@@ -1,7 +1,10 @@
 # Data Design Dimension Website
-company website with Flask
+Company website with Flask
+- currently viewable at http://dadeda.design
+- projected to be published securely at https://dadeda.design
+- magic is happening locally
 
-a work in progrees and tremendous labor of learning––find profit in patience
+A work in progrees and tremendous labor of learning––find profit in patience
 
 ### Acknowledgments
 Thank you to a mentor of mine Dr. Lawrence Gray who has supported me in both computer programming instruction and collaboratively debugging code as well as often with much needed checks and balances when my logic gets off track and an accountable and insightful listening ear. I'm sure I'll have more of you to thank for your feedback on the site as it progresses.
