@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% block heading %}
+  {{ super() }}
+{% block content %}
+{% endblock %}
+<div class="container">
+   <div class="row">
+     <div class="col">
+       <h2> {{my_string}}</h2>
+       <br>
+     </div>
+   </div>
+   <div class="row">
+     <div class="col">
+       <p><strong>{{my_list1[1]}}</strong></p>
+       <ul><strong>
+         {% for n in my_list1 %}
+         <li>{{n}}</li>
+         {% endfor %}</strong>
+       </ul>
+       <br>
+     </div>
+     <div class="col">
+       <p><strong>{{my_list2[1]}}</strong></p>
+       <ul><strong>
+         {% for n in my_list2 %}
+         <li>{{n}}</li>
+         {% endfor %}</strong>
+       </ul>
+       <br>
+     </div>
+     <div class="col">
+       <p><strong>{{my_list3[1]}}</strong></p>
+       <ul><strong>
+         {% for n in my_list3 %}
+         <li>{{n}}</li>
+         {% endfor %}</strong>
+       </ul>
+       <br>
+     </div>
+   </div>
+   <div class="row">
+     <div class="col">
+       <h4> Creating value along the full data life-cycle from idea, where you are now, to where the world needs you to go.
+       </h4>
+       <br>
+       <br>
+     </div>
+   </div>
+     <div class="card border-success mb-3">
+     <div class="card-body">
+       <h4 class="card-title">Kathryn Hurchla</h4>
+       <h6 class="card-subtitle mb-2 text-muted">Chief Executive Member</h6>
+       <p class="card-text">Kathryn is a data developer and designer. She founded Data Design Dimension in 2020 to approach business and social challenges and deliver data visualization products and services across a variety of domains, blending strategy with practical data skills. She earned a M.P.S. in Data Analytics & Visualization from Maryland Institute College of Art when her research that wed audience to outcomes was motivated to change behaviors by sparking visual exploration. Her ability to carve solutions when the going gets tough was tested in more than a decade of experience leading nonprofit revenue driven data initiatives with business and technology partners at two world-renowned organizations.</p>
+       <br>
+       <p class="card-text">Her work is grounded in seeing that when data is a valued asset, with shared understanding and accountability, and appropriate translation and skepticism, you can visualize meaningful progress and see the next opportunity today. An enduring curiosity finds Kathryn in spirited conversations ranging from affordable homeownership to practical precision forestry and agriculture.</p>
+       <a href="https://sustain-our-soil.kathrynhurchla.com" class="card-link" target="_blank">Featured work</a>
+       <br>
+       <br>
+     </div>
+     </div>
+   </div>
+   <br>
+   <br>
+</div>
+{% endblock %}

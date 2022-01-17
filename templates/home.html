@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block heading %}
+  {{ super() }}
+{% block content %}
+{% endblock %}
+<head>
+    <style>
+        #footer {
+            position: fixed;
+            padding: 10px 10px 0px 10px;
+            bottom: 0;
+            width: 100%;
+            /* Height of the footer*/ 
+            height: 80px;
+            }
+    </style>
+</head>
+    <div class="container">
+       <div class="row">
+           <div class="col">
+               <h2> impact driven data visualization products and services.</h2>
+           </div>
+       </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="footer" id="footer">
+                <p> Data, Design & Daughters LLC Dba Data Design Dimension &copy; 2021</p>
+                <p> All Rights Reserved | <a href="/benefit">Pennsylvania Public Benefit Company</a></p>
+                <!-- move privacy policy back up to last footer line above when link can be included -->
+                <!-- | Privacy Policy </p> -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

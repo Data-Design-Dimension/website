@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+
+    <!-- Bootstrap CSS -->
+    <!-- deliver cached version of Bootstrap’s compiled CSS v5.1.1 link source BootstrapCDN.com -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+        
+    <!-- Bootstrap Theme CSS and custom CSS to override main CSS above -->
+    <!-- deliver cached version of Bootswatch Flatly theme compiled CSS; order must follow main unmodified bootstrap.css in order to override with these theme customizations. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.2/dist/flatly/bootstrap.css">
+
+    <div class="container">
+       <div class="row">
+           <div class="col">
+             <title>Data Design Dimension</title>
+           </div>
+       </div>
+    </div>
+    
+  </head>
+  <body>    
+    <!-- navbar for Flatly theme bootstrap css v 5.1.1-->
+    <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">DADEDA</a>
+        <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="navbarColor03" style>
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/work">work</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about">about</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/contact">contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div style="margin-top: 140px;" class="container">
+      <div class="page-header" id="banner">
+        <div class="row">
+          <div class="col">
+            {% block heading %}
+            <h1>{% block page %}{% endblock %} Data Design Dimension</h1>
+            {% endblock %}
+            <br>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- deliver cached version of Bootstrap’s compiled JavaScript v5.1.3 bundled with Popper via URL link source BootstrapCDN.com -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+  </body>
+</html>
