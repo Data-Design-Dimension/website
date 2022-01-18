@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="f44bdf3f-5a67-48fc-b56c-1db8241ce234" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/.15-8898_Benefit_LLC_Annual_Report_2020.html.icloud" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/.15-8898_Benefit_LLC_Annual_Report_2021.html.icloud" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/about.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/freedom-map.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/freedom-map.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/work.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/work.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/benefit.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/benefit.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
