@@ -5,23 +5,37 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f44bdf3f-5a67-48fc-b56c-1db8241ce234" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/DataDesignDaughtersLLC_15-8898_Benefit_LLC_Annual_Report_2020.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/DataDesignDaughtersLLC_15-8898_Benefit_LLC_Annual_Report_2021.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/Kathryn_Hurchla_diplomacy_20201113_thematic_map_screen_RGB_72dpi.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/Kathryn_Hurchla_diplomacy_20201113_thematic_map_screen_RGB_72dpi.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/PHL_Streets_Dept_Case_for_Investment.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/Report_2020_Costs_and_Barriers_along_the_Mortgage_Application_Timeline.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/Sustain_Our_Soil_DensityRanges_Screenshot_sq.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/redistricting_map.png" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/freedom-map.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/15-8898_Benefit_LLC_Annual_Report_2020.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/15-8898_Benefit_LLC_Annual_Report_2021.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/about.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/benefit.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/benefit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/work.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/work.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="0e657968-8d47-4386-a84c-500e532ba91c" />
+        <option name="url" value="git@github.com:data-design-dimension/website" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -33,6 +47,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -71,5 +86,16 @@
       <updated>1642351461681</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

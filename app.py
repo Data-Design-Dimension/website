@@ -9,6 +9,10 @@ def home():
 def work():
    return render_template("work.html")
 
+@app.route("/freedom-map")
+def freedom_map():
+   return render_template("freedom-map.html")
+
 @app.route("/about")
 def about():
    return render_template("about.html", my_string="compel action with data backed visual storytelling.", my_list1=['Web applications'], my_list2=['Interactive and static charts'], my_list3=['Maps'])
@@ -20,14 +24,6 @@ def contact():
 @app.route("/benefit")
 def benefit():
    return render_template("benefit.html", my_string="public benefit created.")
-
-@app.route("/benefit_report_2020")
-def benefit_report_2020():
-   return render_template("15-8898_Benefit_LLC_Annual_Report_2020.html")
-
-@app.route("/benefit_report_2021")
-def benefit_report_2021():
-   return render_template("15-8898_Benefit_LLC_Annual_Report_2021.html")
 
 if __name__=="__main__":
     app.run(debug= True)

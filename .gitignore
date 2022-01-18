@@ -153,7 +153,7 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# image files
-*.png
-*.pdf
+# image files need to be in the slug for heroku
+# keep *.png
+# keep *.pdf
 >>>>>>> master
