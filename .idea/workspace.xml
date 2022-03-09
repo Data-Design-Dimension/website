@@ -5,8 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f44bdf3f-5a67-48fc-b56c-1db8241ce234" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/static/Freedom_Map_CDIPHL_annual_appeal.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/Freedom_Map_revision_Winkel_Tripel_Screen_Shot.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/Invest_as_One_city_budget_proposal_prototype_persona_development.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/Jones2_47quality_textoverlay.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/USstatedeptindependentstateslist_Screen_Shot.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/invest_as_one_Screen_Shot_dumping.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/invest-as-one.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/KathrynHurchla_CV.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/static/KathrynHurchla_CV.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/KathrynHurchla_Resume_Cover.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/KathrynHurchla_bio.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/static/KathrynHurchla_bio.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/about.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/benefit.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/benefit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/contact.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/contact.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/freedom-map.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/freedom-map.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/work.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/work.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,6 +49,9 @@
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="23muD7HZ8ioB1jZhmlqK7imvvjK" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />

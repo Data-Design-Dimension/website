@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% block heading %}
+  {{ super() }}
+{% block content %}
+{% endblock %}
+<div class="container">
+   <div class="row">
+       <div class="col">
+           <h2>one dataset, two audiences</h2>
+           <br>
+       </div>
+   </div>
+   <div class="row">
+     <div class="col">
+       <h4>City budget visual presentation</h4>
+       <h4 class="text-secondary"><i>Human centered design highlight: Observation</i></h4>
+       <br>
+     </div>
+   </div>
+   <div class="container">
+     <div class="row row-cols-2">
+       <div style="margin-top: 40px;" class="col">
+           <h4>Persona development</h4>
+           <br>
+
+           <p><b>Empathy for challenges and goals</b> was central to this prototype for a city sanitation department's budget presentation to its primary city council audience.</p>
+
+           <p><b>Personas</b> were developed for a central figure with vote swaying power through his role and relationships, and residents to engage them in litter control. View the <a href="/static/Invest_as_One_city_budget_proposal_prototype_persona_development.pdf" target="_blank">full persona examples</a>.</p>
+       </div>
+       <div style="margin-top: 40px;" class="col">
+           <figure>
+               <a><img src="/static/Jones2_47quality_textoverlay.jpg" alt="Photograph of a highlighted Black male politician dressed in formal business suit attire with overlaid white text describing him as a community informed development advocate and a blurred purple background showing him seated beside multiple Black and white policemen each wearing service uniforms and caps." class="imp-responsive" width="100%"></a>
+               <figcaption>User Archetype was informed by research of Hon. Curtis Jones Jr. on Philadelphia's City Council. Background image source: https://phlcouncil.com/</figcaption>
+           </figure>
+       </div>
+       <div style="margin-top: 40px;" class="col">
+           <h4>Reader attention</h4>
+
+           <figure>
+               <a><img src="/static/invest_as_one_Screen_Shot_dumping.jpg" alt="Screen shot of second page of Tableau Story with yellow highlighted arrows outlined in magenta tracing the most likely path the reader's eye follows as they navigate the key elements of the illegal dumping projections portion of the prototype." class="imp-responsive" width="100%"></a>
+               <figcaption>Arrows follow a reading pattern that informed the design according to eye tracking research.</figcaption>
+           </figure>
+       </div>
+       <div style="margin-top: 40px;" class="col">
+           <br>
+           <br>
+
+           <p><b>Charts placed top and left</b> in Tableau Data Story layouts illustrated key points in each section—spending breakdown, increased cost projections, and marketing briefs.</p>
+
+           <p><b>Visual hierarchy</b> and small text chunks support scanning in a common <i>F</i> shaped pattern.</p>
+
+           <p>Surveys informed <b>at a glance placards</b> for business windows, sidewalk trash receptacles, and public transit.
+       </div>
+     </div>
+   </div>
+   <br>
+   <div class="row">
+       <div style="margin-top: 40px;" class="col">
+
+           <h4>High fidelity prototype</h4>
+
+           <br>
+           <div class="alert alert-dismissible alert-info">
+               <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+               <strong>This work is best viewed on a computer screen rather than a mobile device.</strong> A static size is set for the data dense presentation use case.
+           </div>
+           <br>
+
+           <div class='tableauPlaceholder' id='viz1643809305549' style='position: center' width="100%">
+               <object class='tableauViz'  style='display:none;'>
+                   <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+                   <param name='embed_code_version' value='3' />
+                   <param name='site_root' value='' />
+                   <param name='name' value='PHL_Streets_Dept_Case_for_Investment&#47;InvestasOneCouncilNowTowardsaZeroWasteLitter-freeCityby2035' />
+                   <param name='tabs' value='no' />
+                   <param name='toolbar' value='yes' />
+                   <param name='animate_transition' value='yes' />
+                   <param name='display_static_image' value='yes' />
+                   <param name='display_spinner' value='yes' />
+                   <param name='display_overlay' value='yes' />
+                   <param name='display_count' value='yes' />
+                   <param name='language' value='en-US' />
+               </object>
+           </div>
+           <script type='text/javascript'>
+           var divElement = document.getElementById('viz1643809305549');
+           var vizElement = divElement.getElementsByTagName('object')[0];
+           vizElement.style.width='1016px';vizElement.style.height='991px';
+           var scriptElement = document.createElement('script');
+           scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+           vizElement.parentNode.insertBefore(scriptElement, vizElement);
+           </script>
+
+           <br>
+           <p>Explore <a href="https://public.tableau.com/app/profile/kathryn.hurchla/viz/PHL_Streets_Dept_Case_for_Investment/InvestasOneCouncilNowTowardsaZeroWasteLitter-freeCityby2035" target="_blank">this interactive prototype</a> or other Tableau examples on founder Kathryn Hurchla's <a href="" target="_blank">Tableau Public author profile</a>.</p>
+
+       </div>
+   </div>
+</div>
+{% endblock %}
