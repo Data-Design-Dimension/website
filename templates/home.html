@@ -6,30 +6,44 @@
 <head>
     <style>
         #footer {
-            position: fixed;
-            padding: 10px 10px 0px 10px;
-            bottom: 0;
-            width: 100%;
-            /* Height of the footer*/ 
-            height: 80px;
+            text-align: left;
+            padding: 10px;
+<!--            below are the fixed footer attributes previously used that resulted in overlapping body content.-->
+<!--            position: fixed;-->
+<!--            padding: 10px 10px 0px 10px;-->
+<!--            bottom: 0;-->
+<!--            width: 100%;-->
+<!--            /* Height of the footer*/ -->
+<!--            height: 80px;-->
             }
     </style>
 </head>
-    <div class="container">
+<body>
+    <div class="container" style="margin-bottom: 100px>
        <div class="row">
            <div class="col">
                <h2> compel action with data backed visual storytelling.</h2>
            </div>
        </div>
+       <div class="row">
+           <div class="col">
+               <img src="/static/img/my_values_strengths.jpeg"
+                    alt="Image of a radial circle shaped chart with axes for values in a violet color and strengths in a gray color and labeled clockwise as analytical, variety, build, storytelling, systems, design, and collaborate. The graph shows a balance among all these attributes."
+                    class="img-responsive"
+                    width="100%">
+           </div>
+       </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <div class="footer" id="footer">
-                <p> Data, Design & Daughters LLC Dba Data Design Dimension &copy; 2021</p>
-                <p> All Rights Reserved | <a href="/benefit">Pennsylvania Public Benefit Company</a></p>
-                <!-- move privacy policy back up to last footer line above when link can be included -->
-                <!-- | Privacy Policy </p> -->
+    <footer>
+        <div class="row">
+            <div class="col">
+                <div class="footer" id="footer">
+                    <p>Data, Design & Daughters LLC Dba Data Design Dimension &copy; 2021&nbsp&nbsp&#127912&nbsp&#127911&nbsp&nbsp|&nbsp&nbspAll Rights Reserved.&nbsp&nbsp&#128188&nbsp&nbsp|&nbsp&nbspNo cookies here to track your data.&nbsp&nbsp&#128274&nbsp&nbsp|&nbsp&nbsp<a href="/benefit">Pennsylvania Public Benefit Company</a>&nbsp&nbsp&#127758</p>
+                    <!-- move privacy policy back up to last footer line above when link can be included -->
+                    <!-- | Privacy Policy </p> -->
+                </div>
             </div>
         </div>
-    </div>
+    </footer>
+</body>
 {% endblock %}

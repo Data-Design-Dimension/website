@@ -159,7 +159,7 @@ cython_debug/
 >>>>>>> master
 
 # MacOS Finder stuff
-.DS_Store
+*.DS_Store
 
 # PyCharm project settings
 .idea/
