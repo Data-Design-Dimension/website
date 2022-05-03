@@ -27,7 +27,8 @@
        </div>
        <div class="row">
            <div class="col">
-               <img src="/static/img/my_values_strengths.jpeg"
+               <!--   how to serve images in html while using flask from subdirectory img in static directory           -->
+               <img src="{{url_for('static',filename =  'img/my_values_strengths.jpeg')}}"
                     alt="Image of a radial circle shaped chart with axes for values in a violet color and strengths in a gray color and labeled clockwise as analytical, variety, build, storytelling, systems, design, and collaborate. The graph shows a balance among all these attributes."
                     class="img-responsive"
                     width="100%">
