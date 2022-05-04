@@ -16,7 +16,7 @@
        <p><strong>{{my_list1[1]}}</strong></p>
        <ul><strong>
          {% for n in my_list1 %}
-         <li>{{n}}</li>
+         <li>{{n}}<br><i data-feather="pen-tool"></i>&nbsp;&nbsp;<i data-feather="code"></i>&nbsp;&nbsp;<i data-feather="bookmark"></i></li>
          {% endfor %}</strong>
        </ul>
        <br>
@@ -25,7 +25,7 @@
        <p><strong>{{my_list2[1]}}</strong></p>
        <ul><strong>
          {% for n in my_list2 %}
-         <li>{{n}}</li>
+         <li>{{n}}<br><i data-feather="video"></i>&nbsp;&nbsp;<i data-feather="layout"></i>&nbsp;&nbsp;<i data-feather="codesandbox"></i></li>
          {% endfor %}</strong>
        </ul>
        <br>
@@ -34,7 +34,7 @@
        <p><strong>{{my_list3[1]}}</strong></p>
        <ul><strong>
          {% for n in my_list3 %}
-         <li>{{n}}</li>
+         <li>{{n}}<br><i data-feather="book-open"></i>&nbsp;&nbsp;<i data-feather="bar-chart"></i>&nbsp;&nbsp;<i data-feather="image"></i></li>
          {% endfor %}</strong>
        </ul>
        <br>
@@ -45,7 +45,7 @@
        <p><strong>{{my_list4[1]}}</strong></p>
        <ul><strong>
          {% for n in my_list4 %}
-         <li>{{n}}</li>
+         <li>{{n}}<br><i data-feather="monitor"></i>&nbsp;&nbsp;<i data-feather="terminal"></i>&nbsp;&nbsp;<i data-feather="smartphone"></i></li>
          {% endfor %}</strong>
        </ul>
        <br>
@@ -54,7 +54,7 @@
        <p><strong>{{my_list5[1]}}</strong></p>
        <ul><strong>
          {% for n in my_list5 %}
-         <li>{{n}}</li>
+         <li>{{n}}<br><i data-feather="map-pin"></i>&nbsp;&nbsp;<i data-feather="map"></i>&nbsp;&nbsp;<i data-feather="globe"></i></li>
          {% endfor %}</strong>
        </ul>
        <br>
@@ -63,7 +63,7 @@
        <p><strong>{{my_list6[1]}}</strong></p>
        <ul><strong>
          {% for n in my_list6 %}
-         <li>{{n}}</li>
+         <li>{{n}}<br><i data-feather="sliders"></i>&nbsp;&nbsp;<i data-feather="filter"></i>&nbsp;&nbsp;<i data-feather="bar-chart-2"></i></li>
          {% endfor %}</strong>
        </ul>
        <br>
@@ -87,18 +87,36 @@
          <br>
          <p><em>Get to know Kathryn and what she's been reading, writing, and tinkering with!</em></p>
 
-         <a href="https://medium.com/@kathrynhurchla" class="card-link" target="_blank">Medium blog</a>&nbsp;
-         <a href="https://sustain-our-soil.kathrynhurchla.com" class="card-link" target="_blank">Featured work</a>&nbsp;
-         <a href="/static/KathrynHurchla_Resume.pdf" class="card-link" target="_blank">Résumé</a>&nbsp;
-         <a href="/static/KathrynHurchla_bio.pdf" class="card-link" target="_blank">Bio</a>&nbsp;
-
-         <a href="https://github.com/khurchla" class="card-link" target="_blank">GitHub</a>&nbsp;
-
-         <a href="https://www.youtube.com/playlist?list=PLqijE-Hipvlzn_OFrHlqvYHWsRbLnFVbY" class="card-link" target="_blank">Videos</a>&nbsp;
-         <a href="https://public.tableau.com/app/profile/kathryn.hurchla" class="card-link" target="_blank">Tableau Public</a>&nbsp;
-         <a href="https://www.linkedin.com/in/kathrynhurchla/" class="card-link" target="_blank">LinkedIn</a>&nbsp;
-         <a href="https://twitter.com/khurchla" class="card-link" target="_blank">Twitter</a>&nbsp;
-         <a href="mailto:kathryn@dadeda.design" class="card-link" target="_blank">Email</a>
+         <a href="https://medium.com/@kathrynhurchla" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- pen icon for blog-->
+           <i data-feather="pen-tool"></i>&nbsp;Medium blog</a>
+         <a href="https://sustain-our-soil.kathrynhurchla.com" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- map and bar chart icons for interactive analytic application -->
+           <i data-feather="compass"></i> Featured work</a>
+         <a href="/static/KathrynHurchla_Resume.pdf" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- file with text lines icon for résumé document-->
+           <i data-feather="file-text"></i>&nbsp;Résumé</a>
+         <a href="/static/KathrynHurchla_bio.pdf" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- file with no text lines icon for short bio document-->
+           <i data-feather="file"></i>&nbsp;Bio</a>
+         <a href="https://github.com/khurchla" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- GitHub icon-->
+           <i data-feather="github"></i> GitHub</a>
+         <a href="https://www.youtube.com/playlist?list=PLqijE-Hipvlzn_OFrHlqvYHWsRbLnFVbY" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- YouTube icon -->
+           <i data-feather="youtube"></i> Videos</a>
+         <a href="https://public.tableau.com/app/profile/kathryn.hurchla" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- pie chart icon for Tableau-->
+           <i data-feather="pie-chart"></i> Tableau Public</a>
+         <a href="https://www.linkedin.com/in/kathrynhurchla/" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- LinkedIn icon -->
+           <i data-feather="linkedin"></i> LinkedIn</a>
+         <a href="https://twitter.com/khurchla" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- Twitter icon -->
+           <i data-feather="twitter"></i> Twitter</a>
+         <a href="mailto:kathryn@dadeda.design" class="card-link" target="_blank" style="white-space: nowrap">
+           <!-- mail icon for mailto: email link -->
+           <i data-feather="mail"></i> Email</a>
          <br>
          <br>
 
@@ -141,8 +159,10 @@
      </div>
  </div>
  <br>
-<div><i class="fa-brands fa-github"></i>
-</div>
  <br>
+ <!-- script allows feather to replace the feather data attributes with their svg icons -->
+ <script>
+   feather.replace()
+ </script>
 </body>
 {% endblock %}

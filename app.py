@@ -20,7 +20,7 @@ def freedom_map():
 
 @app.route("/about")
 def about():
-   return render_template("about.html", my_string="data writing, products, and solutions.", my_list1=['Data science blogs'], my_list2=['Data visualization tutorials'], my_list3=['Visual communications'], my_list4=['Analytic web applications'], my_list5=['Maps'], my_list6=['Interactive charts'])
+   return render_template("about.html", my_string="data writing, products, and solutions.", my_list1=['Blogs & talks'], my_list2=['Teach Dataviz'], my_list3=['Compel action'], my_list4=['Analytic apps'], my_list5=['Maps & time'], my_list6=['Interactive charts'])
 
 @app.route("/contact")
 def contact():
@@ -31,4 +31,4 @@ def benefit():
    return render_template("benefit.html", my_string="public benefit created.")
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(debug=False)

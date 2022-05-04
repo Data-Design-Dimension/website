@@ -3,6 +3,7 @@
   {{ super() }}
 {% block content %}
 {% endblock %}
+<body>
 <div class="container">
    <div class="row">
      <div class="col">
@@ -13,7 +14,9 @@
    <div class="row">
      <div class="col">
        <h4 class="text-info"><i>Select an image to explore featured work.</i></h4>
-       <h4 class="text-info"><i>Or go straight to see work being done on <a href="https://github.com/Data-Design-Dimension" target="_blank">GitHub</a>.</i></h4>
+       <h4 class="text-info"><i>Or go straight to see programming code on <a href="https://github.com/Data-Design-Dimension" target="_blank" style="white-space: nowrap">
+           <!-- GitHub icon-->
+            GitHub <i data-feather="github"></i></a>.</i></h4>
        <br>
      </div>
    </div>
@@ -35,6 +38,7 @@
        <p>InDesign research brief <a href="/static/Report_2020_Costs_and_Barriers_along_the_Mortgage_Application_Timeline.epub/" target="_blank">ebook</a> or <a href="/static/Report_2020_Costs_and_Barriers_along_the_Mortgage_Application_Timeline.pdf/" target="_blank">PDF</a> with Python flow chart analyzing mortgage barriers to homeownership.</p>
 
        <a href="/static/Report_2020_Costs_and_Barriers_along_the_Mortgage_Application_Timeline.epub" target="_blank"><img src="{{url_for('static',filename = 'img/Report_2020_Costs_and_Barriers_along_the_Mortgage_Application_Timeline.png')}}"
+                                                                                                                          class="img-thumbnail"
                                                                                                                           alt="Page spread showing flow chart of mortgage application process data from eBook."
                                                                                                                           class="img-responsive"
                                                                                                                           width="100%"></a>
@@ -42,7 +46,7 @@
        <div style="margin-top: 40px;" class="col">
          <h4>Redistricting web app</h4>
 
-         <p>Animated Python Plotly Dash choropleth about U.S. population change and redistricting.</p>
+         <p>Animated Plotly Dash choropleth about U.S. population change and redistricting.</p>
 
          <a href="https://dadeda.pythonanywhere.com/" target="_blank"><img src="{{url_for('static',filename = 'img/redistricting_map.png')}}"
                                                                            class="img-thumbnail"
@@ -75,7 +79,7 @@
        <div style="margin-top: 40px;" class="col">
        <h4>Open source programming code</h4>
 
-       <p>View DADEDA code repositories on GitHub, or partner on a public project!</p>
+       <p>View Python, R, and more on DADEDA's <a href="https://github.com/Data-Design-Dimension" target="_blank" style="white-space: nowrap"> GitHub </a> or partner on a public project!</p>
 
        <a href="https://github.com/Data-Design-Dimension" target="_blank"><img src="{{url_for('static',filename = 'img/coding_data_prep_screenshot.png')}}"
                                                                                alt="screenshot taken in an integrated development environment showing Python computer programming code."
@@ -87,4 +91,9 @@
 </div>
 <br>
 <br>
+ <!-- script allows feather to replace the feather data attributes with their svg icons -->
+ <script>
+   feather.replace()
+ </script>
+</body>
 {% endblock %}

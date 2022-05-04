@@ -3,12 +3,13 @@
   {{ super() }}
 {% block content %}
 {% endblock %}
+<body>
 <div class="container">
    <div class="row">
      <div class="col">
        <h2> speaks business and geek.</h2>
        <br>
-       <h4>Get in touch at <a href="mailto:kathryn@dadeda.design">kathryn@dadeda.design</a>.</h4>
+       <h4>Get in touch. <a href="mailto:kathryn@dadeda.design"> <i data-feather="send"></i> kathryn@dadeda.design</a></h4>
        <br>
        <p>Start a conversation with Kathryn about your pain points and goals, and what sparks your joy. Get her talking on topics ranging from affordable homeownership in cities to practical precision forestry and agriculture or about visualizing time in cycles.</p>
      </div>
@@ -21,4 +22,9 @@
      </div>
    </div>
 </div>
+ <!-- script allows feather to replace the feather data attributes with their svg icons -->
+ <script>
+   feather.replace()
+ </script>
+</body>
 {% endblock %}
