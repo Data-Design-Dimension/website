@@ -20,7 +20,7 @@ def freedom_map():
 
 @app.route("/about")
 def about():
-   return render_template("about.html", my_string="data writing, products, and solutions.", my_list1=['Blogs & talks'], my_list2=['Dataviz teaching'], my_list3=['Compelling communication'], my_list4=['Analytic apps'], my_list5=['Maps & time'], my_list6=['Interactive charts'])
+   return render_template("about.html", my_string="visual data science.", my_list1=['Blogs & talks'], my_list2=['Dataviz teaching'], my_list3=['Compelling communication'], my_list4=['Analytic apps'], my_list5=['Maps & time'], my_list6=['Interactive charts'])
 
 @app.route("/contact")
 def contact():

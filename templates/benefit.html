@@ -3,25 +3,39 @@
   {{ super() }}
 {% block content %}
 {% endblock %}
+<body>
 <div class="container">
    <div class="row">
      <div class="col">
        <h2> {{my_string}}</h2>
        <br>
-       <h4> Business and social benefit make excellent bedfellows and a hotbed for innovation.</h4>
+     </div>
+   </div>
+   <div class="row">
+     <div class="col">
+       <h4> Business and social benefit make <i>good bedfellows for innovation.</i></h4>
+       <h4 class="text-info"><i>Follow this space for 
+           <!-- heart icon and activity icon-->
+             impact stories <i data-feather="heart"></i><i data-feather="activity"></i><i data-feather="activity"></i>.</i></h4>
+       <br>
      </div>
    </div>
    <div class="row">
      <div class="col">
         <ul style="list-style-type: none;">
-          <li><b>2022</b><i> What challenges will be braved in the Chinese Year of the Tiger?</i></li>
+          <li><b>2022</b> Expanding knowledge and access in technology through writing, editing, and speaking in open source and nonprofit education communities in the Chinese Year of the Tiger</li>
           <li><a href="/static/DataDesignDaughtersLLC_15-8898_Benefit_LLC_Annual_Report_2021.pdf" target="_blank"><b>2021</b> Open source computer programming exploration of soil productivity with climate change in the Year of the Ox</a></li>
-          <li><a href="/static/DataDesignDaughtersLLC_15-8898_Benefit_LLC_Annual_Report_2021.pdf" target="_blank"><b>2020</b> Beginning of <i>a new day</i> spreading wealth of knowledge in a year of international diplomacy and mentoring</a></li>
+          <li><a href="/static/DataDesignDaughtersLLC_15-8898_Benefit_LLC_Annual_Report_2020.pdf" target="_blank"><b>2020</b> Beginning of <i>a new day</i> spreading wealth of knowledge in a year of international diplomacy and mentoring</a></li>
         </ul>
 
         <br>
-        <p>DADEDA celebrates working with people and organizations that operate in a socially uplifting way with vision, investment, and accountability. As a Public Benefit Company registered with the Pennsylvania Department of State, annual benefit reports are posted here in compliance with the requirements of 15 Pa.C.S. § 8898.</p>
+        <p>DADEDA celebrates working with people and organizations that operate in a socially uplifting way with vision, investment, and accountability. As a Public Benefit Company registered with the Pennsylvania Department of State during 2020 and 2021, annual benefit reports are posted here in compliance with the requirements of 15 Pa.C.S. § 8898.</p>
      </div>
    </div>
+    <!-- script allows feather to replace the feather data attributes with their svg icons -->
+    <script>
+      feather.replace()
+    </script>
 </div>
+</body>
 {% endblock %}
