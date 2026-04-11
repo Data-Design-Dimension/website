@@ -3,7 +3,7 @@ Company website built with Flask
 - view project published securely at https://dadeda.design
 - also viewable at http://dadeda.design
 
-A work in progrees and labor of learning –– hope you'll take a look. You can suggest an update or report a bug by opening an issue on GitHub.
+A work in progress and labor of learning –– hope you'll take a look. You can suggest an update or report a bug by opening an issue on GitHub.
 
 ### Acknowledgments
 Thank you to a mentor of mine <a href="https://lwgray.github.io/">Lawrence Gray, PhD</a> who supported me in the initial building stages of this website in 2021, in both computer programming instruction and collaboratively debugging code as well as often with much needed checks and balances when my logic got off track and an accountable and insightful listening ear.
