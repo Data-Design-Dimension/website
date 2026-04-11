@@ -1,0 +1,65 @@
+/*
+ * DADEDA Design Tokens
+ * #DADEDA is both the brand name and a hex color.
+ * RGB(218, 222, 218) — a sage mist with barely perceptible green undertone.
+ * Phonetically sounds like "data."
+ */
+
+:root {
+  /* === Brand Canvas === */
+  --color-canvas: oklch(0.89 0.007 155); /* #DADEDA — the sage mist */
+  --color-canvas-light: oklch(0.95 0.004 155);
+  --color-canvas-dark: oklch(0.82 0.010 155);
+
+  /* === Brand Accents (to be refined with mood board palette) === */
+  --color-accent-green: oklch(0.75 0.20 145); /* bold neon green */
+  --color-accent-blue: oklch(0.55 0.15 250); /* blueprint cyan */
+  --color-accent-hot: oklch(0.65 0.25 0); /* energy accent */
+
+  /* === Neutrals === */
+  --color-surface: oklch(0.99 0.002 155);
+  --color-text-primary: oklch(0.20 0.01 155);
+  --color-text-secondary: oklch(0.45 0.01 155);
+  --color-text-muted: oklch(0.65 0.005 155);
+  --color-border: oklch(0.80 0.008 155);
+
+  /* === Data Viz Palette (qualitative, colorblind-safe) === */
+  /* Minimum 30 OKLCH lightness units between adjacent colors */
+  --viz-1: oklch(0.55 0.18 250); /* blue */
+  --viz-2: oklch(0.70 0.20 145); /* green */
+  --viz-3: oklch(0.65 0.22 30);  /* orange */
+  --viz-4: oklch(0.55 0.20 330); /* purple */
+  --viz-5: oklch(0.75 0.15 80);  /* gold */
+  --viz-6: oklch(0.50 0.15 200); /* teal */
+  --viz-7: oklch(0.65 0.25 15);  /* red-orange */
+  --viz-8: oklch(0.60 0.12 290); /* violet */
+
+  /* === Typography === */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+  /* === Spacing scale (4px base) === */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* === Motion === */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 600ms;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+  }
+}

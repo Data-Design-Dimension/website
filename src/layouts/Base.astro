@@ -1,0 +1,35 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'DADEDA — Data Design Dimension',
+  description = 'Kathryn Hurchla makes intelligent experiences where design and technology blur.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-[var(--color-accent-green)]">
+      Skip to content
+    </a>
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  @import '../styles/global.css';
+</style>

@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+@layer base {
+  html {
+    background-color: var(--color-canvas);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+
+  body {
+    min-height: 100dvh;
+    margin: 0;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-green);
+    color: var(--color-text-primary);
+  }
+}
