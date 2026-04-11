@@ -46,3 +46,5 @@ env/
 venv/
 *.egg-info/
 
+playwright-report/
+test-results/
