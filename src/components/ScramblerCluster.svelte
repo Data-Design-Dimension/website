@@ -13,11 +13,14 @@
 
   let { cluster, containerWidth, containerHeight, onCardSelect }: Props = $props();
 
-  // Orbit radii based on orbit level — inner is closest/largest, outer is furthest
+  let isPaused = $state(false);
+
+  // Orbit radii — tighter to keep cards on screen
+  // Account for card width (~280px) by reserving margin
   const orbitConfig = {
-    inner: { rxFactor: 0.30, ryFactor: 0.20, speed: 0.3 },
-    middle: { rxFactor: 0.40, ryFactor: 0.28, speed: 0.2 },
-    outer: { rxFactor: 0.48, ryFactor: 0.35, speed: 0.12 },
+    inner: { rxFactor: 0.18, ryFactor: 0.15, speed: 0.12 },
+    middle: { rxFactor: 0.26, ryFactor: 0.20, speed: 0.08 },
+    outer: { rxFactor: 0.32, ryFactor: 0.25, speed: 0.05 },
   } as const;
 
   const config = $derived(orbitConfig[cluster.orbit]);
@@ -47,7 +50,9 @@
     function tick(now: number) {
       const dt = (now - lastTime) / 1000;
       lastTime = now;
-      time += dt * config.speed;
+      if (!isPaused) {
+        time += dt * config.speed;
+      }
       animationId = requestAnimationFrame(tick);
     }
 
@@ -77,8 +82,11 @@
 
 <div
   class="scrambler-cluster"
+  class:paused={isPaused}
   role="group"
   aria-label="{cluster.label} — {cluster.cards.length} items"
+  onmouseenter={() => (isPaused = true)}
+  onmouseleave={() => (isPaused = false)}
 >
   <span class="cluster-label" style:opacity={cluster.orbit === 'inner' ? 0.7 : 0.3}>
     {cluster.label}
@@ -121,5 +129,20 @@
   .card-wrapper {
     position: absolute;
     transform: translate(-50%, -50%);
+  }
+
+  .paused .card-wrapper {
+    animation: gentle-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes gentle-pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.015); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .paused .card-wrapper {
+      animation: none;
+    }
   }
 </style>
