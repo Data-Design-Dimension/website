@@ -1,0 +1,85 @@
+<script lang="ts">
+  import type { ScramblerCard, ScramblerCluster } from '../lib/scrambler/types';
+  import ScramblerClusterComponent from './ScramblerCluster.svelte';
+
+  interface Props {
+    clusters: ScramblerCluster[];
+    onCardSelect?: (card: ScramblerCard) => void;
+  }
+
+  let { clusters, onCardSelect }: Props = $props();
+
+  let containerEl: HTMLDivElement | undefined = $state();
+  let width = $state(800);
+  let height = $state(600);
+
+  $effect(() => {
+    if (!containerEl) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        width = entry.contentRect.width;
+        height = entry.contentRect.height;
+      }
+    });
+
+    observer.observe(containerEl);
+    return () => observer.disconnect();
+  });
+</script>
+
+<div
+  class="scrambler"
+  bind:this={containerEl}
+  role="region"
+  aria-label="Interactive content navigator — use Tab to focus on cards, Enter to select"
+  aria-live="polite"
+>
+  {#each clusters as cluster (cluster.id)}
+    <ScramblerClusterComponent
+      {cluster}
+      containerWidth={width}
+      containerHeight={height}
+      onCardSelect={onCardSelect}
+    />
+  {/each}
+
+  <div class="scrambler-vignette" aria-hidden="true"></div>
+</div>
+
+<style>
+  .scrambler {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--color-canvas);
+    perspective: 1200px;
+    perspective-origin: 50% 50%;
+  }
+
+  /* Soft vignette that fades edges into the canvas color */
+  .scrambler-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 50%,
+      var(--color-canvas) 100%
+    );
+  }
+
+  @media (max-width: 768px) {
+    .scrambler {
+      perspective: 800px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scrambler {
+      perspective: none;
+    }
+  }
+</style>
