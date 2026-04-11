@@ -1,0 +1,211 @@
+---
+import Base from '../layouts/Base.astro';
+import ColorSwatch from '../components/ColorSwatch.svelte';
+---
+
+<Base title="Design System — DADEDA">
+  <div class="ds-container">
+    <header class="ds-header">
+      <h1>Design System</h1>
+      <p>
+        The visual language of dadeda.design. Every choice is deliberate — from the
+        <code>#DADEDA</code> canvas color (which IS the brand name, a hex code that
+        sounds like "data") to the OKLCH color space that ensures perceptual uniformity
+        across brand and data visualization palettes.
+      </p>
+    </header>
+
+    <section class="ds-section">
+      <h2>Brand Canvas</h2>
+      <p>
+        <code>#DADEDA</code> — RGB(218, 222, 218). A sage mist with barely perceptible
+        green undertone. 86% lightness, 1% saturation. The foundation everything lives on.
+      </p>
+      <div class="ds-grid-3">
+        <ColorSwatch client:load name="--color-canvas" value="oklch(0.89 0.007 155)" label="#DADEDA — sage mist" />
+        <ColorSwatch client:load name="--color-canvas-light" value="oklch(0.95 0.004 155)" label="Light variant" />
+        <ColorSwatch client:load name="--color-canvas-dark" value="oklch(0.82 0.010 155)" label="Dark variant" />
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <h2>Brand Accents</h2>
+      <p>
+        Bold colors that pop against the sage canvas. Inspired by Philadelphia industrial
+        patina and neon energy.
+      </p>
+      <div class="ds-grid-3">
+        <ColorSwatch client:load name="--color-accent-green" value="oklch(0.75 0.20 145)" label="Neon green — primary accent" />
+        <ColorSwatch client:load name="--color-accent-blue" value="oklch(0.55 0.15 250)" label="Blueprint cyan — systems" />
+        <ColorSwatch client:load name="--color-accent-hot" value="oklch(0.65 0.25 0)" label="Energy accent" />
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <h2>Neutrals</h2>
+      <div class="ds-grid-5">
+        <ColorSwatch client:load name="--color-surface" value="oklch(0.99 0.002 155)" label="Surface" />
+        <ColorSwatch client:load name="--color-text-primary" value="oklch(0.20 0.01 155)" label="Text primary" />
+        <ColorSwatch client:load name="--color-text-secondary" value="oklch(0.45 0.01 155)" label="Text secondary" />
+        <ColorSwatch client:load name="--color-text-muted" value="oklch(0.65 0.005 155)" label="Text muted" />
+        <ColorSwatch client:load name="--color-border" value="oklch(0.80 0.008 155)" label="Border" />
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <h2>Data Visualization Palette</h2>
+      <p>
+        Qualitative palette. OKLCH ensures minimum 30 lightness units between colors.
+        Tested against protanopia, deuteranopia, tritanopia, and achromatopsia.
+      </p>
+      <div class="ds-grid-8">
+        <ColorSwatch client:load name="--viz-1" value="oklch(0.55 0.18 250)" label="Blue" />
+        <ColorSwatch client:load name="--viz-2" value="oklch(0.70 0.20 145)" label="Green" />
+        <ColorSwatch client:load name="--viz-3" value="oklch(0.65 0.22 30)" label="Orange" />
+        <ColorSwatch client:load name="--viz-4" value="oklch(0.55 0.20 330)" label="Purple" />
+        <ColorSwatch client:load name="--viz-5" value="oklch(0.75 0.15 80)" label="Gold" />
+        <ColorSwatch client:load name="--viz-6" value="oklch(0.50 0.15 200)" label="Teal" />
+        <ColorSwatch client:load name="--viz-7" value="oklch(0.65 0.25 15)" label="Red-orange" />
+        <ColorSwatch client:load name="--viz-8" value="oklch(0.60 0.12 290)" label="Violet" />
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <h2>Typography</h2>
+      <div class="ds-type-scale">
+        <div style="font-size: 3rem; font-weight: 700; letter-spacing: -0.02em;">DADEDA</div>
+        <div style="font-size: 2rem; font-weight: 700;">Heading Level 2</div>
+        <div style="font-size: 1.5rem; font-weight: 600;">Heading Level 3</div>
+        <div style="font-size: 1.25rem;">Body large — where design and technology blur</div>
+        <div style="font-size: 1rem;">Body — I make intelligent experiences using first principles thinking and core tenets, accelerated by AI-first engineering approaches.</div>
+        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Small — metadata, labels, timestamps</div>
+        <div style="font-size: 0.875rem; font-family: var(--font-mono);">Mono — code, tokens, technical details</div>
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <h2>Spacing</h2>
+      <div class="ds-spacing">
+        {[1, 2, 3, 4, 6, 8, 12, 16, 24].map((n) => (
+          <div class="ds-spacing-row">
+            <code>--space-{n}</code>
+            <div class="ds-spacing-bar" style={`width: ${n * 0.25}rem;`}></div>
+            <span>{n * 0.25}rem</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <h2>Why These Choices</h2>
+      <dl class="ds-rationale">
+        <dt>Why OKLCH?</dt>
+        <dd>Perceptually uniform — equal numeric changes produce equal visual changes. Critical for data viz palettes where lightness differences encode meaning.</dd>
+        <dt>Why #DADEDA?</dt>
+        <dd>The brand IS the color. dadeda.design, the hex code, the sage mist canvas. One identity.</dd>
+        <dt>Why Tailwind + vanilla CSS?</dt>
+        <dd>Tailwind for layout and structural utility. Vanilla CSS for animation, D3 viz, and the Scrambler 3D transforms where programmatic control matters. Each tool where it's strongest.</dd>
+        <dt>Why no shadow DOM?</dt>
+        <dd>D3.js needs direct DOM access for <code>d3.select()</code>. Svelte compiles to direct DOM operations — no encapsulation barrier, no workarounds needed.</dd>
+      </dl>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .ds-container {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-6);
+  }
+  .ds-header {
+    margin-bottom: var(--space-16);
+  }
+  .ds-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-4);
+  }
+  .ds-header p {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    max-width: 40rem;
+    line-height: 1.7;
+  }
+  .ds-section {
+    margin-bottom: var(--space-16);
+  }
+  .ds-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .ds-section p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-6);
+    max-width: 40rem;
+  }
+  .ds-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+  .ds-grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-4);
+  }
+  .ds-grid-8 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+  }
+  .ds-type-scale {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .ds-spacing {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .ds-spacing-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: 0.875rem;
+  }
+  .ds-spacing-row code {
+    width: 8rem;
+    font-family: var(--font-mono);
+    color: var(--color-text-secondary);
+  }
+  .ds-spacing-bar {
+    height: 1rem;
+    background: var(--color-accent-green);
+    border-radius: 0.25rem;
+    min-width: 0.25rem;
+  }
+  .ds-spacing-row span {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .ds-rationale dt {
+    font-weight: 600;
+    margin-top: var(--space-4);
+  }
+  .ds-rationale dd {
+    color: var(--color-text-secondary);
+    margin-left: 0;
+    max-width: 40rem;
+  }
+  @media (max-width: 768px) {
+    .ds-grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .ds-grid-5 { grid-template-columns: repeat(3, 1fr); }
+    .ds-grid-8 { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
