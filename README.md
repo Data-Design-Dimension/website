@@ -1,15 +1,65 @@
-# Data Design Dimension Website
-Company website built with Flask
-- view project published securely at https://dadeda.design
-- also viewable at http://dadeda.design
+# dadeda.design
 
-A work in progress and labor of learning –– hope you'll take a look. You can suggest an update or report a bug by opening an issue on GitHub.
+Portfolio and professional brand site for [Kathryn Hurchla](https://www.linkedin.com/in/kathrynhurchla/) / [Data Design Dimension](https://github.com/Data-Design-Dimension).
 
-### Acknowledgments
-Thank you to a mentor of mine <a href="https://lwgray.github.io/">Lawrence Gray, PhD</a> who supported me in the initial building stages of this website in 2021, in both computer programming instruction and collaboratively debugging code as well as often with much needed checks and balances when my logic got off track and an accountable and insightful listening ear.
+## Setup
 
-### General Disclaimer
-This work is completed under the limited liability company Data, Design & Daughters LLC doing business as Data Design Dimension by Kathryn Hurchla with all rights reserved.
+Requires **Node.js 24+** and **pnpm**.
 
-<!-- my custom buy me and a mentee a tea button -->
-<a href="https://www.buymeacoffee.com/earthtokathy"><img src="https://img.buymeacoffee.com/button-api/?text=Fuel web design with tea&emoji=🍵&slug=earthtokathy&button_colour=ecd0df&font_colour=062D3F&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00"></a>
+```bash
+# If Node 24 is installed via Homebrew as a keg:
+export PATH="/usr/local/opt/node@24/bin:$PATH"
+
+# Install dependencies
+pnpm install
+```
+
+## Development
+
+```bash
+pnpm dev          # Start dev server at localhost:4321
+pnpm build        # Production build
+pnpm preview      # Preview production build locally
+pnpm test         # Run tests
+pnpm test:watch   # Run tests in watch mode
+pnpm check        # TypeScript / Astro type checking
+```
+
+## Stack
+
+- **Astro 6** — static-first, islands architecture
+- **Svelte 5** — interactive components (no shadow DOM)
+- **Tailwind v4** — layout and typography
+- **Vanilla CSS + OKLCH** — animation, data viz, design tokens
+- **Vitest** — testing (TDD)
+- **Cloudflare Pages** — hosting ($0)
+
+## Project Structure
+
+```
+src/
+├── pages/           Astro page routes
+├── components/      Svelte interactive components
+├── layouts/         Astro layout templates
+├── content/         Content collections (YAML cards, MD/MDX writing)
+├── lib/             Shared utilities, tokens, Scrambler logic
+└── styles/          Design tokens (tokens.css), global styles
+docs/adr/            Architecture Decision Records
+tests/               Test files
+public/              Static assets
+```
+
+## Key Pages
+
+- `/` — Home
+- `/design-system` — Living design system documentation
+
+## Previous Version
+
+The Flask/Bootstrap version is preserved at tag `v1.0-flask` and branch `archive/flask-v1`.
+
+## License
+
+AGPL-3.0 — see [LICENSE](LICENSE).
+
+Data, Design & Daughters LLC dba Data Design Dimension. All rights reserved.
