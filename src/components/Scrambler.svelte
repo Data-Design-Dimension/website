@@ -4,10 +4,11 @@
 
   interface Props {
     clusters: ScramblerCluster[];
+    manualTimeOffset?: number;
     onCardSelect?: (card: ScramblerCard) => void;
   }
 
-  let { clusters, onCardSelect }: Props = $props();
+  let { clusters, manualTimeOffset = 0, onCardSelect }: Props = $props();
 
   let containerEl: HTMLDivElement | undefined = $state();
   let width = $state(800);
@@ -41,7 +42,7 @@
       {cluster}
       containerWidth={width}
       containerHeight={height}
-      timeOffset={i * (Math.PI * 2 / 3) * 0.4}
+      timeOffset={i * (Math.PI * 2 / 3) * 0.4 + manualTimeOffset}
       onCardSelect={onCardSelect}
     />
   {/each}

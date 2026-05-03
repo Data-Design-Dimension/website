@@ -134,8 +134,16 @@
     <circle cx="100" cy="100" r="95" fill="url(#knob-glass)" />
     <!-- Outer rim definition -->
     <circle cx="100" cy="100" r="95" fill="none" stroke="oklch(0.45 0.03 155 / 0.4)" stroke-width="1" />
-    <!-- Inner ring around the dial -->
-    <circle cx="100" cy="100" r="42" fill="none" stroke="oklch(0.45 0.03 155 / 0.35)" stroke-width="0.5" />
+
+    <!-- Segment dividers — three radial lines making each arc look distinct -->
+    <!-- Three dividers at 270° (top-bottom split), 30°, and 150° -->
+    <line x1="100" y1="100" x2="100" y2="13" stroke="oklch(0.45 0.03 155 / 0.55)" stroke-width="1" stroke-linecap="round" />
+    <line x1="100" y1="100" x2="24.6" y2="143.5" stroke="oklch(0.45 0.03 155 / 0.55)" stroke-width="1" stroke-linecap="round" />
+    <line x1="100" y1="100" x2="175.4" y2="143.5" stroke="oklch(0.45 0.03 155 / 0.55)" stroke-width="1" stroke-linecap="round" />
+
+    <!-- Inner ring around the dial — covers the inner ends of the dividers -->
+    <circle cx="100" cy="100" r="44" fill="url(#knob-glass)" />
+    <circle cx="100" cy="100" r="44" fill="none" stroke="oklch(0.45 0.03 155 / 0.5)" stroke-width="1" />
 
     <!-- Curved text labels along the arc paths -->
     <text class="knob-label label-top" class:active={seeWorkActive}>

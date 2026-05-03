@@ -12,6 +12,10 @@
 
   let seeWorkActive = $state(true);
   let getToKnowActive = $state(true);
+  let manualTimeOffset = $state(0);
+  let lastDialUse = $state(0);
+
+  const bothOff = $derived(!seeWorkActive && !getToKnowActive);
 
   const visibleClusters = $derived.by(() => {
     return initialClusters.filter((cluster) => {
@@ -53,8 +57,11 @@
     }
   }
 
-  function handleDial(_delta: number) {
-    // TODO: wire to Scrambler manual time control
+  function handleDial(delta: number) {
+    // Drag rotation maps directly to time offset.
+    // 2π drag = 1 full orbit cycle, scaled down so it feels controlled.
+    manualTimeOffset += delta * 0.6;
+    lastDialUse = performance.now();
   }
 
   function handleAvatarExpand() {
@@ -70,7 +77,21 @@
   <Avatar onExpand={handleAvatarExpand} />
 
   <section class="windshield" aria-label="Content navigator">
-    <Scrambler clusters={visibleClusters} onCardSelect={handleCardSelect} />
+    {#if bothOff}
+      <div class="empty-state" role="status" aria-live="polite">
+        <p class="empty-prompt">
+          Both content categories are off. Toggle <strong>See Work</strong> or
+          <strong>Get to Know</strong> on the dial to see content here.
+        </p>
+        <p class="empty-hint">Or open <strong>Contact</strong> to reach out directly.</p>
+      </div>
+    {:else}
+      <Scrambler
+        clusters={visibleClusters}
+        manualTimeOffset={manualTimeOffset}
+        onCardSelect={handleCardSelect}
+      />
+    {/if}
   </section>
 
   <div class="knob-overlay">
@@ -106,6 +127,40 @@
     left: 1.5rem;
     z-index: 30;
     pointer-events: auto;
+  }
+
+  .empty-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-8);
+    color: var(--color-text-secondary);
+  }
+
+  .empty-prompt {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    max-width: 36rem;
+    margin: 0 0 var(--space-3);
+  }
+
+  .empty-prompt strong {
+    color: var(--color-accent-green);
+    font-weight: 700;
+  }
+
+  .empty-hint {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .empty-hint strong {
+    color: var(--color-text-primary);
   }
 
   /* Mobile portrait: Knob shifts to center-bottom for thumb reach */
