@@ -24,12 +24,20 @@ export function createOrbitalPath(params: {
 }
 
 /**
+ * The angle on the orbit where cards are in foreground (z = 0).
+ * 5π/4 = 225° = top-left quadrant of the ellipse.
+ * Cards orbit clockwise: TL (foreground) → TR → BR (background) → BL → TL.
+ * Putting foreground at top-left places content in prime reading real
+ * estate where Western readers look first.
+ */
+export const FOREGROUND_ANGLE = (5 * Math.PI) / 4;
+
+/**
  * Calculate position on an elliptical orbit at a given angle.
  * Returns x, y screen coordinates and z depth (0=front, 1=back).
  *
- * The z depth uses a cosine curve: angle 0 is front (z=0),
- * angle PI is back (z=1). This maps naturally to the Scrambler's
- * foreground/background visual model.
+ * The z depth peaks at FOREGROUND_ANGLE (top-left) and is highest
+ * (background) at the diametrically opposite point (bottom-right).
  */
 export function calculateOrbitalPosition(
   path: OrbitalPath,
@@ -38,9 +46,9 @@ export function calculateOrbitalPosition(
   const x = path.centerX + path.radiusX * Math.cos(angle);
   const y = path.centerY + path.radiusY * Math.sin(angle);
 
-  // z depth: 0 at angle 0 (front), 1 at angle PI (back)
-  // Using (1 - cos(angle)) / 2 maps [0, 2PI] to [0, 1, 0]
-  const z = (1 - Math.cos(angle)) / 2;
+  // z = 0 (foreground) at FOREGROUND_ANGLE, z = 1 (background) at the
+  // diametrically opposite point.
+  const z = (1 - Math.cos(angle - FOREGROUND_ANGLE)) / 2;
 
   const visuals = depthToVisuals(z);
 

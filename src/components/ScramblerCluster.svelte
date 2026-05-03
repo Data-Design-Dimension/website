@@ -1,26 +1,36 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import type { ScramblerCluster, ScramblerPosition } from '../lib/scrambler/types';
-  import { createOrbitalPath, calculateOrbitalPosition } from '../lib/scrambler/orbital-math';
+  import {
+    createOrbitalPath,
+    calculateOrbitalPosition,
+    FOREGROUND_ANGLE,
+  } from '../lib/scrambler/orbital-math';
   import ScramblerCardComponent from './ScramblerCard.svelte';
 
   interface Props {
     cluster: ScramblerCluster;
     containerWidth: number;
     containerHeight: number;
+    timeOffset?: number;
     onCardSelect?: (card: import('../lib/scrambler/types').ScramblerCard) => void;
   }
 
-  let { cluster, containerWidth, containerHeight, onCardSelect }: Props = $props();
+  let {
+    cluster,
+    containerWidth,
+    containerHeight,
+    timeOffset = 0,
+    onCardSelect,
+  }: Props = $props();
 
   let isPaused = $state(false);
 
-  // Orbit radii — tighter to keep cards on screen
-  // Account for card width (~280px) by reserving margin
+  // Orbit radii — tighter to keep cards on screen.
+  // Container queries adjust per viewport size.
   const orbitConfig = {
-    inner: { rxFactor: 0.18, ryFactor: 0.15, speed: 0.12 },
-    middle: { rxFactor: 0.26, ryFactor: 0.20, speed: 0.08 },
-    outer: { rxFactor: 0.32, ryFactor: 0.25, speed: 0.05 },
+    inner: { rxFactor: 0.18, ryFactor: 0.18, speed: 0.10 },
+    middle: { rxFactor: 0.26, ryFactor: 0.24, speed: 0.07 },
+    outer: { rxFactor: 0.34, ryFactor: 0.30, speed: 0.045 },
   } as const;
 
   const config = $derived(orbitConfig[cluster.orbit]);
@@ -35,7 +45,6 @@
     }),
   );
 
-  // Distribute cards evenly around the orbit
   let time = $state(0);
   let animationId: number | undefined;
   let reducedMotion = $state(false);
@@ -65,7 +74,8 @@
     };
   });
 
-  // Calculate positions for each card in the cluster
+  // Distribute cards evenly around the orbit, anchored so card 0 starts
+  // at the FOREGROUND_ANGLE (top-left). timeOffset lets parent stagger clusters.
   const cardPositions = $derived.by(() => {
     const count = cluster.cards.length;
     if (count === 0) return [];
@@ -73,7 +83,7 @@
     const angleStep = (Math.PI * 2) / count;
 
     return cluster.cards.map((card, i) => {
-      const angle = i * angleStep + time;
+      const angle = i * angleStep + time + timeOffset + FOREGROUND_ANGLE;
       const pos = calculateOrbitalPosition(path, angle);
       return { card, position: pos };
     });
@@ -87,6 +97,8 @@
   aria-label="{cluster.label} — {cluster.cards.length} items"
   onmouseenter={() => (isPaused = true)}
   onmouseleave={() => (isPaused = false)}
+  onfocusin={() => (isPaused = true)}
+  onfocusout={() => (isPaused = false)}
 >
   <span class="cluster-label" style:opacity={cluster.orbit === 'inner' ? 0.7 : 0.3}>
     {cluster.label}
@@ -95,8 +107,7 @@
   {#each cardPositions as { card, position } (card.id)}
     <div
       class="card-wrapper"
-      style:left="{position.x}px"
-      style:top="{position.y}px"
+      style:transform="translate3d({position.x}px, {position.y}px, 0) translate(-50%, -50%)"
       style:z-index={Math.round((1 - position.z) * 100)}
     >
       <ScramblerCardComponent
@@ -128,7 +139,9 @@
 
   .card-wrapper {
     position: absolute;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    will-change: transform;
   }
 
   .paused .card-wrapper {
@@ -136,8 +149,12 @@
   }
 
   @keyframes gentle-pulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.015); }
+    0%, 100% {
+      filter: brightness(1);
+    }
+    50% {
+      filter: brightness(1.04);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

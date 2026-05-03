@@ -3,6 +3,7 @@ import {
   calculateOrbitalPosition,
   depthToVisuals,
   createOrbitalPath,
+  FOREGROUND_ANGLE,
 } from '../../src/lib/scrambler/orbital-math';
 
 describe('Orbital math', () => {
@@ -44,11 +45,14 @@ describe('Orbital math', () => {
       expect(pos.y).toBeCloseTo(100, 0); // bottom of ellipse
     });
 
-    it('z depth follows a sine wave (front at 0, back at PI)', () => {
-      const front = calculateOrbitalPosition(path, 0);
-      const back = calculateOrbitalPosition(path, Math.PI);
-      // Front should have lower z (closer), back should have higher z (further)
-      expect(front.z).toBeLessThan(back.z);
+    it('foreground occurs at FOREGROUND_ANGLE (top-left)', () => {
+      const fg = calculateOrbitalPosition(path, FOREGROUND_ANGLE);
+      expect(fg.z).toBeCloseTo(0, 2);
+    });
+
+    it('background occurs at the diametrically opposite point (bottom-right)', () => {
+      const bg = calculateOrbitalPosition(path, FOREGROUND_ANGLE + Math.PI);
+      expect(bg.z).toBeCloseTo(1, 2);
     });
 
     it('completes a full orbit back to the start', () => {
@@ -56,6 +60,13 @@ describe('Orbital math', () => {
       const end = calculateOrbitalPosition(path, Math.PI * 2);
       expect(end.x).toBeCloseTo(start.x, 5);
       expect(end.y).toBeCloseTo(start.y, 5);
+    });
+
+    it('top-left position has negative x and y offsets from center', () => {
+      // Verify FOREGROUND_ANGLE actually puts foreground in the upper-left
+      const fg = calculateOrbitalPosition(path, FOREGROUND_ANGLE);
+      expect(fg.x).toBeLessThan(path.centerX);
+      expect(fg.y).toBeLessThan(path.centerY);
     });
   });
 

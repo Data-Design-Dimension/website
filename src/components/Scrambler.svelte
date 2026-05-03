@@ -36,11 +36,12 @@
   aria-label="Interactive content navigator — use Tab to focus on cards, Enter to select"
   aria-live="polite"
 >
-  {#each clusters as cluster (cluster.id)}
+  {#each clusters as cluster, i (cluster.id)}
     <ScramblerClusterComponent
       {cluster}
       containerWidth={width}
       containerHeight={height}
+      timeOffset={i * (Math.PI * 2 / 3) * 0.4}
       onCardSelect={onCardSelect}
     />
   {/each}
