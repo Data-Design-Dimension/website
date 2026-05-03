@@ -91,25 +91,50 @@
     pointer-events: none;
     cursor: default;
 
-    /* Outer bezel shadow — directional light from upper-left, casting shadow
-       down and to the right. Multi-layer creates visible glass thickness. */
+    /* Outer bezel shadow — directional light from upper-left */
     box-shadow:
       /* directional drop shadow (light source upper-left) */
-      6px 10px 24px oklch(0.2 0.01 155 / 0.16),
-      4px 6px 12px oklch(0.2 0.01 155 / 0.12),
+      10px 14px 28px oklch(0.2 0.01 155 / 0.18),
+      6px 8px 12px oklch(0.2 0.01 155 / 0.12),
       2px 2px 4px oklch(0.2 0.01 155 / 0.10),
       /* hairline outer rim — defines edge against canvas all around */
-      0 0 0 1px oklch(0.55 0.02 155 / 0.18),
-      /* inner top-left bevel highlight (refractive) */
-      inset 1px 1px 0 0.5px var(--glass-edge-light),
-      inset 2px 2px 4px -1px oklch(0.99 0.02 155 / 0.5),
-      /* inner bottom-right bevel — glass thickness, more pronounced */
-      inset -2px -2px 0 0.5px var(--glass-edge-shadow),
-      inset -4px -4px 8px -2px oklch(0.45 0.03 155 / 0.35),
-      inset -1px -1px 12px oklch(0.35 0.02 155 / 0.15);
+      0 0 0 1px oklch(0.55 0.02 155 / 0.18);
   }
 
-  /* The screen itself — the inner content area with glass tint */
+  /*
+   * ::before — Glass thickness on the right and bottom sides.
+   * Positioned slightly offset down/right behind the card, so only the
+   * 7px sliver on each side is visible — this becomes the "side wall"
+   * of the glass. Tinted darker green than the face for material contrast.
+   * Has its own refractive highlight on the inside edges where it meets
+   * the face (matching how light catches glass thickness in the reference).
+   */
+  .scrambler-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1.5rem;
+    transform: translate(7px, 7px);
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--glass-tint) 55%, oklch(0.62 0.07 165) 45%) 0%,
+      color-mix(in oklch, var(--glass-tint) 60%, oklch(0.50 0.06 165) 40%) 50%,
+      color-mix(in oklch, var(--glass-tint) 65%, oklch(0.40 0.05 155) 35%) 100%
+    );
+    /* Refractive highlight on the inside top + left edges of the side wall
+       — where light catches the glass thickness as it meets the face */
+    box-shadow:
+      inset 0 1px 0 oklch(0.96 0.04 145 / 0.7),
+      inset 1px 0 0 oklch(0.96 0.04 145 / 0.55),
+      /* outer rim of the side wall */
+      0 0 0 1px oklch(0.45 0.03 155 / 0.25);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* The screen itself — the inner content area with glass tint.
+     Inset shadows simulate the curved glass face refracting light:
+     bright top-left rim + soft bottom-right shadow = convex face. */
   .card-screen {
     position: relative;
     padding: var(--space-6);
@@ -117,6 +142,11 @@
     border-radius: 1.25rem;
     overflow: hidden;
     isolation: isolate;
+    box-shadow:
+      inset 1px 1px 0 0.5px var(--glass-edge-light),
+      inset 2px 2px 4px -1px oklch(0.99 0.02 155 / 0.5),
+      inset -1px -1px 0 0.5px oklch(0.55 0.04 155 / 0.4),
+      inset -2px -2px 6px -1px oklch(0.55 0.04 155 / 0.18);
   }
 
   /*
@@ -173,28 +203,18 @@
   /* Foreground — screen feels fully "powered on", lifted forward */
   .scrambler-card.foreground {
     box-shadow:
-      8px 14px 36px oklch(0.2 0.01 155 / 0.18),
-      6px 10px 18px oklch(0.2 0.01 155 / 0.14),
+      14px 18px 40px oklch(0.2 0.01 155 / 0.20),
+      8px 12px 18px oklch(0.2 0.01 155 / 0.14),
       2px 4px 6px oklch(0.2 0.01 155 / 0.10),
-      0 0 0 1px oklch(0.55 0.02 155 / 0.20),
-      inset 1px 1px 0 0.5px var(--glass-edge-light),
-      inset 2px 2px 4px -1px oklch(0.99 0.02 155 / 0.55),
-      inset -2px -2px 0 0.5px var(--glass-edge-shadow),
-      inset -4px -4px 8px -2px oklch(0.45 0.03 155 / 0.4),
-      inset -1px -1px 14px oklch(0.35 0.02 155 / 0.18);
+      0 0 0 1px oklch(0.55 0.02 155 / 0.20);
   }
 
   /* Hovered & interactive — phosphor glow brightens, accent green border */
   .scrambler-card.hovered.interactive {
     box-shadow:
-      10px 18px 48px oklch(0.2 0.01 155 / 0.22),
-      6px 10px 18px oklch(0.2 0.01 155 / 0.14),
-      0 0 0 1px oklch(from var(--color-accent-green) l c h / 0.45),
-      inset 1px 1px 0 0.5px var(--glass-edge-light),
-      inset 2px 2px 6px -1px oklch(0.99 0.02 155 / 0.65),
-      inset -2px -2px 0 0.5px var(--glass-edge-shadow),
-      inset -4px -4px 10px -2px oklch(0.45 0.03 155 / 0.4),
-      inset -1px -1px 14px oklch(0.35 0.02 155 / 0.18);
+      16px 22px 52px oklch(0.2 0.01 155 / 0.24),
+      8px 12px 18px oklch(0.2 0.01 155 / 0.14),
+      0 0 0 1px oklch(from var(--color-accent-green) l c h / 0.5);
   }
 
   .scrambler-card.hovered.interactive .card-screen::after {
