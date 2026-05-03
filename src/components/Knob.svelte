@@ -90,11 +90,10 @@
     const radius = 9.5;
     const x = Math.cos(angleRad) * radius;
     const y = Math.sin(angleRad) * radius;
-    // Tilt items slightly off-perpendicular so labels remain readable.
-    // Pure radial (perpendicular) would put labels at extreme angles;
-    // we soften by 30° toward horizontal.
-    const tilt = angleDeg + 30;
-    return `transform: translate(${x}rem, ${y}rem) rotate(${tilt}deg);`;
+    // Items rest level (0° rotation) at their final position. Their fan
+    // shape comes from radial placement, not from rotation. Animation
+    // handles the "flying out" feel; final pose stays readable.
+    return `transform: translate(${x}rem, ${y}rem);`;
   }
 </script>
 
@@ -134,29 +133,48 @@
 
     <!-- Outer body with glass gradient -->
     <circle cx="100" cy="100" r="95" fill="url(#knob-glass)" />
-    <!-- Outer rim definition -->
-    <circle cx="100" cy="100" r="95" fill="none" stroke="oklch(0.45 0.03 155 / 0.4)" stroke-width="1" />
 
-    <!-- Segment dividers — three radial lines from the inner ring (44)
-         to the outer rim (95) at -30° (upper-right), 90° (bottom),
-         and -150° (upper-left). These split the dial into three clear
-         segment buttons: top, bottom-left, bottom-right. -->
-    <line x1="138.1" y1="78" x2="182.3" y2="52.5" stroke="oklch(0.42 0.03 155 / 0.65)" stroke-width="1.25" stroke-linecap="round" />
-    <line x1="100" y1="144" x2="100" y2="195" stroke="oklch(0.42 0.03 155 / 0.65)" stroke-width="1.25" stroke-linecap="round" />
-    <line x1="61.9" y1="78" x2="17.7" y2="52.5" stroke="oklch(0.42 0.03 155 / 0.65)" stroke-width="1.25" stroke-linecap="round" />
+    <!-- Segment fills — visible distinction between segments AND
+         active/inactive states. Each is a ring sector (band between
+         inner ring r=44 and outer rim r=95), bounded by the segment's
+         radial dividers at -30°, 90°, -150° (= 210°). -->
+    <!-- Top segment (See Work): from 210° via top to 330° -->
+    <path
+      class="segment-fill seg-fill-top"
+      class:active={seeWorkActive}
+      d="M 17.7,52.5 A 95,95 0 0 1 182.3,52.5 L 138.1,78 A 44,44 0 0 0 61.9,78 Z"
+    />
+    <!-- BL segment (Get to Know): from 90° via lower-left to 210° -->
+    <path
+      class="segment-fill seg-fill-bl"
+      class:active={getToKnowActive}
+      d="M 100,195 A 95,95 0 0 1 17.7,52.5 L 61.9,78 A 44,44 0 0 0 100,144 Z"
+    />
+    <!-- BR segment (Contact): from 330° via lower-right to 90° -->
+    <path
+      class="segment-fill seg-fill-br"
+      d="M 182.3,52.5 A 95,95 0 0 1 100,195 L 100,144 A 44,44 0 0 0 138.1,78 Z"
+    />
 
-    <!-- Inner ring around the dial — covers the inner ends of the dividers -->
+    <!-- Outer rim definition (drawn on top of fills for crisp edge) -->
+    <circle cx="100" cy="100" r="95" fill="none" stroke="oklch(0.42 0.03 155 / 0.5)" stroke-width="1.25" />
+
+    <!-- Segment dividers (drawn on top so they show over the fills) -->
+    <line x1="138.1" y1="78" x2="182.3" y2="52.5" stroke="oklch(0.30 0.02 155 / 0.6)" stroke-width="1.25" stroke-linecap="round" />
+    <line x1="100" y1="144" x2="100" y2="195" stroke="oklch(0.30 0.02 155 / 0.6)" stroke-width="1.25" stroke-linecap="round" />
+    <line x1="61.9" y1="78" x2="17.7" y2="52.5" stroke="oklch(0.30 0.02 155 / 0.6)" stroke-width="1.25" stroke-linecap="round" />
+
+    <!-- Inner ring around the dial — covers inner ends of dividers + fills -->
     <circle cx="100" cy="100" r="44" fill="url(#knob-glass)" />
-    <circle cx="100" cy="100" r="44" fill="none" stroke="oklch(0.45 0.03 155 / 0.5)" stroke-width="1" />
+    <circle cx="100" cy="100" r="44" fill="none" stroke="oklch(0.42 0.03 155 / 0.55)" stroke-width="1" />
 
-    <!-- Horizontal text labels positioned at each segment's center.
-         Far more readable than curved text on lower segments, where
-         textPath rotates glyphs onto their sides. The arc shapes
-         themselves still communicate the dial aesthetic. -->
-    <text class="knob-label" class:active={seeWorkActive} x="100" y="35" text-anchor="middle">SEE WORK</text>
-    <text class="knob-label" class:active={getToKnowActive} x="40" y="148" text-anchor="middle">GET TO</text>
-    <text class="knob-label" class:active={getToKnowActive} x="40" y="160" text-anchor="middle">KNOW</text>
-    <text class="knob-label" x="160" y="148" text-anchor="middle">CONTACT</text>
+    <!-- Curved labels: straight text rotated to follow the segment angle.
+         Each label is anchored at its segment center and rotated so the
+         glyph "up" points outward from the dial center. Reads naturally
+         when you tilt your head toward each segment. -->
+    <text class="knob-label" class:active={seeWorkActive} x="100" y="38" text-anchor="middle">SEE WORK</text>
+    <text class="knob-label" class:active={getToKnowActive} x="37.6" y="138" text-anchor="middle" transform="rotate(-60 37.6 138)">GET TO KNOW</text>
+    <text class="knob-label" x="162.4" y="138" text-anchor="middle" transform="rotate(60 162.4 138)">CONTACT</text>
   </svg>
 
   <!-- Invisible click targets for the three arc segments (positioned over SVG) -->
@@ -252,20 +270,47 @@
     filter: drop-shadow(8px 12px 20px oklch(0.2 0.01 155 / 0.22));
   }
 
-  /* Curved text labels — high contrast against the glass body itself, no halo.
-     Weight 700 with a soft drop shadow gives depth without the white outline. */
+  /* Segment fills — the visible "button" surfaces of the dial.
+     Inactive: subtle desaturated wash showing it's "off."
+     Active: blueprint-blue tint showing it's currently filtering content. */
+  .segment-fill {
+    fill: oklch(0.84 0.008 155 / 0.55);
+    transition: fill var(--duration-fast) ease;
+  }
+
+  .segment-fill.active {
+    fill: oklch(0.62 0.10 250 / 0.32);
+  }
+
+  .seg-fill-br {
+    /* Contact segment uses a slightly different fill since it's not a toggle */
+    fill: oklch(0.78 0.012 155 / 0.45);
+  }
+
+  /* Click target hover state brightens the segment underneath via :has */
+  .knob:has(.seg-top:hover) .seg-fill-top:not(.active),
+  .knob:has(.seg-bl:hover) .seg-fill-bl:not(.active),
+  .knob:has(.seg-br:hover) .seg-fill-br {
+    fill: oklch(0.78 0.014 155 / 0.65);
+  }
+
+  .knob:has(.seg-top:hover) .seg-fill-top.active,
+  .knob:has(.seg-bl:hover) .seg-fill-bl.active {
+    fill: oklch(0.58 0.12 250 / 0.42);
+  }
+
+  /* Straight rotated labels — high contrast, no halo, weight 700 */
   .knob-label {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     fill: oklch(0.18 0.012 155);
-    filter: drop-shadow(0 1px 0 oklch(0.99 0.004 155 / 0.6));
+    filter: drop-shadow(0 1px 0 oklch(0.99 0.004 155 / 0.5));
   }
 
   .knob-label.active {
-    fill: oklch(0.32 0.12 250);
-    filter: drop-shadow(0 1px 0 oklch(0.99 0.004 155 / 0.6));
+    fill: oklch(0.22 0.12 250);
   }
 
   /* Click targets sit over the SVG arcs */
@@ -413,7 +458,7 @@
     border-radius: 9999px;
     cursor: pointer;
     pointer-events: auto;
-    transform-origin: 0 50%;
+    transform-origin: center;
     box-shadow:
       0 4px 12px oklch(0.15 0.05 250 / 0.35),
       inset 1px 1px 0 oklch(0.55 0.10 250 / 0.5),
@@ -435,7 +480,7 @@
   @keyframes radial-in {
     from {
       opacity: 0;
-      transform: translate(0, 0) rotate(0deg) scale(0.7);
+      transform: translate(0, 0) scale(0.7);
     }
   }
 

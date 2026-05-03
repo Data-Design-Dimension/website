@@ -97,8 +97,8 @@ export const sampleCards: ScramblerCard[] = [
   {
     id: 'nightingale-issue-5-sustainability',
     type: 'writing',
-    title: 'Visualizing Sustainability — Nightingale Issue 5',
-    summary: 'Four-page spread in the Special Section on sustainability of Nightingale Magazine Issue 5. A survey of noteworthy global data visualization projects and practitioners approaching sustainability through diverse lenses — from soil to satellite, climate to community.',
+    title: 'Spotlight on Noteworthy Sustainability Data Viz',
+    summary: 'Five-page spread in the Special Section on sustainability of Nightingale Magazine Issue 5. A survey of noteworthy global data visualization projects and practitioners approaching sustainability through diverse lenses — from soil to satellite, climate to community.',
     tags: ['nightingale', 'dvs', 'sustainability', 'data-viz', 'print', 'editorial', 'survey'],
     cta: { label: 'Get the print issue', url: 'https://shop.datavisualizationsociety.org/products/nightingale-magazine-issue-5', external: true },
     order: 2,
@@ -132,11 +132,11 @@ export const sampleCards: ScramblerCard[] = [
   },
   {
     id: 'styling-ddd-inspiration',
-    type: 'link',
+    type: 'inspiration',
     title: 'Styling Data, Design & Daughters',
     summary: 'Brand mood board: Philadelphia industrial typography, embossed cast iron, found vernacular signage. The visual research that grounds DADEDA.',
     tags: ['inspiration', 'brand', 'design-process', 'philadelphia', 'industrial-typography'],
-    cta: { label: 'View inspiration gallery', url: '/inspiration/styling-ddd', external: false },
+    cta: { label: 'Open inspiration gallery', url: '#inspiration-styling-ddd', external: false },
     order: 1,
   },
 ];
@@ -157,8 +157,7 @@ export const sampleClusters: ScramblerCluster[] = [
     label: 'Get to Know',
     orbit: 'middle',
     cards: sampleCards.filter((c) =>
-      ['talk', 'writing'].includes(c.type) ||
-      (c.type === 'link' && c.tags.includes('inspiration')),
+      ['talk', 'writing', 'inspiration'].includes(c.type),
     ),
     order: 1,
   },

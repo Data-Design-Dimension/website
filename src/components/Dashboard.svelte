@@ -20,7 +20,7 @@
   const visibleClusters = $derived.by(() => {
     return initialClusters.filter((cluster) => {
       const seeWorkTypes = ['portfolio', 'repo', 'meta', 'skills'];
-      const getToKnowTypes = ['talk', 'writing', 'link', 'inspiration'];
+      const getToKnowTypes = ['talk', 'writing', 'inspiration'];
       const isSeeWork = cluster.cards.some((c) => seeWorkTypes.includes(c.type));
       const isGetToKnow = cluster.cards.some((c) => getToKnowTypes.includes(c.type));
       if (isSeeWork && !seeWorkActive) return false;
@@ -118,6 +118,13 @@
   .windshield {
     position: absolute;
     inset: 0;
+  }
+
+  /* When any card is hovered or focused inside the windshield, pull the
+     entire windshield above the Knob's stacking layer so the card can
+     fully reveal even at small viewports. */
+  .stage:has(.scrambler-card:hover, .scrambler-card:focus-visible) .windshield {
+    z-index: 100;
   }
 
   /* Knob overlays the windshield in lower-left, no separate dashboard zone */

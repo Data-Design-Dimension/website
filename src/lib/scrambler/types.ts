@@ -13,7 +13,9 @@ export type CardType =
   | 'writing'
   | 'link'
   | 'repo'
-  | 'meta';
+  | 'meta'
+  | 'inspiration'
+  | 'skills';
 
 export type OrbitLevel = 'inner' | 'middle' | 'outer';
 
