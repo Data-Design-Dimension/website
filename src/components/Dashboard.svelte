@@ -13,9 +13,6 @@
   let seeWorkActive = $state(true);
   let getToKnowActive = $state(true);
 
-  // Filter clusters based on active categories
-  // For now, simple split: all clusters with cards of certain types
-  // belong to "See Work" or "Get to Know" — refine when filter mapping is fully wired.
   const visibleClusters = $derived.by(() => {
     return initialClusters.filter((cluster) => {
       const seeWorkTypes = ['portfolio', 'repo', 'meta', 'skills'];
@@ -31,7 +28,6 @@
   function handleContactAction(action: 'email' | 'resume' | 'linkedin' | 'github' | 'share') {
     switch (action) {
       case 'email':
-        // TODO: open in-place contact form overlay
         window.location.href = 'mailto:kathryn@dadeda.design?subject=Hi%20from%20dadeda.design';
         break;
       case 'resume':
@@ -41,7 +37,7 @@
         window.open('https://www.linkedin.com/in/kathrynhurchla/', '_blank', 'noopener,noreferrer');
         break;
       case 'github':
-        window.open('https://github.com/Data-Design-Dimension', '_blank', 'noopener,noreferrer');
+        window.open('https://github.com/khurchla', '_blank', 'noopener,noreferrer');
         break;
       case 'share':
         if (navigator.share) {
@@ -70,70 +66,54 @@
   }
 </script>
 
-<div class="dashboard">
+<div class="stage">
   <Avatar onExpand={handleAvatarExpand} />
 
   <section class="windshield" aria-label="Content navigator">
     <Scrambler clusters={visibleClusters} onCardSelect={handleCardSelect} />
   </section>
 
-  <section class="dashboard-zone" aria-label="Site controls">
-    <div class="knob-anchor">
-      <Knob
-        {seeWorkActive}
-        {getToKnowActive}
-        onToggleSeeWork={() => (seeWorkActive = !seeWorkActive)}
-        onToggleGetToKnow={() => (getToKnowActive = !getToKnowActive)}
-        onContactAction={handleContactAction}
-        onDial={handleDial}
-      />
-    </div>
-  </section>
+  <div class="knob-overlay">
+    <Knob
+      {seeWorkActive}
+      {getToKnowActive}
+      onToggleSeeWork={() => (seeWorkActive = !seeWorkActive)}
+      onToggleGetToKnow={() => (getToKnowActive = !getToKnowActive)}
+      onContactAction={handleContactAction}
+      onDial={handleDial}
+    />
+  </div>
 </div>
 
 <style>
-  .dashboard {
-    display: grid;
-    grid-template-rows: 1fr auto;
+  .stage {
+    position: relative;
+    width: 100%;
     height: 100dvh;
     background: var(--color-canvas);
+    overflow: hidden;
   }
 
   .windshield {
-    position: relative;
-    overflow: hidden;
-    /* CRT cabinet edge — subtle line separating windshield from dashboard */
-    border-bottom: 1px solid oklch(0.55 0.02 155 / 0.18);
-    box-shadow: 0 4px 12px oklch(0.2 0.01 155 / 0.05);
+    position: absolute;
+    inset: 0;
   }
 
-  .dashboard-zone {
-    position: relative;
-    height: 28dvh;
-    min-height: 18rem;
-    background: linear-gradient(to bottom,
-      var(--color-canvas-dark),
-      var(--color-canvas)
-    );
-    display: flex;
-    align-items: center;
-    padding: var(--space-4) var(--space-6);
+  /* Knob overlays the windshield in lower-left, no separate dashboard zone */
+  .knob-overlay {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 30;
+    pointer-events: auto;
   }
 
-  .knob-anchor {
-    /* Lower-left anchored on desktop, center on mobile */
-    margin-left: 0;
-  }
-
-  /* Mobile: dashboard becomes thin bar, knob centers */
-  @media (max-width: 768px) {
-    .dashboard-zone {
-      height: auto;
-      min-height: 10rem;
-      justify-content: center;
-    }
-    .knob-anchor {
-      margin: 0 auto;
+  /* Mobile portrait: Knob shifts to center-bottom for thumb reach */
+  @media (max-width: 640px) {
+    .knob-overlay {
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 </style>

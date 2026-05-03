@@ -2,15 +2,15 @@
   /**
    * The Knob — unified circular dashboard control.
    *
-   * Replaces three separate UI elements (filter buttons + manual dial +
-   * action menu) with one cohesive circular control echoing the vintage
-   * tube-TV channel knob. CRT-glass styling matches the cards.
+   * Echoes a vintage tube-TV channel knob. Three arc segments (See Work,
+   * Get to Know, Contact) wrap around a central rotating dial. Segment
+   * labels are rendered as SVG textPath that follows the arc curve, so
+   * text is never clipped and stays readable.
    *
-   * Layout:
-   *   - Center: rotating dial for manual card cycling (microfiche metaphor)
-   *   - Top arc: "See Work" filter toggle
-   *   - Bottom-left arc: "Get to Know" filter toggle
-   *   - Bottom-right arc: "Contact Center" with hover/focus flyout
+   * The Contact flyout is a RADIAL menu — individual items fan out from
+   * the Contact arc as extensions of the dial, like labels on a retro
+   * car dashboard. They float over the windshield with translucent backing
+   * and high-contrast text.
    */
 
   interface Props {
@@ -52,7 +52,6 @@
     const prevAngle = dialAngle;
     dialAngle = angle;
     let delta = angle - prevAngle;
-    // Wrap delta to shortest path
     if (delta > Math.PI) delta -= Math.PI * 2;
     if (delta < -Math.PI) delta += Math.PI * 2;
     onDial(delta);
@@ -73,73 +72,112 @@
       onDial(Math.PI / 12);
     }
   }
+
+  // Contact flyout items, with radial position around the Contact arc
+  // (which sits at ~135° / lower-right of the SVG viewBox). Each item
+  // gets an angle (in degrees) measured from the Knob center.
+  const contactItems = [
+    { key: 'email', label: 'Email me', angle: 18 },
+    { key: 'resume', label: 'Resume', angle: 36 },
+    { key: 'share', label: 'Share', angle: 54 },
+    { key: 'linkedin', label: 'LinkedIn', angle: 72 },
+    { key: 'github', label: 'GitHub', angle: 90 },
+  ] as const;
+
+  function flyoutItemStyle(angleDeg: number): string {
+    // Position items radiating from the Knob center.
+    // The Knob is 16rem (256px), center at 128px.
+    // Radial distance = 9rem (144px) keeps items just outside the rim.
+    const angleRad = (angleDeg * Math.PI) / 180;
+    const radius = 9.5; // rem
+    const x = Math.cos(angleRad) * radius;
+    const y = Math.sin(angleRad) * radius;
+    // Slight tilt so items are 75% perpendicular to radial — more readable
+    const tilt = angleDeg - 90 + 15;
+    return `transform: translate(${x}rem, ${y}rem) rotate(${tilt}deg);`;
+  }
 </script>
 
 <div class="knob" role="group" aria-label="Site dashboard control">
-  <!-- Background ring with three arc segments -->
-  <svg class="knob-ring" viewBox="0 0 200 200" aria-hidden="true">
+  <!-- SVG ring with arc paths and curved text labels -->
+  <svg class="knob-svg" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <filter id="knob-glow">
-        <feGaussianBlur stdDeviation="2" />
-      </filter>
+      <!-- Glass gradient for the ring body -->
+      <radialGradient id="knob-glass" cx="35%" cy="30%">
+        <stop offset="0%" stop-color="oklch(0.95 0.005 155 / 0.92)" />
+        <stop offset="60%" stop-color="oklch(0.86 0.012 165 / 0.88)" />
+        <stop offset="100%" stop-color="oklch(0.78 0.015 155 / 0.85)" />
+      </radialGradient>
+
+      <!-- Arc paths for textPath. Drawn left-to-right so text reads naturally. -->
+      <!-- Top arc (See Work): from upper-left to upper-right -->
+      <path
+        id="arc-top"
+        d="M 50,55 A 70,70 0 0 1 150,55"
+        fill="none"
+      />
+      <!-- Bottom-left arc (Get to Know): from lower-left to bottom -->
+      <path
+        id="arc-bl"
+        d="M 30,120 A 70,70 0 0 0 100,170"
+        fill="none"
+      />
+      <!-- Bottom-right arc (Contact): from bottom to lower-right -->
+      <path
+        id="arc-br"
+        d="M 100,170 A 70,70 0 0 0 170,120"
+        fill="none"
+      />
     </defs>
-    <!-- Outer ring -->
-    <circle cx="100" cy="100" r="95" fill="var(--glass-tint)" stroke="var(--glass-edge-shadow)" stroke-width="1" />
-    <!-- Inner concave ring -->
-    <circle cx="100" cy="100" r="48" fill="none" stroke="var(--glass-edge-shadow)" stroke-width="0.5" />
+
+    <!-- Outer body with glass gradient -->
+    <circle cx="100" cy="100" r="95" fill="url(#knob-glass)" />
+    <!-- Outer rim definition -->
+    <circle cx="100" cy="100" r="95" fill="none" stroke="oklch(0.45 0.03 155 / 0.4)" stroke-width="1" />
+    <!-- Inner ring around the dial -->
+    <circle cx="100" cy="100" r="42" fill="none" stroke="oklch(0.45 0.03 155 / 0.35)" stroke-width="0.5" />
+
+    <!-- Curved text labels along the arc paths -->
+    <text class="knob-label label-top" class:active={seeWorkActive}>
+      <textPath href="#arc-top" startOffset="50%" text-anchor="middle">SEE WORK</textPath>
+    </text>
+    <text class="knob-label label-bl" class:active={getToKnowActive}>
+      <textPath href="#arc-bl" startOffset="50%" text-anchor="middle">GET TO KNOW</textPath>
+    </text>
+    <text class="knob-label label-br">
+      <textPath href="#arc-br" startOffset="50%" text-anchor="middle">CONTACT</textPath>
+    </text>
   </svg>
 
-  <!-- See Work segment (top) -->
+  <!-- Invisible click targets for the three arc segments (positioned over SVG) -->
   <button
     class="knob-segment seg-top"
     class:active={seeWorkActive}
     aria-pressed={seeWorkActive}
-    aria-label="Toggle See Work category — portfolio, repos, skills, fantasy projects"
+    aria-label="Toggle See Work category — portfolio, repos, skills"
     onclick={onToggleSeeWork}
-  >
-    <span class="seg-label">See Work</span>
-  </button>
+  ></button>
 
-  <!-- Get to Know segment (bottom-left) -->
   <button
     class="knob-segment seg-bl"
     class:active={getToKnowActive}
     aria-pressed={getToKnowActive}
-    aria-label="Toggle Get to Know category — talks, writing, podcasts, interviews, inspiration"
+    aria-label="Toggle Get to Know category — talks, writing, inspiration"
     onclick={onToggleGetToKnow}
-  >
-    <span class="seg-label">Get to Know</span>
-  </button>
+  ></button>
 
-  <!-- Contact Center segment (bottom-right) -->
-  <div class="knob-segment seg-br contact-seg" class:open={contactOpen}>
-    <button
-      class="contact-trigger"
-      aria-expanded={contactOpen}
-      aria-haspopup="menu"
-      aria-label="Open contact and share options"
-      onclick={() => (contactOpen = !contactOpen)}
-      onmouseenter={() => (contactOpen = true)}
-      onfocus={() => (contactOpen = true)}
-    >
-      <span class="seg-label">Contact</span>
-    </button>
-    {#if contactOpen}
-      <div
-        class="contact-flyout"
-        role="menu"
-        onmouseleave={() => (contactOpen = false)}
-      >
-        <button role="menuitem" onclick={() => onContactAction('email')}>Email me</button>
-        <button role="menuitem" onclick={() => onContactAction('resume')}>Download resume</button>
-        <button role="menuitem" onclick={() => onContactAction('linkedin')}>LinkedIn</button>
-        <button role="menuitem" onclick={() => onContactAction('github')}>GitHub</button>
-        <button role="menuitem" onclick={() => onContactAction('share')}>Share site</button>
-      </div>
-    {/if}
-  </div>
+  <button
+    class="knob-segment seg-br contact-seg"
+    class:open={contactOpen}
+    aria-expanded={contactOpen}
+    aria-haspopup="menu"
+    aria-label="Open contact and share options"
+    onclick={() => (contactOpen = !contactOpen)}
+    onmouseenter={() => (contactOpen = true)}
+    onfocus={() => (contactOpen = true)}
+  ></button>
 
-  <!-- Center dial (microfiche cycling control) -->
+  <!-- Center dial -->
   <div
     class="knob-dial"
     bind:this={dialEl}
@@ -157,10 +195,34 @@
   >
     <span
       class="dial-indicator"
-      style:transform="rotate({dialAngle}rad)"
+      style:transform="translate(-50%, -100%) rotate({dialAngle}rad)"
       aria-hidden="true"
     ></span>
   </div>
+
+  <!-- Radial flyout menu — items extend from Contact arc like dial spokes -->
+  {#if contactOpen}
+    <div
+      class="contact-radial"
+      role="menu"
+      aria-label="Contact options"
+      onmouseleave={() => (contactOpen = false)}
+    >
+      {#each contactItems as item (item.key)}
+        <button
+          class="radial-item"
+          role="menuitem"
+          style={flyoutItemStyle(item.angle)}
+          onclick={() => {
+            onContactAction(item.key);
+            contactOpen = false;
+          }}
+        >
+          {item.label}
+        </button>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -168,104 +230,78 @@
     position: relative;
     width: 16rem;
     height: 16rem;
-    aspect-ratio: 1;
   }
 
-  .knob-ring {
+  .knob-svg {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    filter: drop-shadow(6px 8px 16px oklch(0.2 0.01 155 / 0.18));
+    /* Slight transparency over windshield content */
+    opacity: 0.95;
+    filter: drop-shadow(8px 12px 20px oklch(0.2 0.01 155 / 0.22));
   }
 
+  /* Curved text labels — high weight + shadow for legibility over content */
+  .knob-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    fill: var(--color-text-primary);
+    paint-order: stroke fill;
+    stroke: oklch(0.95 0.005 155 / 0.85);
+    stroke-width: 2.5px;
+  }
+
+  .knob-label.active {
+    fill: oklch(from var(--color-accent-green) calc(l - 0.15) c h);
+  }
+
+  /* Click targets sit over the SVG arcs */
   .knob-segment {
     position: absolute;
     background: transparent;
     border: none;
     cursor: pointer;
-    color: var(--color-text-secondary);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    transition: color var(--duration-fast) ease;
     padding: 0;
   }
 
-  .knob-segment:hover,
   .knob-segment:focus-visible {
-    color: var(--color-text-primary);
-  }
-
-  .knob-segment.active {
-    color: var(--color-accent-green);
+    outline: 2px solid var(--color-accent-green);
+    outline-offset: 2px;
+    border-radius: 9999px;
   }
 
   .seg-top {
     top: 8%;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 18%;
+    width: 64%;
+    height: 22%;
+    border-radius: 12rem 12rem 0 0 / 8rem 8rem 0 0;
   }
 
   .seg-bl {
-    bottom: 18%;
-    left: 12%;
+    bottom: 12%;
+    left: 6%;
+    width: 42%;
+    height: 38%;
+    border-radius: 8rem 0 0 12rem / 6rem 0 0 8rem;
   }
 
   .seg-br {
-    bottom: 18%;
-    right: 12%;
+    bottom: 12%;
+    right: 6%;
+    width: 42%;
+    height: 38%;
+    border-radius: 0 8rem 12rem 0 / 0 6rem 8rem 0;
   }
 
-  .contact-trigger {
-    background: transparent;
-    border: none;
-    color: inherit;
-    font: inherit;
-    text-transform: inherit;
-    letter-spacing: inherit;
-    cursor: pointer;
-    padding: 0;
+  .knob-segment:hover ~ .knob-svg .knob-label {
+    /* hover would brighten text — handled via :has at parent */
   }
 
-  .contact-flyout {
-    position: absolute;
-    top: -2rem;
-    right: -1rem;
-    transform: translate(100%, -100%);
-    background: var(--glass-tint);
-    border: 1px solid var(--glass-edge-shadow);
-    border-radius: 0.75rem;
-    padding: var(--space-2);
-    box-shadow: 0 8px 24px oklch(0.2 0.01 155 / 0.15);
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 12rem;
-    z-index: 10;
-  }
-
-  .contact-flyout button {
-    background: transparent;
-    border: none;
-    color: var(--color-text-primary);
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
-    text-align: left;
-    padding: var(--space-2) var(--space-3);
-    border-radius: 0.375rem;
-    cursor: pointer;
-    text-transform: none;
-    letter-spacing: normal;
-  }
-
-  .contact-flyout button:hover,
-  .contact-flyout button:focus-visible {
-    background: oklch(from var(--color-accent-green) l c h / 0.15);
-    color: var(--color-text-primary);
-  }
-
+  /* Center dial */
   .knob-dial {
     position: absolute;
     top: 50%;
@@ -279,7 +315,7 @@
       color-mix(in oklch, var(--glass-tint) 60%, oklch(0.46 0.06 165))
     );
     box-shadow:
-      0 4px 12px oklch(0.2 0.01 155 / 0.2),
+      0 4px 12px oklch(0.2 0.01 155 / 0.25),
       inset 1px 1px 0 var(--glass-edge-light),
       inset -1px -1px 0 var(--glass-edge-shadow);
     cursor: grab;
@@ -303,9 +339,67 @@
     height: 35%;
     background: var(--color-accent-green);
     border-radius: 2px;
-    transform-origin: top center;
-    transform: translate(-50%, 0);
+    transform-origin: bottom center;
     box-shadow: 0 0 6px oklch(from var(--color-accent-green) l c h / 0.6);
+  }
+
+  /* Radial menu — items extend from Contact arc like spokes */
+  .contact-radial {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 40;
+  }
+
+  .radial-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Pill-shaped extension matching dial glass aesthetic */
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg,
+      color-mix(in oklch, var(--glass-tint) 55%, oklch(0.62 0.07 165)) 0%,
+      color-mix(in oklch, var(--glass-tint) 60%, oklch(0.50 0.06 165)) 100%
+    );
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border: 1px solid oklch(0.55 0.04 155 / 0.4);
+    border-radius: 9999px;
+    cursor: pointer;
+    pointer-events: auto;
+    transform-origin: 0 50%;
+    box-shadow:
+      0 4px 12px oklch(0.2 0.01 155 / 0.25),
+      0 0 0 1px oklch(0.95 0.01 155 / 0.5),
+      inset 1px 1px 0 var(--glass-edge-light);
+    /* Animate in from center */
+    animation: radial-in var(--duration-normal) var(--ease-spring) backwards;
+  }
+
+  .radial-item:hover,
+  .radial-item:focus-visible {
+    background: linear-gradient(135deg,
+      color-mix(in oklch, var(--color-accent-green) 25%, var(--glass-tint)) 0%,
+      color-mix(in oklch, var(--color-accent-green) 18%, var(--glass-tint)) 100%
+    );
+    color: var(--color-text-primary);
+    outline: 2px solid var(--color-accent-green);
+    outline-offset: 2px;
+  }
+
+  @keyframes radial-in {
+    from {
+      opacity: 0;
+      transform: translate(0, 0) rotate(0deg) scale(0.7);
+    }
   }
 
   @media (max-width: 640px) {
@@ -317,8 +411,18 @@
       width: 3.25rem;
       height: 3.25rem;
     }
-    .seg-label {
-      font-size: 0.625rem;
+    .knob-label {
+      font-size: 8.5px;
+    }
+    .radial-item {
+      font-size: 0.6875rem;
+      padding: 0.4rem 0.7rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .radial-item {
+      animation: none;
     }
   }
 </style>

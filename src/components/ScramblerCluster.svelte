@@ -25,12 +25,12 @@
 
   let isPaused = $state(false);
 
-  // Orbit radii — tighter to keep cards on screen.
-  // Container queries adjust per viewport size.
+  // Orbit radii — wider to fill viewport space, but card width offset
+  // is accounted for in the windshield overflow handling.
   const orbitConfig = {
-    inner: { rxFactor: 0.18, ryFactor: 0.18, speed: 0.10 },
-    middle: { rxFactor: 0.26, ryFactor: 0.24, speed: 0.07 },
-    outer: { rxFactor: 0.34, ryFactor: 0.30, speed: 0.045 },
+    inner: { rxFactor: 0.22, ryFactor: 0.22, speed: 0.10 },
+    middle: { rxFactor: 0.32, ryFactor: 0.30, speed: 0.07 },
+    outer: { rxFactor: 0.40, ryFactor: 0.38, speed: 0.045 },
   } as const;
 
   const config = $derived(orbitConfig[cluster.orbit]);
