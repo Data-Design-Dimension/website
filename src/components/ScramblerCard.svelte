@@ -91,17 +91,22 @@
     pointer-events: none;
     cursor: default;
 
-    /* Outer bezel shadow — subtle plastic/metal frame feel */
+    /* Outer bezel shadow — directional light from upper-left, casting shadow
+       down and to the right. Multi-layer creates visible glass thickness. */
     box-shadow:
-      /* outer drop shadow (depth from canvas) */
-      0 8px 24px oklch(0.2 0.01 155 / 0.10),
-      0 2px 6px oklch(0.2 0.01 155 / 0.08),
+      /* directional drop shadow (light source upper-left) */
+      6px 10px 24px oklch(0.2 0.01 155 / 0.16),
+      4px 6px 12px oklch(0.2 0.01 155 / 0.12),
+      2px 2px 4px oklch(0.2 0.01 155 / 0.10),
+      /* hairline outer rim — defines edge against canvas all around */
+      0 0 0 1px oklch(0.55 0.02 155 / 0.18),
       /* inner top-left bevel highlight (refractive) */
       inset 1px 1px 0 0.5px var(--glass-edge-light),
       inset 2px 2px 4px -1px oklch(0.99 0.02 155 / 0.5),
-      /* inner bottom-right bevel shadow (chamfered glass) */
-      inset -1px -1px 0 0.5px var(--glass-edge-shadow),
-      inset -2px -2px 6px -1px oklch(0.55 0.04 155 / 0.2);
+      /* inner bottom-right bevel — glass thickness, more pronounced */
+      inset -2px -2px 0 0.5px var(--glass-edge-shadow),
+      inset -4px -4px 8px -2px oklch(0.45 0.03 155 / 0.35),
+      inset -1px -1px 12px oklch(0.35 0.02 155 / 0.15);
   }
 
   /* The screen itself — the inner content area with glass tint */
@@ -168,24 +173,28 @@
   /* Foreground — screen feels fully "powered on", lifted forward */
   .scrambler-card.foreground {
     box-shadow:
-      0 16px 40px oklch(0.2 0.01 155 / 0.14),
-      0 4px 12px oklch(0.2 0.01 155 / 0.10),
+      8px 14px 36px oklch(0.2 0.01 155 / 0.18),
+      6px 10px 18px oklch(0.2 0.01 155 / 0.14),
+      2px 4px 6px oklch(0.2 0.01 155 / 0.10),
+      0 0 0 1px oklch(0.55 0.02 155 / 0.20),
       inset 1px 1px 0 0.5px var(--glass-edge-light),
       inset 2px 2px 4px -1px oklch(0.99 0.02 155 / 0.55),
-      inset -1px -1px 0 0.5px var(--glass-edge-shadow),
-      inset -2px -2px 6px -1px oklch(0.55 0.04 155 / 0.25);
+      inset -2px -2px 0 0.5px var(--glass-edge-shadow),
+      inset -4px -4px 8px -2px oklch(0.45 0.03 155 / 0.4),
+      inset -1px -1px 14px oklch(0.35 0.02 155 / 0.18);
   }
 
   /* Hovered & interactive — phosphor glow brightens, accent green border */
   .scrambler-card.hovered.interactive {
     box-shadow:
-      0 20px 56px oklch(0.2 0.01 155 / 0.18),
-      0 6px 16px oklch(0.2 0.01 155 / 0.12),
-      0 0 0 1px oklch(from var(--color-accent-green) l c h / 0.4),
+      10px 18px 48px oklch(0.2 0.01 155 / 0.22),
+      6px 10px 18px oklch(0.2 0.01 155 / 0.14),
+      0 0 0 1px oklch(from var(--color-accent-green) l c h / 0.45),
       inset 1px 1px 0 0.5px var(--glass-edge-light),
       inset 2px 2px 6px -1px oklch(0.99 0.02 155 / 0.65),
-      inset -1px -1px 0 0.5px var(--glass-edge-shadow),
-      inset -2px -2px 6px -1px oklch(0.55 0.04 155 / 0.25);
+      inset -2px -2px 0 0.5px var(--glass-edge-shadow),
+      inset -4px -4px 10px -2px oklch(0.45 0.03 155 / 0.4),
+      inset -1px -1px 14px oklch(0.35 0.02 155 / 0.18);
   }
 
   .scrambler-card.hovered.interactive .card-screen::after {
