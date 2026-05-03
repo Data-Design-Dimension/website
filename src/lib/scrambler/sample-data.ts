@@ -95,6 +95,15 @@ export const sampleCards: ScramblerCard[] = [
     order: 1,
   },
   {
+    id: 'nightingale-issue-5-sustainability',
+    type: 'writing',
+    title: 'Visualizing Sustainability — Nightingale Issue 5',
+    summary: 'Four-page spread in the Special Section on sustainability of Nightingale Magazine Issue 5. A survey of noteworthy global data visualization projects and practitioners approaching sustainability through diverse lenses — from soil to satellite, climate to community.',
+    tags: ['nightingale', 'dvs', 'sustainability', 'data-viz', 'print', 'editorial', 'survey'],
+    cta: { label: 'Get the print issue', url: 'https://shop.datavisualizationsociety.org/products/nightingale-magazine-issue-5', external: true },
+    order: 2,
+  },
+  {
     id: 'github-repos',
     type: 'repo',
     title: 'Open Source Code',
