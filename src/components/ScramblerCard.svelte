@@ -78,7 +78,7 @@
 
   .scrambler-card {
     position: absolute;
-    width: 340px;
+    width: 400px;
     /* CRT tube-shape: asymmetric corner radii (horizontal 1.5rem /
        vertical 2.25rem) pulls the corners into a subtle pillow,
        making the top + sides bulge outward like a tube TV face. */
@@ -285,15 +285,21 @@
     color: var(--color-accent-green);
   }
 
+  @media (max-width: 1280px) {
+    .scrambler-card {
+      width: 340px;
+    }
+  }
+
   @media (max-width: 1024px) {
     .scrambler-card {
-      width: 280px;
+      width: 300px;
     }
   }
 
   @media (max-width: 640px) {
     .scrambler-card {
-      width: 220px;
+      width: 240px;
     }
   }
 

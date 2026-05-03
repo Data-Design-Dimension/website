@@ -144,6 +144,12 @@
     will-change: transform;
   }
 
+  /* Hover/focus brings the card above all other UI (Knob, Avatar, etc.) */
+  .card-wrapper:hover,
+  .card-wrapper:has(:focus-visible) {
+    z-index: 200 !important;
+  }
+
   .paused .card-wrapper {
     animation: gentle-pulse 3s ease-in-out infinite;
   }
