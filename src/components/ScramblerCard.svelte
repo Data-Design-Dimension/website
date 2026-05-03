@@ -79,9 +79,10 @@
   .scrambler-card {
     position: absolute;
     width: 280px;
-    /* Pillowy CRT corners — slightly larger radius than typical cards,
-       and the corner curve is softened by an outer bevel shadow */
-    border-radius: 1.5rem;
+    /* CRT tube-shape: asymmetric corner radii (horizontal 1.5rem /
+       vertical 2.25rem) pulls the corners into a subtle pillow,
+       making the top + sides bulge outward like a tube TV face. */
+    border-radius: 1.5rem / 2.25rem;
     transition:
       transform var(--duration-slow) var(--ease-spring),
       opacity var(--duration-normal) ease,
@@ -102,51 +103,61 @@
   }
 
   /*
-   * ::before — Glass thickness on the right and bottom sides.
-   * Positioned slightly offset down/right behind the card, so only the
-   * 7px sliver on each side is visible — this becomes the "side wall"
-   * of the glass. Tinted darker green than the face for material contrast.
-   * Has its own refractive highlight on the inside edges where it meets
-   * the face (matching how light catches glass thickness in the reference).
+   * ::before — Slim glass side wall on the bottom and right.
+   * Positioned 4px behind the card, so a 4px sliver is visible — this
+   * is the side wall of the curved glass tube. The face curves INTO this
+   * side via matching dark-green rim shadow on the screen's bottom-right.
    */
   .scrambler-card::before {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 1.5rem;
-    transform: translate(7px, 7px);
+    border-radius: 1.5rem / 2.25rem;
+    transform: translate(4px, 4px);
     background: linear-gradient(
       135deg,
-      color-mix(in oklch, var(--glass-tint) 55%, oklch(0.62 0.07 165) 45%) 0%,
-      color-mix(in oklch, var(--glass-tint) 60%, oklch(0.50 0.06 165) 40%) 50%,
-      color-mix(in oklch, var(--glass-tint) 65%, oklch(0.40 0.05 155) 35%) 100%
+      color-mix(in oklch, var(--glass-tint) 55%, oklch(0.58 0.07 165) 45%) 0%,
+      color-mix(in oklch, var(--glass-tint) 60%, oklch(0.46 0.06 165) 40%) 60%,
+      color-mix(in oklch, var(--glass-tint) 65%, oklch(0.38 0.05 155) 35%) 100%
     );
-    /* Refractive highlight on the inside top + left edges of the side wall
-       — where light catches the glass thickness as it meets the face */
+    /* Refractive highlight on the inside top + left of the side wall —
+       light catches the glass thickness where it meets the face */
     box-shadow:
-      inset 0 1px 0 oklch(0.96 0.04 145 / 0.7),
-      inset 1px 0 0 oklch(0.96 0.04 145 / 0.55),
-      /* outer rim of the side wall */
-      0 0 0 1px oklch(0.45 0.03 155 / 0.25);
+      inset 0 1px 0 oklch(0.96 0.04 145 / 0.6),
+      inset 1px 0 0 oklch(0.96 0.04 145 / 0.45),
+      0 0 0 1px oklch(0.42 0.03 155 / 0.25);
     z-index: -1;
     pointer-events: none;
   }
 
-  /* The screen itself — the inner content area with glass tint.
-     Inset shadows simulate the curved glass face refracting light:
-     bright top-left rim + soft bottom-right shadow = convex face. */
+  /* The curved glass face — pillow corners matching the outer card,
+     radial luminosity gradient gives the bulge feel (center catches
+     more light than edges, like a convex CRT face), and the bottom-
+     right rim matches the side wall color so the corner curves
+     continuously from face into the visible glass thickness. */
   .card-screen {
     position: relative;
     padding: var(--space-6);
-    background: var(--glass-tint);
-    border-radius: 1.25rem;
+    background:
+      /* Bulge highlight — center of the face catches ambient light
+         like a convex glass surface */
+      radial-gradient(
+        ellipse 130% 110% at 38% 32%,
+        oklch(1 0 0 / 0.18) 0%,
+        oklch(1 0 0 / 0.06) 35%,
+        transparent 70%
+      ),
+      var(--glass-tint);
+    border-radius: 1.25rem / 1.85rem;
     overflow: hidden;
     isolation: isolate;
     box-shadow:
+      /* Bright top-left refractive rim */
       inset 1px 1px 0 0.5px var(--glass-edge-light),
-      inset 2px 2px 4px -1px oklch(0.99 0.02 155 / 0.5),
-      inset -1px -1px 0 0.5px oklch(0.55 0.04 155 / 0.4),
-      inset -2px -2px 6px -1px oklch(0.55 0.04 155 / 0.18);
+      inset 2px 2px 5px -1px oklch(0.99 0.02 155 / 0.6),
+      /* Bottom-right rim matches side wall color — face curves into side */
+      inset -1px -1px 0 0.5px oklch(0.50 0.06 165 / 0.55),
+      inset -3px -3px 8px -2px oklch(0.50 0.06 165 / 0.3);
   }
 
   /*
