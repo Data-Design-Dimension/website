@@ -14,6 +14,10 @@
   const isForeground = $derived(position.z < 0.3);
   const isInteractive = $derived(position.z < 0.4);
 
+  // Phosphor intensity scales with depth — foreground is "on", background is "off"
+  // 1.0 at z=0, 0 at z=0.5+
+  const phosphorIntensity = $derived(Math.max(0, 1 - position.z * 2));
+
   function handleClick() {
     if (isInteractive && onSelect) {
       onSelect(card);
@@ -32,6 +36,7 @@
   class:foreground={isForeground}
   class:interactive={isInteractive}
   class:hovered={isHovered}
+  style:--phosphor-intensity={phosphorIntensity}
   style:transform="translateZ({position.z * -200}px) scale({position.scale})"
   style:opacity={position.opacity}
   style:filter="blur({position.blur}px)"
@@ -44,40 +49,115 @@
   onclick={handleClick}
   onkeydown={handleKeydown}
 >
-  {#if card.media}
-    <div class="card-media">
-      <img src={card.media.src} alt={card.media.alt} loading="lazy" />
-    </div>
-  {/if}
-
-  <div class="card-content">
-    <span class="card-type">{card.type}</span>
-    <h3 class="card-title">{card.title}</h3>
-    {#if isForeground}
-      <p class="card-summary">{card.summary}</p>
-      {#if card.cta}
-        <span class="card-cta">{card.cta.label} &rarr;</span>
-      {/if}
+  <div class="card-screen">
+    {#if card.media}
+      <div class="card-media">
+        <img src={card.media.src} alt={card.media.alt} loading="lazy" />
+      </div>
     {/if}
+
+    <div class="card-content">
+      <span class="card-type">{card.type}</span>
+      <h3 class="card-title">{card.title}</h3>
+      {#if isForeground}
+        <p class="card-summary">{card.summary}</p>
+        {#if card.cta}
+          <span class="card-cta">{card.cta.label} &rarr;</span>
+        {/if}
+      {/if}
+    </div>
   </div>
 </div>
 
 <style>
+  /*
+   * CRT face plate effect — cards as convex glass screens.
+   * Layered approach using OKLCH color-mix, registered properties,
+   * and multi-layer box-shadows. No SVG filters (would distort text).
+   */
+
   .scrambler-card {
     position: absolute;
     width: 280px;
-    padding: var(--space-6);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
+    /* Pillowy CRT corners — slightly larger radius than typical cards,
+       and the corner curve is softened by an outer bevel shadow */
+    border-radius: 1.5rem;
     transition:
       transform var(--duration-slow) var(--ease-spring),
       opacity var(--duration-normal) ease,
       filter var(--duration-normal) ease,
-      box-shadow var(--duration-fast) ease;
+      --phosphor-intensity var(--duration-slow) ease;
     will-change: transform, opacity, filter;
     pointer-events: none;
     cursor: default;
+
+    /* Outer bezel shadow — subtle plastic/metal frame feel */
+    box-shadow:
+      /* outer drop shadow (depth from canvas) */
+      0 8px 24px oklch(0.2 0.01 155 / 0.10),
+      0 2px 6px oklch(0.2 0.01 155 / 0.08),
+      /* inner top-left bevel highlight (refractive) */
+      inset 1px 1px 0 0.5px var(--glass-edge-light),
+      inset 2px 2px 4px -1px oklch(0.99 0.02 155 / 0.5),
+      /* inner bottom-right bevel shadow (chamfered glass) */
+      inset -1px -1px 0 0.5px var(--glass-edge-shadow),
+      inset -2px -2px 6px -1px oklch(0.55 0.04 155 / 0.2);
+  }
+
+  /* The screen itself — the inner content area with glass tint */
+  .card-screen {
+    position: relative;
+    padding: var(--space-6);
+    background: var(--glass-tint);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /*
+   * ::before — Ambient glass highlight from top-left
+   * Simulates ambient light catching the convex face plate.
+   * Linear gradient masked to the upper portion only.
+   */
+  .card-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      oklch(1 0 0 / 0.45) 0%,
+      oklch(1 0 0 / 0.12) 18%,
+      transparent 45%
+    );
+    mix-blend-mode: screen;
+    z-index: 1;
+  }
+
+  /*
+   * ::after — Phosphor glow + corner vignette
+   * Inner radial gradient creates the CRT corner darkening.
+   * Phosphor glow tied to --phosphor-intensity (animatable property).
+   * When phosphor-intensity is high (foreground), the screen is "on".
+   * When low (background), the screen "powers down".
+   */
+  .card-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      /* CRT corner vignette */
+      radial-gradient(
+        ellipse 120% 120% at 50% 50%,
+        transparent 60%,
+        var(--glass-corner-vignette) 100%
+      );
+    box-shadow:
+      /* phosphor glow — green inner halo, intensity scales with depth */
+      inset 0 0 calc(var(--phosphor-intensity) * 32px)
+        oklch(from var(--phosphor-color) l c h / calc(var(--phosphor-intensity) * 0.18));
+    z-index: 2;
   }
 
   .scrambler-card.interactive {
@@ -85,13 +165,32 @@
     cursor: pointer;
   }
 
+  /* Foreground — screen feels fully "powered on", lifted forward */
   .scrambler-card.foreground {
-    box-shadow: 0 8px 32px oklch(0.2 0.01 155 / 0.12);
+    box-shadow:
+      0 16px 40px oklch(0.2 0.01 155 / 0.14),
+      0 4px 12px oklch(0.2 0.01 155 / 0.10),
+      inset 1px 1px 0 0.5px var(--glass-edge-light),
+      inset 2px 2px 4px -1px oklch(0.99 0.02 155 / 0.55),
+      inset -1px -1px 0 0.5px var(--glass-edge-shadow),
+      inset -2px -2px 6px -1px oklch(0.55 0.04 155 / 0.25);
   }
 
+  /* Hovered & interactive — phosphor glow brightens, accent green border */
   .scrambler-card.hovered.interactive {
-    box-shadow: 0 12px 48px oklch(0.2 0.01 155 / 0.2);
-    border-color: var(--color-accent-green);
+    box-shadow:
+      0 20px 56px oklch(0.2 0.01 155 / 0.18),
+      0 6px 16px oklch(0.2 0.01 155 / 0.12),
+      0 0 0 1px oklch(from var(--color-accent-green) l c h / 0.4),
+      inset 1px 1px 0 0.5px var(--glass-edge-light),
+      inset 2px 2px 6px -1px oklch(0.99 0.02 155 / 0.65),
+      inset -1px -1px 0 0.5px var(--glass-edge-shadow),
+      inset -2px -2px 6px -1px oklch(0.55 0.04 155 / 0.25);
+  }
+
+  .scrambler-card.hovered.interactive .card-screen::after {
+    box-shadow:
+      inset 0 0 48px oklch(from var(--color-accent-green) l c h / 0.22);
   }
 
   .card-media {
@@ -100,12 +199,19 @@
     border-radius: 0.5rem;
     overflow: hidden;
     margin-bottom: var(--space-4);
+    position: relative;
+    z-index: 0;
   }
 
   .card-media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 0;
   }
 
   .card-type {
