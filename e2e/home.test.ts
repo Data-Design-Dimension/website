@@ -10,7 +10,7 @@ test.describe('Home page — Scrambler', () => {
   });
 
   test('Scrambler region is present and accessible', async ({ page }) => {
-    const scrambler = page.getByRole('region', { name: /content navigator/i });
+    const scrambler = page.getByRole('region', { name: /Interactive content navigator/i });
     await expect(scrambler).toBeVisible();
   });
 

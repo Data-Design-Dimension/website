@@ -1,0 +1,50 @@
+# DADEDA — Kathryn Hurchla
+
+> Kathryn Hurchla is an Associate Principal Engineer at Fantasy specializing in AI-first creative engineering and data visualization. Data Design Dimension (DADEDA) is her independent practice.
+
+She makes intelligent experiences where design and technology blur, using first principles thinking and core tenets, accelerated by AI-first engineering approaches.
+
+## Quick Facts
+
+- Role: Associate Principal Engineer at Fantasy (since Jan 2026)
+- Previously: Technology Lead, Data Science Lead at Fantasy (May 2022 – Jan 2026)
+- Education: MPS Data Analytics & Visualization (MICA), BFA Visual Art (NYSCC at Alfred)
+- Located: Northeast Kingdom, Vermont
+- LinkedIn: https://www.linkedin.com/in/kathrynhurchla/
+- GitHub: https://github.com/khurchla and https://github.com/Data-Design-Dimension
+- Email: kathryn@dadeda.design
+
+## Areas of Expertise
+
+- AI engineering and creative technology
+- Agent frameworks, MCP, WebMCP, plugins, skills
+- RAG, vector indexes, LoRA/QLoRA fine-tuning
+- TypeScript, Node.js, Lit, React, Next.js, A2UI/AG-UI, Vue/Nuxt
+- Python (expert), asyncio
+- WebGL, real-time networking (WebRTC, WebSocket)
+- Data visualization (D3, Plotly Dash)
+- Color science (OKLCH, perceptually uniform palettes)
+
+## Recognition
+
+- Plotly Dash Ambassador (2021-2025)
+- Nightingale (Data Visualization Society) contributing author and editor
+- Towards Data Science author
+- Inaugural AI Engineer Code Summit attendee (2025)
+- Certified Scrum Product Owner (Scrum Alliance, 2020)
+
+## Project: Data Design Dimension
+
+DADEDA is both the independent practice name and a hex color (#DADEDA — sage mist with green undertone). Phonetically sounds like "data." The brand operates as Data, Design & Daughters LLC, a Pennsylvania public benefit company.
+
+## Site Structure
+
+- / — interactive Scrambler navigation showing portfolio, talks, writing
+- /design-system — living design system documentation
+- /writing — long-form articles and notes (some original, some syndicated)
+
+## Resources
+
+- Resume PDF: /Kathryn_Hurchla_resume.pdf
+- Markdown variants of pages available at `.md` URLs (e.g., /about.md)
+- WebMCP tools available via `navigator.modelContext` for agent navigation

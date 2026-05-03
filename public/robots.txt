@@ -1,0 +1,33 @@
+# dadeda.design — robots.txt
+# Welcoming responsible crawlers, including AI agents.
+
+User-agent: *
+Allow: /
+
+# AI agent crawlers — explicitly welcomed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+# Sitemap
+Sitemap: https://dadeda.design/sitemap-index.xml
+
+# LLM-friendly content index
+# See also: https://dadeda.design/llms.txt

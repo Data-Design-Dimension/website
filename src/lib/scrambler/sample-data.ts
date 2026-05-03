@@ -7,13 +7,31 @@ import type { ScramblerCard, ScramblerCluster } from './types';
 
 export const sampleCards: ScramblerCard[] = [
   {
+    id: 'do-websites-need-pages',
+    type: 'portfolio',
+    title: 'Do Websites Need Pages?',
+    summary: 'Speculative web app prototype demoed by Fantasy. I built the working application that explores what happens when AI agents drive the UI instead of static pages.',
+    tags: ['fantasy', 'ai', 'agents', 'webmcp', 'prototype', 'speculative'],
+    cta: { label: 'Watch demo (12:32)', url: 'https://fantasy.co/latest/do-websites-need-pages', external: true },
+    order: 0,
+  },
+  {
     id: 'sustain-our-soil',
     type: 'portfolio',
     title: 'Sustain Our Soil',
     summary: 'Interactive Python Plotly Dash app exploring soil health, food trade, and climate change.',
     tags: ['python', 'plotly-dash', 'geospatial', 'data-viz'],
     cta: { label: 'Read case study', url: '/work/sustain-our-soil', external: false },
-    order: 0,
+    order: 1,
+  },
+  {
+    id: 'mica-capstone',
+    type: 'portfolio',
+    title: 'MICA MPS Capstone',
+    summary: 'Master\'s capstone in Data Analytics & Visualization at MICA. The institutional showcase of my graduate research and project work.',
+    tags: ['mica', 'mps', 'capstone', 'data-viz', 'academic'],
+    cta: { label: 'View on MICA', url: 'https://www.mica.edu/about-mica/offices-divisions/school-of-creative-professional-studies/mps-programs/mps-capstones/student/kathryn-hurchla/', external: true },
+    order: 2,
   },
   {
     id: 'freedom-map',
@@ -94,28 +112,52 @@ export const sampleCards: ScramblerCard[] = [
     cta: { label: 'Design system', url: '/design-system', external: false },
     order: 0,
   },
+  {
+    id: 'tech-stack-skills',
+    type: 'meta',
+    title: 'Tech Stack & Recent Work',
+    summary: 'Some of my deepest recent work is at Fantasy under NDA. The tech I work with shows breadth across the stack — for specifics on what I\'m building now, get in touch.',
+    tags: ['skills', 'fantasy', 'ai', 'agents', 'typescript', 'python', 'webgl'],
+    cta: { label: 'Tell me about recent work', url: '#contact-prefill', external: false },
+    order: 1,
+  },
+  {
+    id: 'styling-ddd-inspiration',
+    type: 'link',
+    title: 'Styling Data, Design & Daughters',
+    summary: 'Brand mood board: Philadelphia industrial typography, embossed cast iron, found vernacular signage. The visual research that grounds DADEDA.',
+    tags: ['inspiration', 'brand', 'design-process', 'philadelphia', 'industrial-typography'],
+    cta: { label: 'View inspiration gallery', url: '/inspiration/styling-ddd', external: false },
+    order: 1,
+  },
 ];
 
 export const sampleClusters: ScramblerCluster[] = [
   {
     id: 'featured-work',
-    label: 'Featured Work',
+    label: 'See Work',
     orbit: 'inner',
-    cards: sampleCards.filter((c) => c.type === 'portfolio'),
+    cards: sampleCards.filter((c) =>
+      ['portfolio', 'repo'].includes(c.type) ||
+      (c.type === 'meta' && c.id === 'tech-stack-skills'),
+    ),
     order: 0,
   },
   {
-    id: 'hear-me-speak',
-    label: 'Hear Me Speak',
+    id: 'get-to-know',
+    label: 'Get to Know',
     orbit: 'middle',
-    cards: sampleCards.filter((c) => c.type === 'talk'),
+    cards: sampleCards.filter((c) =>
+      ['talk', 'writing'].includes(c.type) ||
+      (c.type === 'link' && c.tags.includes('inspiration')),
+    ),
     order: 1,
   },
   {
-    id: 'read-my-work',
-    label: 'Read My Work',
+    id: 'meta-cluster',
+    label: 'How This Works',
     orbit: 'outer',
-    cards: sampleCards.filter((c) => ['writing', 'repo', 'meta'].includes(c.type)),
+    cards: sampleCards.filter((c) => c.type === 'meta' && c.id !== 'tech-stack-skills'),
     order: 2,
   },
 ];

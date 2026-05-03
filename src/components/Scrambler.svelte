@@ -53,7 +53,7 @@
   .scrambler {
     position: relative;
     width: 100%;
-    height: 100dvh;
+    height: 100%;
     overflow: hidden;
     background: var(--color-canvas);
     perspective: 1200px;

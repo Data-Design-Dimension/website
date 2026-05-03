@@ -2,26 +2,102 @@
 interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
 }
 
 const {
-  title = 'DADEDA — Data Design Dimension',
-  description = 'Kathryn Hurchla makes intelligent experiences where design and technology blur.',
+  title = 'DADEDA — Kathryn Hurchla',
+  description = 'Kathryn Hurchla is an Associate Principal Engineer at Fantasy specializing in AI-first creative engineering and data visualization. Data Design Dimension (DADEDA) is her independent practice.',
+  ogImage = '/apple-touch-icon.png',
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://dadeda.design').toString();
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonicalURL} />
     <title>{title}</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Favicons (reused from prior brand identity) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#75c19c" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#DADEDA" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={new URL(ogImage, canonicalURL).toString()} />
+    <meta property="og:site_name" content="DADEDA" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, canonicalURL).toString()} />
+
+    <!-- WebMCP signal for agent discovery -->
+    <meta name="webmcp" content="enabled" />
+
+    <!-- JSON-LD Person + WebSite structured data (AEO/GEO) -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://dadeda.design/#kathryn",
+          "name": "Kathryn Hurchla",
+          "jobTitle": "Associate Principal Engineer",
+          "worksFor": { "@type": "Organization", "name": "Fantasy", "url": "https://fantasy.co" },
+          "alumniOf": [
+            { "@type": "CollegeOrUniversity", "name": "Maryland Institute College of Art", "url": "https://mica.edu" },
+            { "@type": "CollegeOrUniversity", "name": "NYSCC at Alfred University" }
+          ],
+          "knowsAbout": ["AI engineering", "data visualization", "creative technology", "WebMCP", "agent frameworks", "Python", "TypeScript", "WebGL", "design systems"],
+          "url": "https://dadeda.design",
+          "sameAs": [
+            "https://www.linkedin.com/in/kathrynhurchla/",
+            "https://github.com/khurchla",
+            "https://github.com/Data-Design-Dimension"
+          ],
+          "description": description
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://dadeda.design/#website",
+          "url": "https://dadeda.design",
+          "name": "DADEDA",
+          "description": "Portfolio of Kathryn Hurchla — Data Design Dimension",
+          "publisher": { "@id": "https://dadeda.design/#kathryn" },
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://dadeda.design/#dadeda",
+          "name": "Data Design Dimension",
+          "alternateName": "DADEDA",
+          "legalName": "Data, Design & Daughters LLC",
+          "url": "https://dadeda.design",
+          "founder": { "@id": "https://dadeda.design/#kathryn" }
+        }
+      ]
+    })} />
+
     <slot name="head" />
   </head>
   <body>
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-[var(--color-accent-green)]">
+    <a href="#main" class="skip-link">
       Skip to content
     </a>
     <main id="main">
@@ -32,4 +108,19 @@ const {
 
 <style>
   @import '../styles/global.css';
+
+  .skip-link {
+    position: absolute;
+    top: -100vh;
+    left: 0;
+    z-index: 100;
+    padding: var(--space-4);
+    background: var(--color-accent-green);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .skip-link:focus {
+    top: 0;
+  }
 </style>
