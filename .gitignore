@@ -48,3 +48,8 @@ venv/
 
 playwright-report/
 test-results/
+
+# Personal files (not for commit)
+Kathryn_Hurchla_resume.pdf
+*.heic
+pnpm-workspace.yaml
