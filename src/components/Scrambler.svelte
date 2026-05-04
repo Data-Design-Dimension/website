@@ -56,7 +56,9 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: var(--color-canvas);
+    /* No solid background — the parent .stage already paints the canvas
+       color, and a transparent base lets the windshield's phosphor
+       wordmark (DADEDA) show through behind the orbiting cards. */
     perspective: 1200px;
     perspective-origin: 50% 50%;
   }

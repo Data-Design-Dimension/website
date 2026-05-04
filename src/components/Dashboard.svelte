@@ -14,6 +14,12 @@
   let getToKnowActive = $state(true);
   let manualTimeOffset = $state(0);
   let lastDialUse = $state(0);
+  // Shared "an expanded card is open" state. The about-me avatar is
+  // the first source today; Scrambler card click-expansion will set
+  // the same flag later. When true, a translucent backdrop dims the
+  // windshield so the open card pops forward — the Mason-style
+  // expand-in-place pattern.
+  let cardExpanded = $state(false);
 
   const bothOff = $derived(!seeWorkActive && !getToKnowActive);
 
@@ -73,10 +79,20 @@
   }
 </script>
 
-<div class="stage">
-  <Avatar onExpand={handleAvatarExpand} />
+<div class="stage" class:card-expanded={cardExpanded}>
+  <Avatar
+    onExpand={handleAvatarExpand}
+    onOpenChange={(open) => (cardExpanded = open)}
+  />
+
+  <!-- Backdrop dim layer: appears whenever any card is in expanded
+       state. Sits behind the open card but above the Scrambler /
+       windshield content so the expanded card pops forward. -->
+  <div class="card-backdrop" aria-hidden="true"></div>
 
   <section class="windshield" aria-label="Content navigator">
+    <div class="phosphor-wordmark" aria-hidden="true">DADEDA</div>
+
     {#if bothOff}
       <div class="empty-state" role="status" aria-live="polite">
         <p class="empty-prompt">
@@ -118,6 +134,84 @@
   .windshield {
     position: absolute;
     inset: 0;
+  }
+
+  /* Backdrop layer for expand-in-place card overlays.
+     - At rest: invisible and click-through (pointer-events: none).
+     - When .stage.card-expanded is set, the layer fades in to a soft
+       canvas-tinted dim with a tiny backdrop blur, focusing attention
+       on the expanded card and visually receding the Scrambler.
+     - Sits at z-index 40 — above the Knob (z-30) and the Scrambler
+       content but below the Avatar (z-50), so the open card pops
+       forward over everything else. */
+  .card-backdrop {
+    position: absolute;
+    inset: 0;
+    background: oklch(0.72 0.01 155 / 0.30);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 40;
+    transition: opacity var(--duration-normal) ease;
+  }
+
+  .stage.card-expanded .card-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* When a card is expanded, soften the Knob too — same visual
+     recession the Scrambler gets. */
+  .stage.card-expanded .knob-overlay {
+    opacity: 0.6;
+    transition: opacity var(--duration-normal) ease;
+  }
+
+  /* Retro-amber phosphor wordmark — small, receded teletext-style
+     mark in the upper-left of the windshield, horizontally mirroring
+     the Avatar on the upper-right. References: BBC MODE 7 / Bedstead
+     teletext SAA5050 typography. We use VT323 (a free Google font with
+     the same pixelated CRT-terminal feel) at low chroma + multiply
+     blend so it reads as "text burned into a phosphor screen" rather
+     than as foreground content. z-index 10 keeps it above the
+     Scrambler vignette but below the Knob (z-30). */
+  .phosphor-wordmark {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-family: 'VT323', 'Press Start 2P', ui-monospace, monospace;
+    font-weight: 400;
+    /* Sized to share a visual scale relationship with the at-rest
+       Avatar height: avatar is 3.5rem on desktop / 2.5rem on mobile,
+       and VT323's cap-height tracks its font-size closely, so the
+       wordmark glyph height ≈ the avatar disc height across breakpoints. */
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    letter-spacing: 0.18em;
+    line-height: 1;
+    /* Three levers tuned for "barely there phosphor trace":
+       - Lightness raised (0.82) so the multiply blend darkens the
+         backdrop only slightly — wordmark reads as a tint, not text.
+       - Chroma cut roughly in half so the amber feels desaturated.
+       - Alpha at 0.35 makes it nearly transparent on its own.
+       Combined with a single very soft glow, it sits like the ghost
+       of an old CRT image you'd see if a phosphor screen was idling. */
+    color: oklch(0.82 0.10 75 / 0.35);
+    text-shadow: 0 0 8px oklch(0.78 0.12 75 / 0.20);
+    text-rendering: geometricPrecision;
+    pointer-events: none;
+    user-select: none;
+    z-index: 10;
+    white-space: nowrap;
+    mix-blend-mode: multiply;
+  }
+
+  @media (max-width: 640px) {
+    .phosphor-wordmark {
+      top: 0.75rem;
+      left: 0.75rem;
+      letter-spacing: 0.14em;
+    }
   }
 
   /* When any card is hovered or focused inside the windshield, pull the

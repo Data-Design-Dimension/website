@@ -24,6 +24,16 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://dadeda.d
     <link rel="canonical" href={canonicalURL} />
     <title>{title}</title>
 
+    <!-- Teletext-style font for the CRT phosphor wordmark (DADEDA).
+         VT323 evokes the BBC Micro MODE 7 / Mullard SAA5050 character
+         grid — pixelated, single-weight, monospace-feeling. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Favicons (reused from prior brand identity) -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />

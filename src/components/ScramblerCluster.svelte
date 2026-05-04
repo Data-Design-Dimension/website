@@ -3,6 +3,7 @@
   import {
     createOrbitalPath,
     calculateOrbitalPosition,
+    warpPhaseToAngle,
     FOREGROUND_ANGLE,
   } from '../lib/scrambler/orbital-math';
   import ScramblerCardComponent from './ScramblerCard.svelte';
@@ -83,7 +84,12 @@
     const angleStep = (Math.PI * 2) / count;
 
     return cluster.cards.map((card, i) => {
-      const angle = i * angleStep + time + timeOffset + FOREGROUND_ANGLE;
+      // Phase is linear in time. Warp it into a non-uniform angle so
+      // cards LINGER near the foreground (upper-left) and snap through
+      // the back faster — fills the empty upper-left and improves
+      // readability when a card is in focus.
+      const phase = i * angleStep + time + timeOffset + FOREGROUND_ANGLE;
+      const angle = warpPhaseToAngle(phase);
       const pos = calculateOrbitalPosition(path, angle);
       return { card, position: pos };
     });
