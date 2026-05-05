@@ -158,6 +158,21 @@
   let expandedShiftX = $state(0);
   let expandedShiftY = $state(0);
 
+  let cardScreenEl: HTMLDivElement | undefined = $state();
+
+  // On expand, smooth-scroll the card-screen to its top so the user
+  // sees header + title regardless of where they clicked. Per plan
+  // §I 2026 scroll affordances.
+  $effect(() => {
+    if (isExpanded && cardScreenEl) {
+      // Scroll to top after the next frame so the expanded layout
+      // has settled before we measure / animate.
+      requestAnimationFrame(() => {
+        cardScreenEl?.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  });
+
   // Viewport clamp fires whenever the card is being engaged with
   // (hovered, focused, or expanded). A ResizeObserver watches the
   // card's size, so the moment expanded class flips and the card
@@ -350,7 +365,7 @@
   onkeydown={handleCardKeydown}
   style:cursor={isDragging ? 'grabbing' : isDraggable ? 'grab' : 'default'}
 >
-  <div class="card-screen">
+  <div class="card-screen" bind:this={cardScreenEl}>
     <!-- HEADER ROW: type label on the left, type icon on the right.
          Both share the SAME accent color so the icon is "the visual
          echo" of the type label, with no background/border so it
@@ -1251,13 +1266,50 @@
   .scrambler-card.expanded {
     z-index: 250 !important;
     width: min(54rem, calc(100vw - 2rem));
+    /* Promote viewport bound to the card itself so the transform
+     * shift never lets the card extend past the viewport. The
+     * card-screen handles internal scroll for overflow content. */
+    max-height: calc(100dvh - 2.5rem);
   }
 
   .scrambler-card.expanded .card-screen {
     max-height: calc(100dvh - 2.5rem);
     overflow-y: auto;
+    /* 2026 scroll affordances per plan §I:
+     *   - overscroll-behavior contains the scroll inside the card
+     *     so wheel doesn't bubble up to the page;
+     *   - scroll-behavior smooth applies to programmatic scrollTo
+     *     calls (e.g., the on-expand jump-to-top below);
+     *   - thin OKLCH-tinted scrollbar matches brand;
+     *   - mask-image gradient at top + bottom signals there's more
+     *     content above / below without dedicating space to a
+     *     scrollbar track. */
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.55 0.05 90 / 0.6) transparent;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black 1.25rem,
+      black calc(100% - 1.25rem),
+      transparent 100%
+    );
     /* Keep the toggle reservation when the screen scrolls. */
     padding-bottom: 4rem;
+  }
+  .scrambler-card.expanded .card-screen::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrambler-card.expanded .card-screen::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrambler-card.expanded .card-screen::-webkit-scrollbar-thumb {
+    background: oklch(0.55 0.05 90 / 0.5);
+    border-radius: 3px;
+  }
+  .scrambler-card.expanded .card-screen::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.55 0.05 90 / 0.8);
   }
 
   /* MAGAZINE-STYLE LAYOUT for expanded cards with TALL portrait
