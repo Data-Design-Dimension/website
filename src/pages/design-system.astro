@@ -209,6 +209,76 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
     </section>
 
     <section class="ds-section">
+      <h2>AI Interaction Design</h2>
+      <p>
+        The site is built for two audiences in parallel: humans who arrive at
+        a browser, and agents who arrive on behalf of a user. The principles
+        below shape every WebMCP tool, every piece of structured data, and
+        every UI affordance that participates in agent flow.
+      </p>
+      <dl class="ds-rationale">
+        <dt>Agent transparency</dt>
+        <dd>
+          Every agent action is observable and reversible. When a tool runs,
+          the targeted control glows (amber → green) and is briefly
+          non-interactive so the user can see "an agent is acting on this."
+          On completion the glow recedes; nothing happens silently. The
+          window.dadeda registry is inspectable from any console.
+        </dd>
+        <dt>Cognitive amplification, not replacement</dt>
+        <dd>
+          Agents extend what a user is already doing — surfacing
+          information, navigating the site, drafting a share — but the user
+          stays the author of intent. Drawing on Bret Victor's direct-
+          manipulation tradition and Microsoft's HAX guidelines: the agent
+          assists, the human chooses.
+        </dd>
+        <dt>Taste-conducive interaction</dt>
+        <dd>
+          The system reflects the user's choices rather than imposing a
+          default. The Scrambler arrangement is one valid state of many;
+          agents can rearrange it. Privacy preferences are user-controlled.
+          When an agent shares the user's profile on their behalf, the user
+          decides the message and the type.
+        </dd>
+        <dt>Privacy-by-design defaults</dt>
+        <dd>
+          Agents access only what's needed. Privacy preferences default to
+          off for analytics and agent storage; on for agent discovery (so
+          the site is honest about what it offers, but doesn't write
+          anything to the device without consent). Set or read via the
+          <code>setPrivacyPreferences</code> tool, with a UI surface as a
+          parallel control.
+        </dd>
+        <dt>Markdown-first content delivery for agents</dt>
+        <dd>
+          Agents read structured content faster than rendered HTML. The
+          site exposes <code>llms.txt</code> at the root, JSON-LD
+          (<code>Person</code>, <code>WebSite</code>, <code>Organization</code>)
+          in <code>&lt;head&gt;</code>, and a planned <code>.md</code> endpoint
+          per content page. The Scrambler card collection is
+          agent-queryable via <code>getSiteMap</code> /
+          <code>searchCards</code> with full content shape — no scraping.
+        </dd>
+        <dt>Progressive enhancement</dt>
+        <dd>
+          The site works without agents. The Scrambler navigates by mouse,
+          keyboard, and touch; the Knob has direct human controls; cards
+          link normally. Agent capability is additive — bring an agent and
+          you get more, but you don't need one.
+        </dd>
+      </dl>
+      <p class="ds-rationale-footer">
+        Reference architectures: Anthropic <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">MCP</a>,
+        Google <a href="https://google.github.io/A2A/" target="_blank" rel="noopener">A2A</a>,
+        Microsoft <a href="https://www.microsoft.com/en-us/haxtoolkit/" target="_blank" rel="noopener">HAX guidelines</a>,
+        and Anthropic's <a href="https://www.anthropic.com/research/constitutional-ai-harmlessness-from-ai-feedback" target="_blank" rel="noopener">Constitutional AI</a>
+        principles for transparency. Accessibility calibration via
+        <a href="https://www.frank.computer/" target="_blank" rel="noopener">frank.computer / Chartability</a>.
+      </p>
+    </section>
+
+    <section class="ds-section">
       <h2>Why These Choices</h2>
       <dl class="ds-rationale">
         <dt>Why OKLCH?</dt>
@@ -313,7 +383,19 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
   .ds-rationale dd {
     color: var(--color-text-secondary);
     margin-left: 0;
-    max-width: 40rem;
+    max-width: 48rem;
+    line-height: 1.6;
+  }
+  .ds-rationale-footer {
+    margin-top: var(--space-6);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    max-width: 48rem;
+  }
+  .ds-rationale-footer a {
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
   .ds-subsection-h {
     font-size: 1rem;

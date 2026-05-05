@@ -1,0 +1,245 @@
+---
+import Base from '../layouts/Base.astro';
+import MermaidDiagram from '../components/MermaidDiagram.svelte';
+
+/**
+ * Architecture diagram + dual-audience explanation. The Mermaid source
+ * lives in docs/architecture.md (single source of truth); this route
+ * imports the same source string and renders client-side via the
+ * MermaidDiagram component (which lazy-loads mermaid on mount).
+ */
+
+// Inline the Mermaid source so the route doesn't need a build-time fs
+// read. When docs/architecture.md is updated, paste the graph block
+// here too — keeps the docs / site in sync. (Future: a tiny build
+// step that extracts the fenced mermaid block from the .md file.)
+const mermaidSource = `%%{init: {'theme':'base', 'themeVariables': {
+  'primaryColor': '#fff8d4',
+  'primaryTextColor': '#1a1a1a',
+  'primaryBorderColor': '#a07a3a',
+  'lineColor': '#5a6b5a',
+  'secondaryColor': '#d4f0db',
+  'tertiaryColor': '#f0f0f0'
+}}}%%
+graph LR
+  classDef human fill:#d4f0db,stroke:#3a7a4a,color:#1a3a1a
+  classDef agent fill:#fff8d4,stroke:#a07a3a,color:#3a2a1a
+  classDef content fill:#f0f0f0,stroke:#666,color:#222
+  classDef hosting fill:#e0e8f0,stroke:#3a5a8a,color:#1a2a4a
+
+  subgraph Human["Human-first UX"]
+    Scrambler["Scrambler<br/>orbital cards"]
+    Knob["Knob<br/>filters + dial + contact"]
+    Avatar["Avatar<br/>about-me halftone"]
+    CardOverlay["Expand-in-place<br/>card overlay"]
+    Writing["/writing<br/>chronological feed"]
+    Review["/review<br/>side-by-side card review"]
+    DesignSystem["/design-system<br/>tokens, viz scales, AI principles"]
+  end
+  class Scrambler,Knob,Avatar,CardOverlay,Writing,Review,DesignSystem human
+
+  subgraph Agent["Agent-facing"]
+    WebMCP["WebMCP tools<br/>getSiteMap / searchCards / focusCard<br/>getResume / sendEmail / shareProfile<br/>setPrivacyPreferences"]
+    LlmsTxt["llms.txt<br/>+ planned per-page .md endpoints"]
+    JsonLd["JSON-LD<br/>Person / Organization / WebSite"]
+    AiPlugin[".well-known/ai-plugin.json<br/>(planned)"]
+    Glow["Tool-in-flight glow<br/>amber → green halo<br/>+ controls disabled"]
+    Anonymizer["GitHub anonymizer<br/>scripts/github-anonymize.ts"]
+  end
+  class WebMCP,LlmsTxt,JsonLd,AiPlugin,Glow,Anonymizer agent
+
+  subgraph Content["Shared content layer"]
+    Collections["Astro Content Collections<br/>cards / clusters / writing"]
+    Tokens["OKLCH design tokens<br/>+ data-viz palette"]
+    GitHubApi["GitHub API<br/>(server island, planned)"]
+    R2["Cloudflare R2<br/>media CDN"]
+    KV["Cloudflare KV<br/>runtime overrides<br/>+ privacy prefs"]
+  end
+  class Collections,Tokens,GitHubApi,R2,KV content
+
+  subgraph Hosting["Hosting + CI"]
+    Pages["Cloudflare Pages<br/>static + auto-deploy"]
+    Workers["Cloudflare Workers<br/>server islands<br/>contact form<br/>RSS monitor (planned)"]
+    GHA["GitHub Actions<br/>build + a11y + Lighthouse + Chromatic"]
+  end
+  class Pages,Workers,GHA hosting
+
+  Scrambler --> Collections
+  Knob --> Scrambler
+  Avatar --> Collections
+  CardOverlay --> Collections
+  Writing --> Collections
+  Review --> Collections
+  DesignSystem --> Tokens
+
+  WebMCP --> Collections
+  WebMCP --> Glow
+  WebMCP -.exposes.-> JsonLd
+  WebMCP -.consumes.-> Anonymizer
+
+  Pages --> Collections
+  Workers --> KV
+  Workers --> R2
+  GHA --> Pages
+
+  Collections --> Pages
+  Tokens --> Pages`;
+---
+
+<Base
+  title="How This Site Works — DADEDA"
+  description="Architecture of dadeda.design — a dual-audience system designed for human visitors and agent collaborators in parallel. Astro + Svelte 5 + WebMCP + Cloudflare Pages."
+>
+  <main class="hw-container">
+    <header class="hw-header">
+      <h1>How This Site Works</h1>
+      <p>
+        dadeda.design is built for two audiences in parallel: humans who
+        arrive at a browser, and agents who arrive on behalf of a user. The
+        diagram below shows how the same content layer feeds both, with
+        deliberate engineering for transparency, privacy, and progressive
+        enhancement.
+      </p>
+    </header>
+
+    <section class="hw-diagram">
+      <MermaidDiagram client:only="svelte" source={mermaidSource} id="architecture-diagram" />
+    </section>
+
+    <section class="hw-legend">
+      <h2>Color legend</h2>
+      <ul>
+        <li><span class="legend-swatch human"></span><strong>Green</strong> — human-first UX surfaces</li>
+        <li><span class="legend-swatch agent"></span><strong>Amber</strong> — agent-facing surfaces (WebMCP, llms.txt, JSON-LD, ai-plugin)</li>
+        <li><span class="legend-swatch content"></span><strong>Neutral</strong> — shared content + design layer both audiences read from</li>
+        <li><span class="legend-swatch hosting"></span><strong>Blue</strong> — hosting + CI infrastructure</li>
+      </ul>
+    </section>
+
+    <section class="hw-narrative">
+      <h2>Why dual-audience by design</h2>
+      <p>
+        A site that lists tools, shares a profile, and surfaces work should be
+        just as legible to an agent acting on a user's behalf as it is to a
+        human in a browser. The architecture treats both as first-class
+        consumers: the same content collection feeds both, the same privacy
+        preferences govern both, the same accessibility wins (semantic HTML,
+        alt text, ARIA landmarks) help both.
+      </p>
+      <p>
+        Agent transparency, cognitive amplification, taste-conducive
+        interaction, privacy-by-design defaults, and progressive enhancement
+        are the principles documented in
+        <a href="/design-system#ai-interaction-design">/design-system</a>.
+      </p>
+    </section>
+
+    <footer class="hw-footer">
+      <p>
+        Source diagram in <code>docs/architecture.md</code>. The Mermaid
+        markup is intentionally readable — agents can parse it directly via
+        the GitHub raw URL without rendering.
+      </p>
+      <p>
+        <a href="/">← Back to the main site</a>
+      </p>
+    </footer>
+  </main>
+</Base>
+
+<style>
+  .hw-container {
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: var(--space-12) var(--space-6);
+  }
+  .hw-header {
+    margin-bottom: var(--space-12);
+  }
+  .hw-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-4);
+  }
+  .hw-header p {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    max-width: 48rem;
+  }
+  .hw-diagram {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: var(--space-4);
+    margin-bottom: var(--space-12);
+    overflow-x: auto;
+  }
+  .hw-legend {
+    margin-bottom: var(--space-12);
+  }
+  .hw-legend h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-muted);
+  }
+  .hw-legend ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-3);
+  }
+  .hw-legend li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text-secondary);
+  }
+  .legend-swatch {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.25rem;
+    border: 1px solid;
+    flex-shrink: 0;
+  }
+  .legend-swatch.human { background: #d4f0db; border-color: #3a7a4a; }
+  .legend-swatch.agent { background: #fff8d4; border-color: #a07a3a; }
+  .legend-swatch.content { background: #f0f0f0; border-color: #666; }
+  .legend-swatch.hosting { background: #e0e8f0; border-color: #3a5a8a; }
+  .hw-narrative {
+    margin-bottom: var(--space-12);
+    max-width: 48rem;
+  }
+  .hw-narrative h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+  }
+  .hw-narrative p {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin-bottom: var(--space-3);
+  }
+  .hw-narrative a {
+    color: var(--color-accent-blue);
+  }
+  .hw-footer {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-6);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  .hw-footer p {
+    margin: 0 0 var(--space-2);
+  }
+  .hw-footer a {
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+  }
+</style>

@@ -1,11 +1,17 @@
 type: meta
 title: How This Site Works
-summary: Astro + Svelte + CSS 3D. The architecture is the portfolio.
+summary: "Astro + Svelte + CSS 3D, with WebMCP for agents. The architecture is dual-audience by design: humans and agents read the same content layer."
 tags:
   - meta
   - engineering
   - architecture
+  - webmcp
+  - agent-readiness
 cta:
+  label: See the architecture
+  url: /how-this-works
+  external: false
+secondaryCta:
   label: Design system
   url: /design-system
   external: false
