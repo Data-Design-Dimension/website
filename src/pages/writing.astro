@@ -1,0 +1,171 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+type WritingCard = CollectionEntry<'cards'> & {
+  data: { type: 'writing' };
+};
+
+const entries = (await getCollection('cards'))
+  .filter((entry): entry is WritingCard => entry.data.type === 'writing' && !entry.data.archived)
+  .sort((a, b) => {
+    // Most recent first — date YYYYMMDD when present, else fall back to order.
+    const dateA = a.data.date ?? '';
+    const dateB = b.data.date ?? '';
+    if (dateA && dateB) return dateB.localeCompare(dateA);
+    return a.data.order - b.data.order;
+  });
+---
+
+<Base
+  title="Writing — DADEDA"
+  description="Kathryn Hurchla's writing index: original entries, syndicated articles, and notes. The site indexes writing wherever it lives."
+>
+  <main class="writing-container">
+    <header class="writing-header">
+      <h1>Writing</h1>
+      <p>
+        The canonical index of what I've written, regardless of where it
+        was originally published. Entries linked here open on the
+        publishing site; full-text originals will live on dadeda.design
+        as I migrate them in.
+      </p>
+    </header>
+
+    <ul class="writing-list">
+      {entries.map((entry) => {
+        const cta = entry.data.cta;
+        const isDraft = cta?.disabled === true;
+        return (
+          <li class="writing-entry" class:draft={isDraft}>
+            <article>
+              <h2>{entry.data.title}</h2>
+              <p class="writing-summary">{entry.data.summary}</p>
+              {entry.data.tags && entry.data.tags.length > 0 && (
+                <ul class="writing-tags" aria-label="Tags">
+                  {entry.data.tags.map((tag) => <li>{tag}</li>)}
+                </ul>
+              )}
+              {cta && !isDraft && (
+                <a
+                  class="writing-link"
+                  href={cta.url}
+                  target={cta.external ? '_blank' : undefined}
+                  rel={cta.external ? 'noopener noreferrer' : undefined}
+                >
+                  {cta.label}
+                  {cta.external ? <span aria-hidden="true">↗</span> : <span aria-hidden="true">→</span>}
+                </a>
+              )}
+              {isDraft && (
+                <span class="writing-status">Draft, in progress</span>
+              )}
+            </article>
+          </li>
+        );
+      })}
+    </ul>
+
+    <footer class="writing-footer">
+      <p>
+        Looking for something else? <a href="/">Back to the main site</a>.
+      </p>
+    </footer>
+  </main>
+</Base>
+
+<style>
+  .writing-container {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: var(--space-12) var(--space-6);
+  }
+  .writing-header {
+    margin-bottom: var(--space-16);
+  }
+  .writing-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-4);
+  }
+  .writing-header p {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    max-width: 42rem;
+  }
+  .writing-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-16);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+  .writing-entry article {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-6);
+  }
+  .writing-entry h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-3);
+  }
+  .writing-entry.draft h2 {
+    color: var(--color-text-muted);
+  }
+  .writing-summary {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0 0 var(--space-4);
+  }
+  .writing-tags {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .writing-tags li {
+    font-size: 0.6875rem;
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    background: var(--color-canvas-light);
+    padding: 0.15rem 0.45rem;
+    border-radius: 0.4rem;
+  }
+  .writing-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-accent-blue);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: gap var(--duration-fast) ease;
+  }
+  .writing-link:hover,
+  .writing-link:focus-visible {
+    gap: 0.6rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .writing-status {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+  .writing-footer {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-6);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  .writing-footer a {
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

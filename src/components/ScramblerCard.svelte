@@ -441,6 +441,25 @@
             {/if}
           </a>
         {/if}
+        {#if card.secondaryCta}
+          <a
+            class="card-cta-secondary"
+            class:external={card.secondaryCta.external}
+            href={card.secondaryCta.url}
+            target={card.secondaryCta.external ? '_blank' : undefined}
+            rel={card.secondaryCta.external ? 'noopener noreferrer' : undefined}
+            onclick={(e) => e.stopPropagation()}
+          >
+            <span class="cta-label-text">{card.secondaryCta.label}</span>
+            {#if card.secondaryCta.external}
+              <svg viewBox="0 0 24 24" class="cta-external-icon" aria-hidden="true">
+                <path d="M15 3h6v6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+                <path d="M10 14L21 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            {/if}
+          </a>
+        {/if}
       </div>
     {/if}
   </div>
@@ -880,6 +899,37 @@
     border: 1px solid oklch(from var(--card-accent) l c h / 0.25);
     border-radius: 0.4rem;
     padding: 0.15rem 0.45rem;
+  }
+
+  /*
+   * SECONDARY CTA — small, understated text link below the primary CTA.
+   * Used when one project has two legitimate destinations (e.g., merged
+   * sustain-our-soil case study + MICA institutional page).
+   */
+  .card-cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--card-accent-dim);
+    text-decoration: none;
+    align-self: flex-start;
+    transition: color var(--duration-fast) ease, transform var(--duration-fast) ease;
+  }
+  .card-cta-secondary:hover,
+  .card-cta-secondary:focus-visible {
+    color: var(--card-accent-strong);
+    transform: translateX(2px);
+  }
+  .card-cta-secondary .cta-label-text {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .card-cta-secondary .cta-external-icon {
+    width: 0.75em;
+    height: 0.75em;
   }
 
   /*

@@ -61,6 +61,14 @@ export interface ScramblerCard {
   summary: string;
   quickView?: string;
   cta?: CardCta;
+  /**
+   * Optional secondary CTA. Used when one project has two legitimate
+   * destinations of equal authority (e.g., a merged case-study card
+   * that links both to the local case study and the institutional /
+   * collaborator page). Renders as a smaller text link below the
+   * primary CTA.
+   */
+  secondaryCta?: CardCta;
   tags: string[];
   media?: CardMedia;
   /**

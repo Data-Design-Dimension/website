@@ -1,12 +1,14 @@
 type: inspiration
-title: Styling Data, Design & Daughters
-summary: "Brand mood board: Philadelphia industrial typography, embossed cast iron, found vernacular signage. The visual research that grounds DADEDA."
+title: Visual Inspiration
+summary: "Mood board: Philadelphia industrial typography, embossed cast iron, found vernacular signage. Plus the design DNA of the cards themselves, drawn from vintage CRT tube televisions: bezel, asymmetric pillow shape, screen bulge, phosphor glow. Pre-flat-screen object design as a reference for tactile, dimensional digital surfaces."
 tags:
   - inspiration
   - brand
   - design-process
   - philadelphia
   - industrial-typography
+  - crt
+  - object-design
 cta:
   label: Open inspiration gallery
   url: '#inspiration-styling-ddd'

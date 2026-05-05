@@ -11,6 +11,13 @@ const mediaSchema = z.object({
     .optional(),
 });
 
+const ctaSchema = z.object({
+  label: z.string(),
+  url: z.string(),
+  external: z.boolean(),
+  disabled: z.boolean().optional(),
+});
+
 const cards = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './src/content/cards' }),
   schema: z.object({
@@ -27,14 +34,8 @@ const cards = defineCollection({
     title: z.string(),
     summary: z.string(),
     quickView: z.string().optional(),
-    cta: z
-      .object({
-        label: z.string(),
-        url: z.string(),
-        external: z.boolean(),
-        disabled: z.boolean().optional(),
-      })
-      .optional(),
+    cta: ctaSchema.optional(),
+    secondaryCta: ctaSchema.optional(),
     tags: z.array(z.string()),
     media: mediaSchema.optional(),
     mediaGrid: z.array(mediaSchema).optional(),
