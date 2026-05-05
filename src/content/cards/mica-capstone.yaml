@@ -1,0 +1,18 @@
+type: portfolio
+title: MICA MPS Capstone
+summary: "Master's capstone in Data Analytics & Visualization at MICA. The academic showcase of my graduate research and project work."
+tags:
+  - mica
+  - mps
+  - capstone
+  - data-viz
+  - academic
+cta:
+  label: View on MICA
+  url: https://www.mica.edu/about-mica/offices-divisions/school-of-creative-professional-studies/mps-programs/mps-capstones/student/kathryn-hurchla/
+  external: true
+media:
+  src: https://assets.mica.edu/files/modules/screen-shot-2022-06-15-at-10200-pm.png
+  alt: Sustain Our Soil capstone project visualization screenshot from the MICA institutional page
+  position: top
+order: 2

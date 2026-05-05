@@ -1,0 +1,12 @@
+type: portfolio
+title: Invest as One
+summary: "Tableau Story prototype for a city budget proposal: one dataset, two audiences."
+tags:
+  - tableau
+  - data-viz
+  - storytelling
+cta:
+  label: Read case study
+  url: /work/invest-as-one
+  external: false
+order: 2

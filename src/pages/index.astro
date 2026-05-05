@@ -1,12 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
 import Dashboard from '../components/Dashboard.svelte';
-import { sampleClusters } from '../lib/scrambler/sample-data';
+import { loadClusters } from '../lib/scrambler/load-content';
+
+const clusters = await loadClusters();
 ---
 
 <Base>
   <Dashboard
     client:only="svelte"
-    initialClusters={sampleClusters}
+    initialClusters={clusters}
   />
 </Base>

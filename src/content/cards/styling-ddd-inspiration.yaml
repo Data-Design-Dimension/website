@@ -1,0 +1,23 @@
+type: inspiration
+title: Styling Data, Design & Daughters
+summary: "Brand mood board: Philadelphia industrial typography, embossed cast iron, found vernacular signage. The visual research that grounds DADEDA."
+tags:
+  - inspiration
+  - brand
+  - design-process
+  - philadelphia
+  - industrial-typography
+cta:
+  label: Open inspiration gallery
+  url: '#inspiration-styling-ddd'
+  external: false
+mediaGrid:
+  - src: /img/inspiration/styling-ddd-1.webp
+    alt: Brand styling research from the Data, Design & Daughters mood board
+  - src: /img/inspiration/styling-ddd-2.webp
+    alt: Visual identity reference for the DADEDA brand
+  - src: /img/inspiration/styling-ddd-3.webp
+    alt: Typography and material study from the inspiration board
+  - src: /img/inspiration/styling-ddd-4.webp
+    alt: Found vernacular signage and industrial lettering reference
+order: 1

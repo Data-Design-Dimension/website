@@ -1,59 +1,60 @@
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
+
+const mediaSchema = z.object({
+  src: z.string(),
+  alt: z.string(),
+  aspect: z.enum(['wide', 'tall', 'square']).optional(),
+  aspectRatio: z.string().optional(),
+  position: z
+    .enum(['top', 'center', 'bottom', 'left', 'right', 'right center'])
+    .optional(),
+});
 
 const cards = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '*.yaml', base: './src/content/cards' }),
   schema: z.object({
-    type: z.enum(['portfolio', 'talk', 'writing', 'link', 'repo', 'meta']),
+    type: z.enum([
+      'portfolio',
+      'talk',
+      'writing',
+      'link',
+      'repo',
+      'meta',
+      'inspiration',
+      'skills',
+    ]),
     title: z.string(),
     summary: z.string(),
-    cluster: z.string(),
     quickView: z.string().optional(),
     cta: z
       .object({
         label: z.string(),
         url: z.string(),
-        external: z.boolean().default(false),
+        external: z.boolean(),
+        disabled: z.boolean().optional(),
       })
       .optional(),
-    tags: z.array(z.string()).default([]),
-    media: z
-      .object({
-        src: z.string(),
-        alt: z.string(),
-      })
-      .optional(),
-    order: z.number().default(0),
+    tags: z.array(z.string()),
+    media: mediaSchema.optional(),
+    mediaGrid: z.array(mediaSchema).optional(),
+    order: z.number(),
+    // YYYYMMDD; falls back to the entry file's git commit date when omitted.
+    date: z.string().regex(/^\d{8}$/).optional(),
+    archived: z.boolean().optional(),
+    featured: z.boolean().optional(),
+    approved: z.boolean().optional(),
   }),
 });
 
 const clusters = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '*.yaml', base: './src/content/clusters' }),
   schema: z.object({
     label: z.string(),
-    orbit: z.enum(['inner', 'middle', 'outer']).default('middle'),
-    order: z.number().default(0),
+    orbit: z.enum(['inner', 'middle', 'outer']),
+    cardIds: z.array(z.string()),
+    order: z.number(),
   }),
 });
 
-const writing = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string().optional(),
-    type: z.enum(['original', 'syndicated', 'note']),
-    date: z.coerce.date(),
-    publishedAt: z.string().optional(),
-    originalUrl: z.string().url().optional(),
-    tags: z.array(z.string()).default([]),
-    excerpt: z.string().optional(),
-  }),
-});
-
-const pages = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-  }),
-});
-
-export const collections = { cards, clusters, writing, pages };
+export const collections = { cards, clusters };

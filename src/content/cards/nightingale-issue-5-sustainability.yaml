@@ -1,0 +1,20 @@
+type: writing
+title: Spotlight on Noteworthy Sustainability Data Viz
+summary: "Five-page spread in the Special Section on sustainability of Nightingale Magazine Issue 5. A survey of noteworthy global data visualization projects and practitioners approaching sustainability through diverse lenses, from soil to satellite, climate to community."
+tags:
+  - nightingale
+  - dvs
+  - sustainability
+  - data-viz
+  - print
+  - editorial
+  - survey
+cta:
+  label: Get the print issue
+  url: https://shop.datavisualizationsociety.org/products/nightingale-magazine-issue-5
+  external: true
+media:
+  src: /img/writing/nightingale-issue-5-cover.png
+  alt: Nightingale Magazine Issue 5 print cover
+  aspectRatio: 1946 / 2039
+order: 2

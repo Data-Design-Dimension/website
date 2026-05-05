@@ -1,0 +1,13 @@
+type: portfolio
+title: Freedom & Diplomacy Map
+summary: QGIS static map for a diplomacy nonprofit fundraising appeal.
+tags:
+  - qgis
+  - geospatial
+  - design
+  - nonprofit
+cta:
+  label: Read case study
+  url: /work/freedom-map
+  external: false
+order: 1

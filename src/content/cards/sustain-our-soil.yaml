@@ -1,0 +1,13 @@
+type: portfolio
+title: Sustain Our Soil
+summary: Interactive Python Plotly Dash app exploring soil health, food trade, and climate change.
+tags:
+  - python
+  - plotly-dash
+  - geospatial
+  - data-viz
+cta:
+  label: Read case study
+  url: /work/sustain-our-soil
+  external: false
+order: 1

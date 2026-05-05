@@ -1,0 +1,19 @@
+type: portfolio
+title: Do Websites Need Pages?
+summary: Speculative web app prototype demoed by Fantasy. I built the working application that explores what happens when AI agents drive the UI instead of static pages.
+tags:
+  - fantasy
+  - ai
+  - agents
+  - webmcp
+  - prototype
+  - speculative
+cta:
+  label: Watch demo (12:32)
+  url: https://fantasy.co/latest/do-websites-need-pages
+  external: true
+media:
+  src: /img/do-websites-need-pages-demo.webp
+  alt: Demo screenshot of the Do Websites Need Pages? speculative web app prototype
+  aspectRatio: 8 / 5
+order: 0

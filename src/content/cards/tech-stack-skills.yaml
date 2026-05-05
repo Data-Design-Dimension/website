@@ -1,0 +1,16 @@
+type: meta
+title: Tech Stack & Recent Work
+summary: "Some of my deepest recent work is at Fantasy under NDA. The tech I work with shows breadth across the stack. For specifics on what I'm building now, get in touch."
+tags:
+  - skills
+  - fantasy
+  - ai
+  - agents
+  - typescript
+  - python
+  - webgl
+cta:
+  label: Tell me about recent work
+  url: '#contact-prefill'
+  external: false
+order: 1

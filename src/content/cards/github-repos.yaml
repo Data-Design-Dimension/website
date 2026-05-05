@@ -1,0 +1,20 @@
+type: repo
+title: Open Source Code
+summary: Full-stack, web development, and data viz on GitHub.
+tags:
+  - python
+  - typescript
+  - ai-engineering
+  - data-viz
+  - full-stack
+  - open-source
+cta:
+  label: View repos
+  url: https://github.com/Data-Design-Dimension
+  external: true
+media:
+  src: https://ghchart.rshah.org/5fc274/khurchla
+  alt: "GitHub contributions heatmap for @khurchla: recent commit activity"
+  aspect: wide
+  position: right
+order: 0

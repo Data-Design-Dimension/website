@@ -1,0 +1,12 @@
+type: meta
+title: How This Site Works
+summary: Astro + Svelte + CSS 3D. The architecture is the portfolio.
+tags:
+  - meta
+  - engineering
+  - architecture
+cta:
+  label: Design system
+  url: /design-system
+  external: false
+order: 0

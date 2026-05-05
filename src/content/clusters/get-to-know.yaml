@@ -1,0 +1,10 @@
+label: Get to Know
+orbit: middle
+order: 1
+cardIds:
+  - pycon-talk
+  - plotly-workshop
+  - oklch-article
+  - nightingale
+  - nightingale-issue-5-sustainability
+  - styling-ddd-inspiration

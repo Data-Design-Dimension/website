@@ -1,0 +1,13 @@
+type: writing
+title: Building with OKLCH
+summary: Unformed thoughts in process. Why perceptually uniform color changes everything for data visualization.
+tags:
+  - color
+  - data-viz
+  - css
+cta:
+  label: Read article
+  url: /writing/oklch
+  external: false
+  disabled: true
+order: 0
