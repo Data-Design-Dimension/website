@@ -24,7 +24,8 @@
     "@astrojs/svelte": "^8.0.4",
     "astro": "^6.1.5",
     "motion-sv": "^0.1.12",
-    "svelte": "^5.55.3"
+    "svelte": "^5.55.3",
+    "zod": "^4.4.3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

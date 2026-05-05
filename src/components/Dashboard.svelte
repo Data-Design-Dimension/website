@@ -3,12 +3,23 @@
   import Scrambler from './Scrambler.svelte';
   import Knob from './Knob.svelte';
   import Avatar from './Avatar.svelte';
+  import WebMCPProvider from './WebMCPProvider.svelte';
 
   interface Props {
     initialClusters: ScramblerCluster[];
   }
 
   let { initialClusters }: Props = $props();
+
+  // Flatten cluster cards into a deduped pool for the WebMCP registry.
+  // Cluster shape stays as-is; the pool is what tools query against.
+  const allCards = $derived.by(() => {
+    const seen = new Map<string, ScramblerCard>();
+    for (const cluster of initialClusters) {
+      for (const card of cluster.cards) seen.set(card.id, card);
+    }
+    return [...seen.values()];
+  });
 
   let seeWorkActive = $state(true);
   let getToKnowActive = $state(true);
@@ -78,6 +89,8 @@
     // TODO: open card overlay (Mason-style expand-in-place)
   }
 </script>
+
+<WebMCPProvider cards={allCards} clusters={initialClusters} />
 
 <div class="stage" class:card-expanded={cardExpanded}>
   <Avatar

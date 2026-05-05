@@ -12,6 +12,8 @@
    * pad as extensions of the dial, like labels on a retro car dashboard.
    */
 
+  import { toolInFlight } from '../lib/webmcp/state.svelte';
+
   interface Props {
     seeWorkActive: boolean;
     getToKnowActive: boolean;
@@ -29,6 +31,17 @@
     onContactAction,
     onDial,
   }: Props = $props();
+
+  /**
+   * Glow state — when a WebMCP tool is in flight, the targeted control
+   * gets an ethereal amber→green halo and is briefly non-interactive
+   * to prevent tool interruption. Recedes on completion.
+   */
+  const glow = $derived(toolInFlight.value);
+  const seeWorkGlow = $derived(glow?.target === 'knob-see-work');
+  const gtkGlow = $derived(glow?.target === 'knob-gtk');
+  const contactGlow = $derived(glow?.target === 'knob-contact');
+  const dialGlow = $derived(glow?.target === 'knob-dial');
 
   let contactOpen = $state(false);
   let dialAngle = $state(0);
@@ -213,16 +226,19 @@
     <path
       class="pad pad-green"
       class:active={seeWorkActive}
+      class:tool-active={seeWorkGlow}
       d={padTopPath}
     />
     <path
       class="pad pad-amber"
       class:active={getToKnowActive}
+      class:tool-active={gtkGlow}
       d={padBlPath}
     />
     <path
       class="pad pad-neutral"
       class:active={contactOpen}
+      class:tool-active={contactGlow}
       d={padBrPath}
     />
 
@@ -294,6 +310,8 @@
   <button
     class="pad-target target-top"
     class:active={seeWorkActive}
+    class:tool-active={seeWorkGlow}
+    disabled={seeWorkGlow}
     aria-pressed={seeWorkActive}
     aria-label="Toggle See Work category — portfolio, repos, skills"
     onclick={onToggleSeeWork}
@@ -302,6 +320,8 @@
   <button
     class="pad-target target-bl"
     class:active={getToKnowActive}
+    class:tool-active={gtkGlow}
+    disabled={gtkGlow}
     aria-pressed={getToKnowActive}
     aria-label="Toggle Get to Know category — talks, writing, inspiration"
     onclick={onToggleGetToKnow}
@@ -310,6 +330,8 @@
   <button
     class="pad-target target-br"
     class:active={contactOpen}
+    class:tool-active={contactGlow}
+    disabled={contactGlow}
     aria-expanded={contactOpen}
     aria-haspopup="menu"
     aria-label="Open contact and share options"
@@ -322,6 +344,7 @@
   <!-- Center dial -->
   <div
     class="knob-dial"
+    class:tool-active={dialGlow}
     bind:this={dialEl}
     role="slider"
     tabindex="0"
@@ -798,6 +821,52 @@
   @media (prefers-reduced-motion: reduce) {
     .radial-item {
       animation: none;
+    }
+  }
+
+  /* ─── Tool-in-flight glow ──────────────────────────────────────────
+   * When a WebMCP tool is targeting this pad / dial, render an
+   * ethereal amber→green halo around it. Pulse breathes in and out;
+   * a slow drop-shadow color cycle reads as a clockwise drift around
+   * the control. Max ~1cm spread. Recedes when the tool completes
+   * (the class is removed and CSS transitions fade the filter).
+   *
+   * Animation: filter-based (no transform jitter on SVG paths).
+   * Color cycle: amber → green → amber via @property-typed variable.
+   * Reduced motion: opacity only, no breathing or color cycle.
+   */
+  @property --tool-glow-color {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: oklch(0.85 0.16 75);
+  }
+
+  .pad.tool-active,
+  .knob-dial.tool-active {
+    filter: drop-shadow(0 0 0.4cm var(--tool-glow-color))
+            drop-shadow(0 0 0.8cm oklch(from var(--tool-glow-color) l c h / 0.5));
+    animation: tool-glow-cycle 2.4s ease-in-out infinite;
+    z-index: 100;
+    transition: filter var(--duration-normal) ease;
+  }
+
+  .pad-target.tool-active,
+  .pad-target:disabled.tool-active {
+    cursor: progress;
+    pointer-events: none;
+  }
+
+  @keyframes tool-glow-cycle {
+    0%   { --tool-glow-color: oklch(0.85 0.16 75 / 0.85); }   /* amber */
+    50%  { --tool-glow-color: oklch(0.78 0.18 130 / 0.85); }  /* green */
+    100% { --tool-glow-color: oklch(0.85 0.16 75 / 0.85); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pad.tool-active,
+    .knob-dial.tool-active {
+      animation: none;
+      filter: drop-shadow(0 0 0.3cm oklch(0.82 0.17 100 / 0.7));
     }
   }
 </style>
