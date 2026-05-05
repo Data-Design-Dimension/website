@@ -53,21 +53,133 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
     </section>
 
     <section class="ds-section">
-      <h2>Data Visualization Palette</h2>
+      <h2>Data Viz — Categorical</h2>
       <p>
-        Qualitative palette. OKLCH ensures minimum 30 lightness units between colors.
-        Tested against protanopia, deuteranopia, tritanopia, and achromatopsia.
+        Okabe-Ito hue identity, re-anchored on a monotonic lightness ladder
+        (L 0.32 → 0.92, ≥8 units between adjacent stops) so the palette also
+        reads cleanly in grayscale. Stock Okabe-Ito collides at Sky Blue ≈ Orange
+        in luminance; this version doesn't. CVD-safe across protan / deutan /
+        tritan; chroma is near max sustainable at each (L, H) so the palette
+        feels chromatic, not flat.
       </p>
       <div class="ds-grid-8">
-        <ColorSwatch client:load name="--viz-1" value="oklch(0.55 0.18 250)" label="Blue" />
-        <ColorSwatch client:load name="--viz-2" value="oklch(0.70 0.20 145)" label="Green" />
-        <ColorSwatch client:load name="--viz-3" value="oklch(0.65 0.22 30)" label="Orange" />
-        <ColorSwatch client:load name="--viz-4" value="oklch(0.55 0.20 330)" label="Purple" />
-        <ColorSwatch client:load name="--viz-5" value="oklch(0.75 0.15 80)" label="Gold" />
-        <ColorSwatch client:load name="--viz-6" value="oklch(0.50 0.15 200)" label="Teal" />
-        <ColorSwatch client:load name="--viz-7" value="oklch(0.65 0.25 15)" label="Red-orange" />
-        <ColorSwatch client:load name="--viz-8" value="oklch(0.60 0.12 290)" label="Violet" />
+        <ColorSwatch client:load name="--viz-1" value="oklch(0.32 0.10 155)" label="Dark sage" />
+        <ColorSwatch client:load name="--viz-2" value="oklch(0.42 0.18 250)" label="Blue" />
+        <ColorSwatch client:load name="--viz-3" value="oklch(0.52 0.18 40)" label="Vermillion" />
+        <ColorSwatch client:load name="--viz-4" value="oklch(0.60 0.13 165)" label="Bluish green" />
+        <ColorSwatch client:load name="--viz-5" value="oklch(0.68 0.16 350)" label="Reddish purple" />
+        <ColorSwatch client:load name="--viz-6" value="oklch(0.76 0.16 70)" label="Orange" />
+        <ColorSwatch client:load name="--viz-7" value="oklch(0.84 0.09 230)" label="Sky blue" />
+        <ColorSwatch client:load name="--viz-8" value="oklch(0.92 0.16 95)" label="Yellow" />
       </div>
+      <p class="ds-strip-caption">Grayscale check — each stop should remain visibly distinct:</p>
+      <div class="ds-strip is-grayscale" aria-hidden="true">
+        <span style="background: oklch(0.32 0.10 155);"></span>
+        <span style="background: oklch(0.42 0.18 250);"></span>
+        <span style="background: oklch(0.52 0.18 40);"></span>
+        <span style="background: oklch(0.60 0.13 165);"></span>
+        <span style="background: oklch(0.68 0.16 350);"></span>
+        <span style="background: oklch(0.76 0.16 70);"></span>
+        <span style="background: oklch(0.84 0.09 230);"></span>
+        <span style="background: oklch(0.92 0.16 95);"></span>
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <h2>Data Viz — Card-Safe Categorical</h2>
+      <p>
+        The site's category accents already carry meaning: <strong>green</strong>
+        signals See Work cards (H ≈ 130–170), <strong>amber</strong> signals
+        Get to Know cards (H ≈ 50–100). Any chart that renders inside an
+        expanded card overlay, on top of the Scrambler background, or near
+        category UI must avoid those hue bands so data categories don't
+        leak meaning into the surrounding interface (or absorb it).
+      </p>
+      <p>
+        <code>vizCardSafe</code> is a 7-stop monotonic-L palette restricted to
+        reds (H 0–40), blues (H 200–280), purples / magentas (H 290–350), and
+        low-chroma neutrals.
+      </p>
+      <div class="ds-grid-8">
+        <ColorSwatch client:load name="vizCardSafe[0]" value="oklch(0.30 0.005 155)" label="Near-black" />
+        <ColorSwatch client:load name="vizCardSafe[1]" value="oklch(0.42 0.18 250)" label="Blue" />
+        <ColorSwatch client:load name="vizCardSafe[2]" value="oklch(0.52 0.18 25)" label="Vermillion" />
+        <ColorSwatch client:load name="vizCardSafe[3]" value="oklch(0.62 0.16 350)" label="Reddish purple" />
+        <ColorSwatch client:load name="vizCardSafe[4]" value="oklch(0.72 0.13 290)" label="Purple" />
+        <ColorSwatch client:load name="vizCardSafe[5]" value="oklch(0.82 0.08 220)" label="Sky blue" />
+        <ColorSwatch client:load name="vizCardSafe[6]" value="oklch(0.92 0.10 0)" label="Light coral" />
+      </div>
+      <p class="ds-strip-caption">Grayscale check — each stop should remain visibly distinct:</p>
+      <div class="ds-strip is-grayscale" aria-hidden="true">
+        <span style="background: oklch(0.30 0.005 155);"></span>
+        <span style="background: oklch(0.42 0.18 250);"></span>
+        <span style="background: oklch(0.52 0.18 25);"></span>
+        <span style="background: oklch(0.62 0.16 350);"></span>
+        <span style="background: oklch(0.72 0.13 290);"></span>
+        <span style="background: oklch(0.82 0.08 220);"></span>
+        <span style="background: oklch(0.92 0.10 0);"></span>
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <h2>Data Viz — Scales</h2>
+      <p>
+        Sequential, diverging, and cyclical scales live in
+        <code>src/lib/tokens.ts</code> (array-shaped, consumed directly by D3).
+        Full swatch UI is on the Phase 8 polish list; the values are listed
+        below for reference and copy.
+      </p>
+      <dl class="ds-rationale">
+        <dt>Sequential single-hue (7 stops, light → dark)</dt>
+        <dd><code>vizSeq.sage</code>, <code>vizSeq.blueprint</code>, <code>vizSeq.amber</code>,
+            <code>vizSeq.brown</code>, <code>vizSeq.gray</code>. Default to <code>gray</code>
+            or <code>brown</code> when color would distract from the data.</dd>
+        <dt>Sequential multi-hue (7 stops)</dt>
+        <dd>
+          Default: <code>vizSeqMulti.cividis</code> (CVD-verified;
+          no green hues that confuse protan / deutan).
+          <br />
+          Brand-flavored option: <code>vizSeqMulti.dadeda</code>
+          (blueprint → sage → neon green). Passes the L-monotonicity test
+          in <code>tests/viz-palettes.test.ts</code>, but visual review
+          under deutan / protan / tritan simulators is required before using
+          it in any shipped viz. If a simulation flattens or inverts the
+          ramp, fall back to <code>cividis</code>.
+        </dd>
+        <dt>Diverging (7 stops, neutral midpoint)</dt>
+        <dd><code>vizDiv.brbg</code> (brown ↔ teal-green; the project's default
+            diverging), <code>vizDiv.rdbu</code> (classic, CVD-safe),
+            <code>vizDiv.puor</code> (CVD-safe alternative to RdYlGn),
+            <code>vizDiv.gray</code> (warm-cool through light, very low chroma;
+            for direction without color attention).</dd>
+        <dt>Cyclical (12 stops, constant L, hue rotation)</dt>
+        <dd><code>vizCyc</code>. Use for time-of-day, day-of-year, angles,
+            phase. Never use a sequential ramp for cyclical data.</dd>
+      </dl>
+      <h3 class="ds-subsection-h">Palette governance</h3>
+      <ul class="ds-bullets">
+        <li>Brand colors (DADEDA sage, neon green, blueprint blue, hot accent)
+            stay out of viz <em>except</em> for ≤2–3 categorical brands where
+            meaning is unambiguous (Fantasy red + #DADEDA being canonical),
+            and only when the resulting set passes deuteranopia simulation.</li>
+        <li>Inside cards / on Scrambler bg: use <code>vizCardSafe</code>
+            for categorical, <code>vizSeq.blueprint / brown / gray</code> for
+            sequential, <code>vizDiv.rdbu / gray</code> for diverging. Avoid
+            <code>vizSeq.sage / amber</code>, <code>vizSeqMulti.dadeda</code>,
+            <code>vizDiv.brbg / puor</code>, and <code>vizCyc</code> in those
+            contexts; their hues collide with See Work green or GTK amber.</li>
+        <li>Default to <code>vizSeq.gray</code> or <code>vizSeq.brown</code>
+            whenever color would distract: small multiples, secondary charts,
+            annotation layers, table-as-chart cells.</li>
+        <li>Cyclical data uses <code>vizCyc</code>, never a sequential ramp.
+            For cyclical data inside cards, use a brightness-only cycle
+            through <code>vizSeq.gray</code> with explicit hour / phase labels.</li>
+        <li>D3 scales import from <code>tokens.ts</code>; no inline hex in
+            viz code.</li>
+        <li>Accountability calibration:
+            <a href="https://www.frank.computer/" target="_blank" rel="noopener">
+              frank.computer / Chartability</a> for ongoing viz a11y review.</li>
+      </ul>
     </section>
 
     <section class="ds-section">
@@ -202,6 +314,54 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
     color: var(--color-text-secondary);
     margin-left: 0;
     max-width: 40rem;
+  }
+  .ds-subsection-h {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-3);
+    color: var(--color-text-primary);
+  }
+  .ds-bullets {
+    color: var(--color-text-secondary);
+    max-width: 48rem;
+    padding-left: var(--space-6);
+    margin: 0;
+  }
+  .ds-bullets li {
+    margin-bottom: var(--space-3);
+    line-height: 1.6;
+  }
+  .ds-bullets code {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    background: var(--color-canvas-light);
+    padding: 0.05rem 0.3rem;
+    border-radius: 0.2rem;
+  }
+  .ds-strip-caption {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+  .ds-strip {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 2px;
+    height: 2.5rem;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+  .ds-strip span {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .ds-strip.is-grayscale {
+    filter: grayscale(1);
   }
   @media (max-width: 768px) {
     .ds-grid-3 { grid-template-columns: repeat(2, 1fr); }

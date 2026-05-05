@@ -23,16 +23,22 @@
   --color-text-muted: oklch(0.65 0.005 155);
   --color-border: oklch(0.80 0.008 155);
 
-  /* === Data Viz Palette (qualitative, colorblind-safe) === */
-  /* Minimum 30 OKLCH lightness units between adjacent colors */
-  --viz-1: oklch(0.55 0.18 250); /* blue */
-  --viz-2: oklch(0.70 0.20 145); /* green */
-  --viz-3: oklch(0.65 0.22 30);  /* orange */
-  --viz-4: oklch(0.55 0.20 330); /* purple */
-  --viz-5: oklch(0.75 0.15 80);  /* gold */
-  --viz-6: oklch(0.50 0.15 200); /* teal */
-  --viz-7: oklch(0.65 0.25 15);  /* red-orange */
-  --viz-8: oklch(0.60 0.12 290); /* violet */
+  /* === Data Viz Categorical Palette ===
+   * Okabe-Ito hue identity, re-anchored on a monotonic L ladder so the
+   * palette also reads cleanly in grayscale (stock Okabe-Ito collides at
+   * Sky Blue ≈ Orange in luminance). Index order is dark → light;
+   * for Okabe-Ito's "use first N for N categories" priority, see
+   * vizPriorityOrder in src/lib/tokens.ts.
+   * Sequential / diverging / cyclical scales live in tokens.ts (array-shaped).
+   */
+  --viz-1: oklch(0.32 0.10 155); /* dark sage-black */
+  --viz-2: oklch(0.42 0.18 250); /* blue */
+  --viz-3: oklch(0.52 0.18 40);  /* vermillion */
+  --viz-4: oklch(0.60 0.13 165); /* bluish green */
+  --viz-5: oklch(0.68 0.16 350); /* reddish purple */
+  --viz-6: oklch(0.76 0.16 70);  /* orange */
+  --viz-7: oklch(0.84 0.09 230); /* sky blue */
+  --viz-8: oklch(0.92 0.16 95);  /* yellow */
 
   /* === Typography === */
   --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
