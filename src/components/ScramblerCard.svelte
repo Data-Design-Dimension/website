@@ -10,9 +10,13 @@
     onDragStart?: () => void;
     onDragMove?: (cardId: string, clientX: number, clientY: number) => void;
     onDragEnd?: () => void;
+    /** Force initial state. Used by the Storybook review interface to
+     *  show collapsed + expanded side-by-side. Has no effect once the
+     *  user toggles state via the + button. */
+    initialExpanded?: boolean;
   }
 
-  let { card, position, onSelect, onDragStart, onDragMove, onDragEnd }: Props = $props();
+  let { card, position, onSelect, onDragStart, onDragMove, onDragEnd, initialExpanded = false }: Props = $props();
 
   let isHovered = $state(false);
   // Two interaction states:
@@ -22,8 +26,8 @@
   //  - isExpanded: clicked the + toggle. Card grows to fill more of
   //    the viewport (scrollable if content overflows) and shows full
   //    summary + tags + CTA. Expanded implies focused.
-  let isFocused = $state(false);
-  let isExpanded = $state(false);
+  let isFocused = $state(initialExpanded);
+  let isExpanded = $state(initialExpanded);
   const isLifted = $derived(isFocused || isExpanded);
   let cardEl: HTMLDivElement | undefined = $state();
 

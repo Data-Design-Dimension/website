@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import CardReview from '../components/CardReview.svelte';
+import { getCollection } from 'astro:content';
+import type { ScramblerCard } from '../lib/scrambler/types';
+
+/**
+ * Side-by-side card review interface (plan §E).
+ *
+ * Loads every card from the content collection and shows collapsed +
+ * expanded states with tag editing, approve / archive / feature
+ * toggles, and a one-click YAML output ready to paste back into the
+ * source file.
+ *
+ * Originally specced as a Storybook story; pivoted to an Astro route
+ * because (a) Storybook 10 + Svelte 5 still has rough edges in the
+ * monorepo here, and (b) reviewing on the staging deploy is a better
+ * workflow than spinning a separate Storybook instance.
+ *
+ * The route is unlisted (no nav link) and noindex'd. URL: /review.
+ */
+
+const entries = await getCollection('cards');
+const cards: ScramblerCard[] = entries
+  .map((entry) => ({ id: entry.id, ...(entry.data as Omit<ScramblerCard, 'id'>) }))
+  .sort((a, b) => a.id.localeCompare(b.id));
+---
+
+<Base title="Card Review — DADEDA (private)">
+  <Fragment slot="head">
+    <meta name="robots" content="noindex,nofollow" />
+  </Fragment>
+  <CardReview client:load cards={cards} />
+</Base>
