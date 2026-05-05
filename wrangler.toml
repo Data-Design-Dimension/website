@@ -1,0 +1,16 @@
+# Cloudflare configuration. Used by `wrangler pages deploy` for direct
+# CLI deploys; the Cloudflare Pages dashboard reads its own equivalents
+# from the GitHub integration UI (Build command, Output directory).
+#
+# Authenticate locally one-time:
+#   pnpm dlx wrangler login
+# Then deploy a build to a *.pages.dev URL:
+#   pnpm build && pnpm dlx wrangler pages deploy dist --project-name=dadeda-design
+#
+# Or connect the repo via the Cloudflare Pages dashboard (preferred for
+# auto-deploy on push). See docs/deploy.md for the dashboard recipe.
+
+name = "dadeda-design"
+compatibility_date = "2026-05-05"
+
+pages_build_output_dir = "./dist"
