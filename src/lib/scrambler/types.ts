@@ -23,11 +23,35 @@ export interface CardCta {
   label: string;
   url: string;
   external: boolean;
+  /** Render the CTA as a disabled / inactive button (no link, no
+   *  hover affordance). For drafts and in-progress entries. */
+  disabled?: boolean;
 }
 
 export interface CardMedia {
   src: string;
   alt: string;
+  /**
+   * Frame orientation. Defaults to 'wide' (16:9) for landscape
+   * screenshots/photos. Use 'tall' (3:4) for portrait covers like
+   * magazine spreads, and 'square' (1:1) for logos / avatars.
+   */
+  aspect?: 'wide' | 'tall' | 'square';
+  /**
+   * Custom CSS aspect-ratio value (e.g. '8 / 5', '4 / 3') that
+   * overrides the default for `aspect`. Use when the source image's
+   * natural ratio doesn't match a standard preset — avoids cropping
+   * by sizing the frame to the image instead of forcing the image
+   * into the frame.
+   */
+  aspectRatio?: string;
+  /**
+   * Where to anchor the image inside its frame when cropped. Useful
+   * for tall source images shown in a wide frame — set 'top' to
+   * preserve the top portion (e.g. headline visualizations) instead
+   * of center-cropping. Maps to CSS object-position.
+   */
+  position?: 'top' | 'center' | 'bottom' | 'left' | 'right' | 'right center';
 }
 
 export interface ScramblerCard {
@@ -39,6 +63,13 @@ export interface ScramblerCard {
   cta?: CardCta;
   tags: string[];
   media?: CardMedia;
+  /**
+   * Array of images rendered as a 2×2 grid in the card's collapsed
+   * media area. Use for cards that surface a curated sample (mood
+   * board, inspiration gallery, project lookbook). Mutually
+   * exclusive with `media` — if both are set, mediaGrid wins.
+   */
+  mediaGrid?: CardMedia[];
   order: number;
 }
 

@@ -156,16 +156,51 @@
     transition: opacity var(--duration-normal) ease;
   }
 
-  .stage.card-expanded .card-backdrop {
+  /* The backdrop activates whenever ANY card-style overlay is open —
+     either the Avatar's about card (.stage.card-expanded) OR a
+     scrambler card in its expanded state. Both occlude the rest of
+     the page so the user focuses on the open content. */
+  /* :global() is required around .scrambler-card because that class
+     is rendered by ScramblerCard.svelte (a different component);
+     Svelte's scoped CSS would otherwise hash the selector to a class
+     that doesn't match the actual rendered element. */
+  .stage.card-expanded .card-backdrop,
+  .stage:has(:global(.scrambler-card.expanded)) .card-backdrop {
     opacity: 1;
     pointer-events: auto;
   }
 
-  /* When a card is expanded, soften the Knob too — same visual
-     recession the Scrambler gets. */
-  .stage.card-expanded .knob-overlay {
-    opacity: 0.6;
+  /* Soften the Knob (and any other foreground UI under the
+     backdrop) whenever any card-style overlay is open. */
+  .stage.card-expanded .knob-overlay,
+  .stage:has(:global(.scrambler-card.expanded)) .knob-overlay {
+    opacity: 0.5;
     transition: opacity var(--duration-normal) ease;
+  }
+
+  /* Occlusion: when a Scrambler card is expanded, dim and de-focus
+     EVERYTHING else on the page so the open card has full visual
+     attention. The expanded card itself is unaffected; sibling
+     orbiting cards, the phosphor wordmark, and the avatar all
+     fade and blur. */
+  .stage:has(:global(.scrambler-card.expanded)) :global(.avatar:not(.open)) {
+    opacity: 0.4;
+    filter: blur(2px);
+    transition: opacity var(--duration-normal) ease, filter var(--duration-normal) ease;
+  }
+
+  .stage:has(:global(.scrambler-card.expanded)) .phosphor-wordmark {
+    opacity: 0.25;
+    transition: opacity var(--duration-normal) ease;
+  }
+
+  /* Dim all OTHER orbiting cards when a sibling is expanded.
+     !important is required to override the inline opacity/filter
+     set by the orbital math on each card. */
+  .stage:has(:global(.scrambler-card.expanded)) :global(.scrambler-card:not(.expanded)) {
+    opacity: 0.35 !important;
+    filter: blur(6px) brightness(0.7) !important;
+    transition: opacity var(--duration-normal) ease, filter var(--duration-normal) ease !important;
   }
 
   /* Retro-amber phosphor wordmark — small, receded teletext-style
@@ -214,11 +249,20 @@
     }
   }
 
-  /* When any card is hovered or focused inside the windshield, pull the
-     entire windshield above the Knob's stacking layer so the card can
-     fully reveal even at small viewports. */
-  .stage:has(.scrambler-card:hover, .scrambler-card:focus-visible) .windshield {
-    z-index: 100;
+  /* Pull the windshield above ALL dashboard controls (Knob, Avatar,
+     wordmark, backdrop) whenever a card is hovered, browser-focused,
+     click-focused (.focused), or expanded — every state where the
+     card needs to be the topmost element on the page so the user
+     can read it AND interact with its controls (+/- toggle, CTA,
+     tags) without anything else occluding it. The high z-index
+     value (999) sits well above any other layer in the stack. */
+  .stage:has(
+    :global(.scrambler-card:hover),
+    :global(.scrambler-card:focus-visible),
+    :global(.scrambler-card.focused),
+    :global(.scrambler-card.expanded)
+  ) .windshield {
+    z-index: 999;
   }
 
   /* Knob overlays the windshield in lower-left, no separate dashboard zone */

@@ -13,6 +13,16 @@ export const sampleCards: ScramblerCard[] = [
     summary: 'Speculative web app prototype demoed by Fantasy. I built the working application that explores what happens when AI agents drive the UI instead of static pages.',
     tags: ['fantasy', 'ai', 'agents', 'webmcp', 'prototype', 'speculative'],
     cta: { label: 'Watch demo (12:32)', url: 'https://fantasy.co/latest/do-websites-need-pages', external: true },
+    media: {
+      // Standardized: WebP at q=85 from the source PNG, resized to
+      // 1600 wide. PRESERVES the source's 8:5 aspect (no crop) so
+      // nothing is cut from the screenshot. The frame uses a custom
+      // aspectRatio to match the image — avoids letterboxing or
+      // cropping. PNG was 4.8MB; WebP is 85KB.
+      src: '/img/do-websites-need-pages-demo.webp',
+      alt: 'Demo screenshot of the Do Websites Need Pages? speculative web app prototype',
+      aspectRatio: '8 / 5',
+    },
     order: 0,
   },
   {
@@ -28,9 +38,14 @@ export const sampleCards: ScramblerCard[] = [
     id: 'mica-capstone',
     type: 'portfolio',
     title: 'MICA MPS Capstone',
-    summary: 'Master\'s capstone in Data Analytics & Visualization at MICA. The institutional showcase of my graduate research and project work.',
+    summary: 'Master\'s capstone in Data Analytics & Visualization at MICA. The academic showcase of my graduate research and project work.',
     tags: ['mica', 'mps', 'capstone', 'data-viz', 'academic'],
     cta: { label: 'View on MICA', url: 'https://www.mica.edu/about-mica/offices-divisions/school-of-creative-professional-studies/mps-programs/mps-capstones/student/kathryn-hurchla/', external: true },
+    media: {
+      src: 'https://assets.mica.edu/files/modules/screen-shot-2022-06-15-at-10200-pm.png',
+      alt: 'Sustain Our Soil capstone project visualization screenshot from the MICA institutional page',
+      position: 'top',
+    },
     order: 2,
   },
   {
@@ -80,9 +95,9 @@ export const sampleCards: ScramblerCard[] = [
     id: 'oklch-article',
     type: 'writing',
     title: 'Building with OKLCH',
-    summary: 'Why perceptually uniform color changes everything for data visualization.',
+    summary: 'Unformed thoughts in process. Why perceptually uniform color changes everything for data visualization.',
     tags: ['color', 'data-viz', 'css'],
-    cta: { label: 'Read article', url: '/writing/oklch', external: false },
+    cta: { label: 'Read article', url: '/writing/oklch', external: false, disabled: true },
     order: 0,
   },
   {
@@ -91,7 +106,11 @@ export const sampleCards: ScramblerCard[] = [
     title: 'Nightingale Contributions',
     summary: 'Contributing author and editor for the Data Visualization Society journal.',
     tags: ['data-viz', 'writing', 'editing'],
-    cta: { label: 'View on DVS', url: 'https://nightingaledvs.com', external: true },
+    cta: { label: 'View on DVS', url: 'https://nightingaledvs.com/?s=hurchla', external: true },
+    media: {
+      src: 'https://i0.wp.com/nightingaledvs.com/wp-content/uploads/2023/06/DN_Raveling-11.png?fit=450%2C300&ssl=1',
+      alt: 'Raveling data illustration from a Nightingale article — woven threads visualization',
+    },
     order: 1,
   },
   {
@@ -101,15 +120,36 @@ export const sampleCards: ScramblerCard[] = [
     summary: 'Five-page spread in the Special Section on sustainability of Nightingale Magazine Issue 5. A survey of noteworthy global data visualization projects and practitioners approaching sustainability through diverse lenses — from soil to satellite, climate to community.',
     tags: ['nightingale', 'dvs', 'sustainability', 'data-viz', 'print', 'editorial', 'survey'],
     cta: { label: 'Get the print issue', url: 'https://shop.datavisualizationsociety.org/products/nightingale-magazine-issue-5', external: true },
+    media: {
+      // Locally hosted Issue 5 cover. Source is 1946x2039. Using a
+      // custom aspectRatio that exactly matches the source means the
+      // frame sizes to the image — no crop, no letterbox, image
+      // fills the space cleanly.
+      src: '/img/writing/nightingale-issue-5-cover.png',
+      alt: 'Nightingale Magazine Issue 5 print cover',
+      aspectRatio: '1946 / 2039',
+    },
     order: 2,
   },
   {
     id: 'github-repos',
     type: 'repo',
     title: 'Open Source Code',
-    summary: 'Python, data viz, and web development on GitHub.',
-    tags: ['python', 'open-source', 'github'],
+    summary: 'Full-stack, web development, and data viz on GitHub.',
+    tags: ['python', 'typescript', 'ai-engineering', 'data-viz', 'full-stack', 'open-source'],
     cta: { label: 'View repos', url: 'https://github.com/Data-Design-Dimension', external: true },
+    media: {
+      // Dynamic GitHub contributions heatmap (ghchart.rshah.org renders
+      // the GitHub-style green grid for any user, refreshed daily).
+      // Color hex matches our brand neon green token. Image is ~720×95
+      // (year × week) — in a 16:9 frame with cover, only a horizontal
+      // slice is visible; position: 'right' anchors it to the most
+      // RECENT contributions on the right edge of the year.
+      src: 'https://ghchart.rshah.org/5fc274/khurchla',
+      alt: 'GitHub contributions heatmap for @khurchla — recent commit activity',
+      aspect: 'wide',
+      position: 'right',
+    },
     order: 0,
   },
   {
@@ -137,6 +177,15 @@ export const sampleCards: ScramblerCard[] = [
     summary: 'Brand mood board: Philadelphia industrial typography, embossed cast iron, found vernacular signage. The visual research that grounds DADEDA.',
     tags: ['inspiration', 'brand', 'design-process', 'philadelphia', 'industrial-typography'],
     cta: { label: 'Open inspiration gallery', url: '#inspiration-styling-ddd', external: false },
+    // 2×2 mood-board grid in the collapsed card. Sourced from the
+    // original Behance gallery for "Styling Data, Design & Daughters
+    // LLC" — downloaded and converted to WebP for performance.
+    mediaGrid: [
+      { src: '/img/inspiration/styling-ddd-1.webp', alt: 'Brand styling research from the Data, Design & Daughters mood board' },
+      { src: '/img/inspiration/styling-ddd-2.webp', alt: 'Visual identity reference for the DADEDA brand' },
+      { src: '/img/inspiration/styling-ddd-3.webp', alt: 'Typography and material study from the inspiration board' },
+      { src: '/img/inspiration/styling-ddd-4.webp', alt: 'Found vernacular signage and industrial lettering reference' },
+    ],
     order: 1,
   },
 ];

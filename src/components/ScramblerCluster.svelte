@@ -25,6 +25,82 @@
   }: Props = $props();
 
   let isPaused = $state(false);
+  let clusterEl: HTMLDivElement | undefined = $state();
+  let hasExpandedCard = $state(false);
+  let isDraggingCard = $state(false);
+
+  // Per-card phase offsets — added to a card's natural orbit phase so
+  // the user can DRAG cards along the orbit. The offset persists after
+  // release: the dragged card resumes orbital rotation from its new
+  // phase position when the orbit resumes.
+  let phaseOffsets = $state<Map<string, number>>(new Map());
+
+  // While ANY card inside this cluster is FOCUSED (clicked to pause)
+  // or EXPANDED (clicked + to fully open), freeze the orbit so the
+  // active card stays put. Detected via a MutationObserver watching
+  // for either class on any descendant.
+  $effect(() => {
+    if (!clusterEl || typeof MutationObserver === 'undefined') return;
+    const update = () => {
+      hasExpandedCard = !!clusterEl?.querySelector(
+        '.scrambler-card.focused, .scrambler-card.expanded',
+      );
+    };
+    update();
+    const obs = new MutationObserver(update);
+    obs.observe(clusterEl, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    return () => obs.disconnect();
+  });
+
+  // Pause the orbital animation if hovered/focused, if any card is
+  // expanded, OR if a card is being dragged. Once the user finishes
+  // (collapses the expanded card or releases the drag), the cluster
+  // resumes orbital rotation — but with any drag-induced phase
+  // offsets still applied, so cards stay where they were dragged.
+  const orbitPaused = $derived(isPaused || hasExpandedCard || isDraggingCard);
+
+  // ── DRAG handlers ──────────────────────────────────────────────
+  function handleCardDragStart() {
+    isDraggingCard = true;
+  }
+
+  function handleCardDragEnd() {
+    isDraggingCard = false;
+  }
+
+  function handleCardDragMove(cardId: string, clientX: number, clientY: number) {
+    if (!clusterEl) return;
+    const rect = clusterEl.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    // Cursor angle relative to cluster center (the orbital center).
+    const cursorAngle = Math.atan2(clientY - cy, clientX - cx);
+
+    const count = cluster.cards.length;
+    if (count === 0) return;
+    const angleStep = (Math.PI * 2) / count;
+    const i = cluster.cards.findIndex((c) => c.id === cardId);
+    if (i < 0) return;
+
+    // Natural phase (no offset). The orbital math warps this monotonically
+    // into an actual angle, but for drag purposes we approximate
+    // phase ≈ angle (warp is small enough that the inversion is close).
+    const naturalPhase = i * angleStep + time + timeOffset + FOREGROUND_ANGLE;
+    let offset = cursorAngle - naturalPhase;
+    // Normalize to nearest equivalent rotation so we don't accumulate
+    // huge multiples of 2π in the offset.
+    while (offset > Math.PI) offset -= 2 * Math.PI;
+    while (offset < -Math.PI) offset += 2 * Math.PI;
+
+    // New Map reference so Svelte $state picks up the change.
+    const next = new Map(phaseOffsets);
+    next.set(cardId, offset);
+    phaseOffsets = next;
+  }
 
   // Orbit radii — wider to fill viewport space, but card width offset
   // is accounted for in the windshield overflow handling.
@@ -60,7 +136,7 @@
     function tick(now: number) {
       const dt = (now - lastTime) / 1000;
       lastTime = now;
-      if (!isPaused) {
+      if (!orbitPaused) {
         time += dt * config.speed;
       }
       animationId = requestAnimationFrame(tick);
@@ -86,9 +162,11 @@
     return cluster.cards.map((card, i) => {
       // Phase is linear in time. Warp it into a non-uniform angle so
       // cards LINGER near the foreground (upper-left) and snap through
-      // the back faster — fills the empty upper-left and improves
-      // readability when a card is in focus.
-      const phase = i * angleStep + time + timeOffset + FOREGROUND_ANGLE;
+      // the back faster. Per-card phase OFFSETS are added on top so a
+      // card the user dragged stays at its dragged position and
+      // continues orbiting from there.
+      const offset = phaseOffsets.get(card.id) ?? 0;
+      const phase = i * angleStep + time + timeOffset + FOREGROUND_ANGLE + offset;
       const angle = warpPhaseToAngle(phase);
       const pos = calculateOrbitalPosition(path, angle);
       return { card, position: pos };
@@ -97,8 +175,9 @@
 </script>
 
 <div
+  bind:this={clusterEl}
   class="scrambler-cluster"
-  class:paused={isPaused}
+  class:paused={orbitPaused}
   role="group"
   aria-label="{cluster.label} — {cluster.cards.length} items"
   onmouseenter={() => (isPaused = true)}
@@ -120,6 +199,9 @@
         {card}
         {position}
         onSelect={onCardSelect}
+        onDragStart={handleCardDragStart}
+        onDragMove={handleCardDragMove}
+        onDragEnd={handleCardDragEnd}
       />
     </div>
   {/each}
@@ -150,10 +232,20 @@
     will-change: transform;
   }
 
-  /* Hover/focus brings the card above all other UI (Knob, Avatar, etc.) */
+  /* Hover/focus brings the card above all other UI (Knob, Avatar, etc.).
+     Expanded cards are bumped even higher so they float over their
+     orbital siblings while the user reads them.
+     :global() needed because .scrambler-card is rendered by the child
+     ScramblerCard component which has its own scope hash. */
   .card-wrapper:hover,
-  .card-wrapper:has(:focus-visible) {
+  .card-wrapper:has(:global(:focus-visible)) {
     z-index: 200 !important;
+  }
+
+  /* Focused or expanded card lifts above all orbital siblings. */
+  .card-wrapper:has(:global(.scrambler-card.focused)),
+  .card-wrapper:has(:global(.scrambler-card.expanded)) {
+    z-index: 250 !important;
   }
 
   .paused .card-wrapper {

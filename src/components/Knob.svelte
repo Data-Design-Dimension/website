@@ -346,6 +346,7 @@
     <div
       class="contact-radial"
       role="menu"
+      tabindex="-1"
       aria-label="Contact options"
       onmouseenter={cancelClose}
       onmouseleave={scheduleClose}
@@ -441,15 +442,20 @@
 
   /* Hover preview — partway between inactive and active, staying in
      the same hue family so it reads as "warming up" toward the active
-     state instead of jumping to a different color. */
+     state. A subtle drop-shadow filter also lifts the hovered pad
+     off the dial to reinforce press affordance (filter works on SVG
+     paths where CSS transform translateY can be flaky). */
   .knob:has(.target-top:hover) .pad-green:not(.active) {
-    fill: oklch(0.84 0.15 138); /* halfway between inactive yellow-green and active card-cta green */
+    fill: oklch(0.84 0.15 138);
+    filter: drop-shadow(0 -2px 3px oklch(0.45 0.10 145 / 0.35));
   }
   .knob:has(.target-bl:hover) .pad-amber:not(.active) {
-    fill: oklch(0.90 0.14 90); /* halfway between pale amber inactive and #FFCC00 active */
+    fill: oklch(0.90 0.14 90);
+    filter: drop-shadow(0 -2px 3px oklch(0.55 0.12 90 / 0.35));
   }
   .knob:has(.target-br:hover) .pad-neutral:not(.active) {
-    fill: oklch(0.66 0.028 70); /* mid warm tan, between inactive and active */
+    fill: oklch(0.66 0.028 70);
+    filter: drop-shadow(0 -2px 3px oklch(0.40 0.02 70 / 0.30));
   }
 
   /* Pad labels — sized in SVG user units so text scales with the dial.
@@ -502,35 +508,110 @@
     height: 38%;
   }
 
-  /* Center dial — blueprint blue, colorblind-safe, distinct from pads.
-     CONCAVE: inset bevel reads as a recessed knob you'd grip and turn. */
+  /* Center dial — vintage brushed-metal knob with a FLAT top.
+     Reference: vintage-air automotive HVAC dials (cool aluminum).
+     Three layers:
+       1. Subtle radial gradient — top is nearly flat in tone
+          (slight darkening at the rim only), so it reads as a
+          machined flat surface, not a polished sphere.
+       2. ::before brushed-metal texture — repeating diagonal
+          micro-stripes at very low alpha mimic the milled finish.
+       3. ::after thin bevel ring — a darker hairline at the very
+          edge implies the elevated rim where the flat top meets
+          the side wall.
+     Dial sits proud of the inner well via an outer drop shadow. */
   .knob-dial {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 5.5rem;
-    height: 5.5rem;
+    width: 6.5rem;
+    height: 6.5rem;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    background: radial-gradient(
-      circle at 50% 55%,
-      oklch(0.32 0.10 250) 0%,
-      oklch(0.22 0.08 250) 70%,
-      oklch(0.18 0.07 250) 100%
-    );
+    background:
+      radial-gradient(
+        circle at 50% 45%,
+        oklch(0.86 0.008 250) 0%,
+        oklch(0.82 0.010 250) 55%,
+        oklch(0.74 0.012 250) 85%,
+        oklch(0.62 0.014 250) 100%
+      );
     box-shadow:
-      inset 2px 2px 6px oklch(0.10 0.04 250 / 0.7),
-      inset -1px -1px 0 oklch(0.55 0.10 250 / 0.4),
-      0 2px 6px oklch(0.15 0.05 250 / 0.25);
+      /* Tight bright rim at top — subtle, not a sphere */
+      inset 0 1px 0 oklch(0.95 0.005 250 / 0.70),
+      /* Soft darker shadow at bottom rim */
+      inset 0 -1.5px 2px oklch(0.42 0.015 250 / 0.45),
+      /* Outer drop shadow — dial elevated above its well */
+      0 3px 6px oklch(0.10 0.02 250 / 0.40),
+      0 1px 2px oklch(0.08 0.02 250 / 0.30);
     cursor: grab;
     touch-action: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    transition:
+      transform var(--duration-fast) ease,
+      box-shadow var(--duration-fast) ease;
   }
 
+  /* Brushed-metal milled finish — faint diagonal micro-stripes
+     across the entire flat top. */
+  .knob-dial::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      repeating-linear-gradient(
+        38deg,
+        oklch(1 0 0 / 0.08) 0px,
+        oklch(1 0 0 / 0.08) 0.5px,
+        transparent 0.5px,
+        transparent 1.5px,
+        oklch(0 0 0 / 0.05) 1.5px,
+        oklch(0 0 0 / 0.05) 2px,
+        transparent 2px,
+        transparent 3px
+      );
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: overlay;
+  }
+
+  /* Bevel ring at outer edge — the visible "rim" where the flat
+     top meets the side wall. Subtle dark hairline + light highlight
+     just inside it implies a chamfer. */
+  .knob-dial::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow:
+      inset 0 0 0 1px oklch(0.45 0.010 250 / 0.55),
+      inset 0 0 0 2px oklch(0.95 0.005 250 / 0.25);
+    z-index: 1;
+  }
+
+  /* Hover: dial lifts slightly to imply press affordance */
+  .knob-dial:hover {
+    transform: translate(-50%, calc(-50% - 1px));
+    box-shadow:
+      inset 0 1px 0 oklch(0.97 0.005 250 / 0.80),
+      inset 0 -1.5px 2px oklch(0.42 0.015 250 / 0.50),
+      0 6px 12px oklch(0.10 0.02 250 / 0.50),
+      0 2px 4px oklch(0.08 0.02 250 / 0.35);
+  }
+
+  /* Active drag: dial pushes into its well */
   .knob-dial:active {
     cursor: grabbing;
+    transform: translate(-50%, calc(-50% + 1px));
+    box-shadow:
+      inset 0 2px 3px oklch(0.30 0.012 250 / 0.55),
+      inset 0 -1px 1px oklch(0.85 0.008 250 / 0.40),
+      0 1px 2px oklch(0.10 0.02 250 / 0.30);
   }
 
   .knob-dial:focus-visible {
@@ -538,38 +619,45 @@
     outline-offset: 4px;
   }
 
-  /* High-visibility cream indicator on the dark blue dial */
+  /* Engraved indicator line on the brushed-metal dial top — a
+     dark groove with a thin highlighted edge mimicking a milled
+     mark. No glow (would look out of place on flat metal); just
+     a clean engraved appearance. */
   .dial-indicator {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 4px;
+    width: 3px;
     height: 38%;
     background: linear-gradient(to bottom,
-      oklch(0.96 0.03 80) 0%,
-      oklch(0.96 0.03 80) 70%,
-      oklch(0.85 0.05 80) 100%
+      oklch(0.32 0.012 250) 0%,
+      oklch(0.42 0.012 250) 50%,
+      oklch(0.32 0.012 250) 100%
     );
-    border-radius: 2px;
+    border-radius: 1.5px;
     transform-origin: bottom center;
+    /* Engraved look: a thin light edge on one side, dark on the
+       other, mimics how a milled groove catches light. */
     box-shadow:
-      0 0 8px oklch(0.96 0.03 80 / 0.5),
-      0 0 2px oklch(0.96 0.03 80 / 0.9);
+      inset 1px 0 0 oklch(0.95 0.005 250 / 0.55),
+      inset -1px 0 0 oklch(0.20 0.010 250 / 0.65),
+      0 0 1px oklch(0.20 0.010 250 / 0.40);
+    z-index: 2;
   }
 
   .dial-indicator::before {
     content: '';
     position: absolute;
-    top: -2px;
+    top: -1px;
     left: 50%;
     transform: translateX(-50%);
-    width: 8px;
-    height: 8px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
-    background: oklch(0.96 0.03 80);
+    background: oklch(0.32 0.012 250);
     box-shadow:
-      0 0 8px oklch(0.96 0.03 80 / 0.7),
-      0 0 4px oklch(0.96 0.03 80);
+      inset 1px 1px 0 oklch(0.95 0.005 250 / 0.45),
+      inset -1px -1px 0 oklch(0.18 0.010 250 / 0.65);
   }
 
   /* Flyout container — anchored to knob center, but its hover bounds
@@ -624,7 +712,10 @@
     text-transform: uppercase;
     white-space: nowrap;
     border: 1px solid oklch(0.45 0.005 155 / 0.5);
-    border-radius: 9999px;
+    /* Rounded rectangle shape — matches card CTA buttons + tag pills
+       so the contact flyout reads as part of the same UI family.
+       Color stays dark neutral (cohesive with the system overall). */
+    border-radius: 0.5rem;
     cursor: pointer;
     pointer-events: auto;
     transform-origin: center;
@@ -644,6 +735,22 @@
     color: oklch(0.99 0.02 80);
     outline: 2px solid oklch(0.65 0.005 155);
     outline-offset: 2px;
+    /* Lift on hover to imply press affordance — the transform var
+       carries the item's resting translate position so the lift
+       composes cleanly with it. */
+    transform: translate(var(--fx, 0), calc(var(--fy, 0) - 2px)) scale(1);
+    box-shadow:
+      0 8px 16px oklch(0.15 0.005 155 / 0.45),
+      inset 1px 1px 0 oklch(0.55 0.005 155 / 0.5),
+      inset -1px -1px 0 oklch(0.15 0.005 155 / 0.6);
+  }
+
+  .radial-item:active {
+    transform: translate(var(--fx, 0), calc(var(--fy, 0) + 1px)) scale(0.98);
+    box-shadow:
+      0 2px 4px oklch(0.15 0.005 155 / 0.30),
+      inset 1px 1px 0 oklch(0.55 0.005 155 / 0.4),
+      inset -1px -1px 0 oklch(0.15 0.005 155 / 0.55);
   }
 
   @keyframes radial-in {
@@ -663,14 +770,28 @@
       height: 9rem;
     }
     .knob-dial {
-      width: 3.25rem;
-      height: 3.25rem;
+      width: 3.7rem;
+      height: 3.7rem;
     }
     /* No font-size override on .pad-label — SVG user-unit sizing
        already scales the labels proportionally with the dial. */
     .radial-item {
       font-size: 0.6875rem;
       padding: 0.4rem 0.7rem;
+      /* Pull the flyout column closer to the knob and shrink each
+         item slightly so the menu fits on narrow phone viewports
+         (Galaxy S, Pixel 7, ~360-412px wide). Without this scaling,
+         the right edge of pills overflows past the screen. */
+      transform: translate(calc(var(--fx, 0) * 0.55), calc(var(--fy, 0) * 0.55)) scale(0.88);
+    }
+
+    .radial-item:hover,
+    .radial-item:focus-visible {
+      transform: translate(calc(var(--fx, 0) * 0.55), calc(var(--fy, 0) * 0.55 - 2px)) scale(0.88);
+    }
+
+    .radial-item:active {
+      transform: translate(calc(var(--fx, 0) * 0.55), calc(var(--fy, 0) * 0.55 + 1px)) scale(0.86);
     }
   }
 
