@@ -53,3 +53,9 @@ test-results/
 Kathryn_Hurchla_resume.pdf
 *.heic
 pnpm-workspace.yaml
+
+# Anonymized GitHub network snapshots — regenerated locally via
+# scripts/github-anonymize.ts (dry-run fixture or real GH_TOKEN run).
+# Real runs may include locations/cadence we don't want committed
+# even after k=3 anonymization; keep them local.
+src/data/github-network.json
