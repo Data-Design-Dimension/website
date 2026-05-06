@@ -78,6 +78,16 @@ export interface ScramblerCard {
    * exclusive with `media` — if both are set, mediaGrid wins.
    */
   mediaGrid?: CardMedia[];
+  /**
+   * Long-form case-study body, markdown. Renders only in the expanded
+   * card state, below the summary. Use for cards whose full content
+   * is meaningful enough to keep the user in-place rather than
+   * navigating to a separate page (older portfolio works, process
+   * write-ups). Headings, lists, links, blockquotes, and images all
+   * supported. Trusted-author content; rendered via `marked` and
+   * Svelte's `{@html}`.
+   */
+  body?: string;
   order: number;
 }
 

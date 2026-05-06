@@ -1,13 +1,33 @@
 type: portfolio
 title: Freedom & Diplomacy Map
-summary: QGIS static map for a diplomacy nonprofit fundraising appeal.
+summary: A static thematic map I designed for an international diplomacy nonprofit's annual fundraising appeal. Print + email + web; raised more than the previous year's highest, earlier in the cycle.
 tags:
   - qgis
   - geospatial
   - design
   - nonprofit
-cta:
-  label: Read case study
-  url: /work/freedom-map
-  external: false
+  - cartography
+  - print
+  - fundraising
+date: '20201113'
 order: 1
+media:
+  src: /img/work/freedom-map.png
+  alt: Static thematic world map showing countries that participated in CDIPHL diplomatic exchange programs, in its web-optimized production format
+  position: center
+body: |
+  ## What it was
+
+  A static thematic map for Citizen Diplomacy International of Philadelphia's annual fundraising campaign. It anchored the postal mail and email appeals, and was featured on cdiphila.org to drive visitors to a donation page during the campaign window. (CDIPHL has since been renamed the World Affairs Council of Philadelphia.)
+
+  ## Why it worked
+
+  Debrief uncovered that the campaign raised more than the highest preceding year's, at an earlier response rate. The map was the visual anchor for that lift. The kickoff interview shaped the tone: urgency for constituents from nations where the programs remain critical to human rights.
+
+  ## How I built it
+
+  QGIS for the geospatial layout, Adobe tools for design polish, exported in formats sized for both print production and fast web / mobile delivery. Independent states were rendered per the U.S. Department of State's Bureau of Intelligence and Research [Independent States in the World list](https://www.state.gov/independent-states-in-the-world/) at the time, so the diplomatic context matched what the client represents.
+
+  ## What I'd do differently
+
+  A Winkel Tripel projection (shown to me in critical review by Christopher Sloan during MICA's Foundations in Visualization) would let viewers interpret distance and area more accurately than the equirectangular default. Cartographic projection is a substance choice, not a stylistic one: every map foregrounds something and distorts something else.

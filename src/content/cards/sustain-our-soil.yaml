@@ -11,10 +11,6 @@ tags:
   - data-viz
   - academic
 date: '20220615'
-cta:
-  label: Read case study
-  url: /work/sustain-our-soil
-  external: false
 secondaryCta:
   label: View on MICA
   url: https://www.mica.edu/about-mica/offices-divisions/school-of-creative-professional-studies/mps-programs/mps-capstones/student/kathryn-hurchla/
@@ -24,3 +20,23 @@ media:
   alt: Sustain Our Soil capstone project visualization screenshot
   position: top
 order: 1
+body: |
+  ## What it was
+
+  A web app inviting food consumers to engage in their own ecological role, by exploring soil organic-carbon content for the countries some of their food comes from. Soil health as a metric that extends past the soil itself, to us, to the planet.
+
+  I designed and built it as my graduate capstone for MICA's MPS in Data Analytics & Visualization (2022). It ran publicly through 2022 on its own Heroku-hosted domain, and is featured on MICA's institutional capstones page along with my cohort's work.
+
+  ![Soil organic-carbon density ranges screenshot from the Sustain Our Soil app](/img/work/sustain-our-soil-densities.png)
+
+  ## How
+
+  Python, Plotly Dash for the interaction layer, Flask for routing, supporting libraries for the geospatial work. Optimized for desktop and mobile, deployed on Heroku via Git plus the Heroku CLI.
+
+  ## Why this framing
+
+  7.9 billion humans on Earth as of November 2021, projected 10 billion by 2057 (UN / Worldometer). That scale gives consumer choice real leverage on food production sustainability. The visualization wasn't trying to be authoritative; it was trying to make a familiar object (food) feel connected to a less familiar one (soil carbon).
+
+  ## Status
+
+  The app retired in 2022. The thinking and the dataset selections it surfaced still hold up for me, and the methodology fed everything I've done with geospatial work since. More open-source DADEDA Python work lives on the [Data Design Dimension GitHub](https://github.com/Data-Design-Dimension).

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { CardType, ScramblerCard, ScramblerPosition } from '../lib/scrambler/types';
+  import { marked } from 'marked';
 
   interface Props {
     card: ScramblerCard;
@@ -134,6 +135,11 @@
     }
     return { brief: s, rest: '' };
   });
+
+  // Long-form body markdown rendered to HTML. Trusted-author content
+  // (no user-submitted markdown reaches this), so marked's default
+  // sanitization is sufficient. Only computed when card.body exists.
+  const bodyHtml = $derived(card.body ? marked.parse(card.body, { async: false }) as string : '');
 
   // ── Outside-click closes whichever state is active (expanded first,
   //    then focused). Once both are collapsed the card re-enters
@@ -431,6 +437,13 @@
       <div class="card-expanded-body">
         {#if briefAndRest.rest}
           <p class="card-summary">{briefAndRest.rest}</p>
+        {/if}
+        {#if card.body && bodyHtml}
+          <!-- Long-form case-study content. Rendered from card.body
+               markdown via `marked` (trusted-author content). Use for
+               in-card case studies that should not require a separate
+               page navigation. -->
+          <div class="card-body">{@html bodyHtml}</div>
         {/if}
         {#if card.tags && card.tags.length > 0}
           <ul class="card-tags" aria-label="Tags">
@@ -904,6 +917,73 @@
     color: var(--color-text-secondary);
     margin: 0 0 var(--space-3);
     line-height: 1.55;
+  }
+
+  /*
+   * Long-form case-study body (rendered from card.body markdown via
+   * `marked`). Only present in the expanded card state. Typography
+   * tuned for sustained reading inside the card frame.
+   */
+  .card-body {
+    font-size: 0.95rem;
+    color: var(--color-text-primary);
+    line-height: 1.65;
+    margin: 0 0 var(--space-4);
+  }
+  .card-body :global(h2) {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: var(--space-5) 0 var(--space-2);
+    color: var(--color-text-primary);
+  }
+  .card-body :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .card-body :global(h3) {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: var(--space-4) 0 var(--space-2);
+  }
+  .card-body :global(p) {
+    margin: 0 0 var(--space-3);
+  }
+  .card-body :global(ul),
+  .card-body :global(ol) {
+    margin: 0 0 var(--space-3);
+    padding-left: 1.25rem;
+  }
+  .card-body :global(li) {
+    margin-bottom: 0.4rem;
+  }
+  .card-body :global(a) {
+    color: var(--color-accent-blue);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .card-body :global(a:hover),
+  .card-body :global(a:focus-visible) {
+    text-decoration-thickness: 2px;
+  }
+  .card-body :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: 0.4rem;
+    margin: var(--space-3) 0;
+    display: block;
+  }
+  .card-body :global(blockquote) {
+    border-left: 3px solid var(--card-accent-dim, var(--color-border));
+    padding-left: 1rem;
+    margin: 0 0 var(--space-3);
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+  .card-body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--color-canvas-light);
+    padding: 0.05rem 0.3rem;
+    border-radius: 0.2rem;
   }
 
   .card-tags {

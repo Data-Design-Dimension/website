@@ -1,12 +1,41 @@
 type: portfolio
 title: Invest as One
-summary: "Tableau Story prototype for a city budget proposal: one dataset, two audiences."
+summary: "High-fidelity Tableau Story prototype for a Philadelphia Streets Department city budget proposal. One dataset, two audiences."
 tags:
   - tableau
   - data-viz
   - storytelling
+  - persona-research
+  - civic-design
+  - philadelphia
+date: '20220201'
 cta:
-  label: Read case study
-  url: /work/invest-as-one
-  external: false
+  label: Open the Tableau prototype
+  url: https://public.tableau.com/app/profile/kathryn.hurchla/viz/PHL_Streets_Dept_Case_for_Investment/InvestasOneCouncilNowTowardsaZeroWasteLitter-freeCityby2035
+  external: true
+media:
+  src: /img/work/invest-as-one-dumping.jpg
+  alt: Screenshot of the Invest as One Tableau Story showing illegal dumping projections, with arrows tracing the eye-tracking-informed reading path through the layout
 order: 2
+body: |
+  ## What it was
+
+  A high-fidelity Tableau Story prototype for a Philadelphia Streets Department budget proposal to City Council. One dataset, two audiences: council members with vote-swaying power, and residents whose engagement closes the loop on litter control.
+
+  Best viewed on a computer; the layout is sized for the data-dense presentation use case, not mobile.
+
+  ## Personas
+
+  Empathy for the constraints both audiences operate under was the design's center. The council-side persona drew from research on Hon. Curtis Jones Jr. as a community-informed development advocate. The resident-side persona drove the at-a-glance placards for shop windows, sidewalk trash bins, and transit.
+
+  Full archetype work: [view the persona development PDF](/work/invest-as-one-persona-development.pdf).
+
+  ## Layout choices
+
+  Charts top-and-left in each section, following the F-shaped reading pattern that eye-tracking research surfaces for data-dense layouts. Each section pulled one key point: spending breakdown, cost projections, marketing briefs. Visual hierarchy and short text chunks supported scanning over deep reading.
+
+  Surveys informed the at-a-glance placards. Council deck and field signage read from the same data spine; only the framing changed per audience.
+
+  ## Try it
+
+  The prototype lives on [Tableau Public](https://public.tableau.com/app/profile/kathryn.hurchla/viz/PHL_Streets_Dept_Case_for_Investment/InvestasOneCouncilNowTowardsaZeroWasteLitter-freeCityby2035). More work on my [Tableau Public profile](https://public.tableau.com/app/profile/kathryn.hurchla/vizzes).
