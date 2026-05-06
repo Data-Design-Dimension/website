@@ -1,16 +1,20 @@
-# Cloudflare configuration. Used by `wrangler pages deploy` for direct
-# CLI deploys; the Cloudflare Pages dashboard reads its own equivalents
-# from the GitHub integration UI (Build command, Output directory).
+# Cloudflare configuration. The site is a static Astro build deployed
+# via Cloudflare Workers with Static Assets (the unified successor to
+# the older Cloudflare Pages product). The dashboard "Build & scale
+# apps" flow reads this file directly.
 #
 # Authenticate locally one-time:
 #   pnpm dlx wrangler login
-# Then deploy a build to a *.pages.dev URL:
-#   pnpm build && pnpm dlx wrangler pages deploy dist --project-name=dadeda-design
+# Then deploy a build:
+#   pnpm build && pnpm dlx wrangler deploy
 #
-# Or connect the repo via the Cloudflare Pages dashboard (preferred for
-# auto-deploy on push). See docs/deploy.md for the dashboard recipe.
+# See docs/deploy.md for the dashboard recipe.
 
 name = "dadeda-design"
 compatibility_date = "2026-05-05"
 
-pages_build_output_dir = "./dist"
+[assets]
+directory = "./dist"
+# Astro emits a static 404.html; serve it for unknown paths instead of
+# falling back to /index.html (which would mask broken links).
+not_found_handling = "404-page"
