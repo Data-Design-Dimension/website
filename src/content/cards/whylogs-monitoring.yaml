@@ -1,0 +1,19 @@
+type: writing
+title: 5 Ways to Monitor Data Models with WhyLogs Profile Visualizer
+summary: "Practical walkthrough of five monitoring approaches for data and ML models. Written in partnership with WhyLabs, who later closed and open-sourced their entire ML observability platform."
+tags:
+  - ml
+  - observability
+  - monitoring
+  - data-viz
+  - python
+  - whylabs
+  - whylogs
+  - tds
+  - partnership
+  - open-source
+cta:
+  label: Read on Towards Data Science
+  url: https://towardsdatascience.com/5-ways-to-monitor-data-models-with-whylogs-profile-visualizer-8f1048f8f72e/
+  external: true
+order: 3
