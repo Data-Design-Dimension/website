@@ -369,7 +369,8 @@
       : `translate(${expandedShiftX}px, ${expandedShiftY}px) translateZ(${position.z * -200}px) scale(${position.scale})`
   }
   style:opacity={isLifted ? 1 : position.opacity}
-  style:filter={isLifted ? 'none' : `blur(${position.blur}px)`}
+  style:filter={isLifted || position.opacity < 0.08 ? 'none' : `blur(${position.blur}px)`}
+  style:visibility={!isLifted && position.opacity < 0.04 ? 'hidden' : null}
   role="button"
   tabindex={isInteractive ? 0 : -1}
   aria-label={card.title}
@@ -761,11 +762,14 @@
   }
 
   .scrambler-card.hovered.interactive {
+    /* Lightened: dropped the outer 0 0 24px accent glow shadow that was
+     * forcing a heavy paint on every hover state change. The rim
+     * outline (0 0 0 1px) keeps the accent signal; the cast shadow
+     * stays slightly stronger than the foreground rest state. */
     box-shadow:
       16px 22px 52px oklch(from var(--card-shadow) l c h / 0.26),
       8px 12px 18px oklch(from var(--card-shadow) l c h / 0.16),
-      0 0 0 1px oklch(from var(--card-accent) l c h / 0.5),
-      0 0 24px oklch(from var(--card-accent) l c h / 0.18);
+      0 0 0 1px oklch(from var(--card-accent) l c h / 0.5);
   }
 
   .scrambler-card.hovered.interactive .card-screen::after {
