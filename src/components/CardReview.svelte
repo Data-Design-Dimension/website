@@ -20,7 +20,15 @@
     approved?: boolean;
     archived?: boolean;
     featured?: boolean;
+    /** Free-text feedback the reviewer wants to send back as a GitHub
+     *  issue when the review is submitted. */
+    feedback?: string;
   }>>({});
+
+  const REPO = 'Data-Design-Dimension/website';
+  /** Conservative URL length to keep GitHub's prefilled issue URL safe
+   *  across browsers. Above this, fall back to clipboard + simpler URL. */
+  const SAFE_URL_LENGTH = 6000;
 
   function getEdit(id: string) {
     return edits[id] ?? {};
@@ -96,8 +104,159 @@
 
   function reviewedCount(): number {
     return Object.values(edits).filter(
-      (e) => e.approved !== undefined || e.archived !== undefined || e.tags !== undefined,
+      (e) =>
+        e.approved !== undefined ||
+        e.archived !== undefined ||
+        e.tags !== undefined ||
+        (e.feedback && e.feedback.trim().length > 0),
     ).length;
+  }
+
+  function feedbackCount(): number {
+    return Object.values(edits).filter((e) => e.feedback && e.feedback.trim().length > 0).length;
+  }
+
+  function buildIssueBody(): string {
+    const today = new Date().toISOString().slice(0, 10);
+    const lines: string[] = [];
+    lines.push(`# Review feedback — ${today}`);
+    lines.push('');
+    lines.push(
+      `Submitted via the \`/review\` interface. ${reviewedCount()} of ${cards.length} cards have edits or feedback.`,
+    );
+    lines.push('');
+
+    // Edits summary table — only cards that have any edit
+    const editedCards = cards.filter((c) => {
+      const e = edits[c.id];
+      if (!e) return false;
+      return (
+        e.approved !== undefined ||
+        e.archived !== undefined ||
+        e.featured !== undefined ||
+        e.tags !== undefined
+      );
+    });
+    if (editedCards.length > 0) {
+      lines.push('## Status edits');
+      lines.push('');
+      lines.push('| Card | Approve | Feature | Archive | Tags changed |');
+      lines.push('|---|---|---|---|---|');
+      for (const c of editedCards) {
+        const e = edits[c.id]!;
+        const approved = e.approved ?? c.approved ?? false;
+        const featured = e.featured ?? c.featured ?? false;
+        const archived = e.archived ?? c.archived ?? false;
+        const tagsChanged = e.tags !== undefined ? 'yes' : '';
+        lines.push(
+          `| \`${c.id}\` | ${approved ? '✓' : ''} | ${featured ? '★' : ''} | ${archived ? '✕' : ''} | ${tagsChanged} |`,
+        );
+      }
+      lines.push('');
+    }
+
+    // Tag changes detail
+    const tagChanges = cards.filter((c) => edits[c.id]?.tags !== undefined);
+    if (tagChanges.length > 0) {
+      lines.push('## Tag changes');
+      lines.push('');
+      for (const c of tagChanges) {
+        const before = (c.tags ?? []).join(', ') || '(none)';
+        const after = (edits[c.id]?.tags ?? []).join(', ') || '(none)';
+        lines.push(`- \`${c.id}\`: ${before} → ${after}`);
+      }
+      lines.push('');
+    }
+
+    // Per-card feedback
+    const cardsWithFeedback = cards.filter(
+      (c) => (edits[c.id]?.feedback ?? '').trim().length > 0,
+    );
+    if (cardsWithFeedback.length > 0) {
+      lines.push('## Per-card feedback');
+      lines.push('');
+      for (const c of cardsWithFeedback) {
+        lines.push(`### \`${c.id}\` — ${c.title}`);
+        lines.push('');
+        const text = edits[c.id]!.feedback!.trim();
+        for (const line of text.split('\n')) {
+          lines.push(`> ${line}`);
+        }
+        lines.push('');
+      }
+    }
+
+    if (editedCards.length === 0 && cardsWithFeedback.length === 0) {
+      lines.push('_No edits or feedback recorded — submitted as a "no changes" review._');
+    } else {
+      lines.push('---');
+      lines.push('');
+      lines.push(
+        '_When ready, ask Claude Code to address: `gh issue list --label review-feedback --state open` and walk through each item._',
+      );
+    }
+
+    return lines.join('\n');
+  }
+
+  let submitState = $state<'idle' | 'opened' | 'copied' | 'error'>('idle');
+  let submitMessage = $state<string>('');
+  let submitTimer: ReturnType<typeof setTimeout> | undefined;
+
+  async function submitReview() {
+    const today = new Date().toISOString().slice(0, 10);
+    const title = `Card review feedback — ${today}`;
+    const body = buildIssueBody();
+    const baseUrl = `https://github.com/${REPO}/issues/new`;
+
+    // Try the prefilled URL first.
+    const params = new URLSearchParams({
+      title,
+      body,
+      labels: 'review-feedback',
+    });
+    const fullUrl = `${baseUrl}?${params.toString()}`;
+
+    if (fullUrl.length <= SAFE_URL_LENGTH) {
+      window.open(fullUrl, '_blank', 'noopener,noreferrer');
+      submitState = 'opened';
+      submitMessage = 'GitHub issue page opened with your review prefilled. Click Submit on GitHub to create the issue.';
+    } else {
+      // Body too long for a safe prefill URL. Copy to clipboard and open
+      // with title-only; reviewer pastes the body into the issue body.
+      try {
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(body);
+        }
+        const fallbackParams = new URLSearchParams({
+          title,
+          body: '<!-- Review feedback was copied to your clipboard — paste here -->',
+          labels: 'review-feedback',
+        });
+        window.open(`${baseUrl}?${fallbackParams.toString()}`, '_blank', 'noopener,noreferrer');
+        submitState = 'copied';
+        submitMessage = 'Review body was too long for a single URL — copied to clipboard. Paste it into the issue body on GitHub.';
+      } catch {
+        submitState = 'error';
+        submitMessage = 'Could not copy to clipboard. Open DevTools → Console, run `copy(window.__lastReviewBody)` to grab it manually.';
+        (window as unknown as { __lastReviewBody?: string }).__lastReviewBody = body;
+      }
+    }
+
+    if (submitTimer) clearTimeout(submitTimer);
+    submitTimer = setTimeout(() => {
+      submitState = 'idle';
+      submitMessage = '';
+    }, 8000);
+  }
+
+  function clearFeedback() {
+    if (!card) return;
+    edits[card.id] = { ...getEdit(card.id), feedback: undefined };
+  }
+
+  function setFeedback(text: string) {
+    edits[card.id] = { ...getEdit(card.id), feedback: text };
   }
 
   function jump(delta: number) {
@@ -169,8 +328,23 @@
       >
         {status.isArchived ? '✕ Archived' : 'Archive'}
       </button>
-      <span class="reviewed-count">{reviewedCount()} edited</span>
+      <span class="reviewed-count">
+        {reviewedCount()} edited{feedbackCount() > 0 ? ` · ${feedbackCount()} with notes` : ''}
+      </span>
+      <button class="submit-btn" onclick={submitReview}>
+        Submit review →
+      </button>
     </div>
+    {#if submitState !== 'idle'}
+      <p
+        class="submit-status"
+        class:error={submitState === 'error'}
+        role="status"
+        aria-live="polite"
+      >
+        {submitMessage}
+      </p>
+    {/if}
   </header>
 
   <section class="review-tags">
@@ -221,6 +395,23 @@
         {/key}
       </div>
     </article>
+  </section>
+
+  <section class="review-feedback">
+    <header class="feedback-header">
+      <h3>Feedback for this card <span class="feedback-hint">(included in the GitHub issue when you Submit Review)</span></h3>
+      {#if (getEdit(card.id).feedback ?? '').length > 0}
+        <button class="clear-btn" onclick={clearFeedback}>Clear</button>
+      {/if}
+    </header>
+    <textarea
+      class="feedback-textarea"
+      rows="3"
+      placeholder="Anything to flag about this card — wording, image, tags, ordering, missing context. Plain text."
+      value={getEdit(card.id).feedback ?? ''}
+      oninput={(e) => setFeedback((e.target as HTMLTextAreaElement).value)}
+      aria-label="Feedback note for this card"
+    ></textarea>
   </section>
 
   <section class="review-yaml">
@@ -329,6 +520,92 @@
     font-size: 0.8rem;
     color: var(--color-text-muted);
     margin-left: auto;
+  }
+  .submit-btn {
+    border: 1px solid oklch(0.55 0.16 145);
+    background: oklch(0.78 0.12 145);
+    color: oklch(0.18 0.05 145);
+    border-radius: 0.4rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: transform var(--duration-fast) ease, background var(--duration-fast) ease;
+  }
+  .submit-btn:hover {
+    background: oklch(0.82 0.14 145);
+    transform: translateY(-1px);
+  }
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+  .submit-status {
+    margin: 0.5rem 0 0;
+    padding: 0.5rem 0.8rem;
+    background: oklch(0.95 0.04 145);
+    border: 1px solid oklch(0.65 0.10 145);
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+    color: oklch(0.30 0.10 145);
+  }
+  .submit-status.error {
+    background: oklch(0.95 0.04 25);
+    border-color: oklch(0.65 0.16 25);
+    color: oklch(0.30 0.16 25);
+  }
+  .review-feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .feedback-header h3 {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    font-weight: 500;
+  }
+  .feedback-hint {
+    font-weight: 400;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    font-style: italic;
+  }
+  .clear-btn {
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 0.4rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: var(--color-text-muted);
+  }
+  .clear-btn:hover {
+    color: oklch(0.55 0.18 25);
+    border-color: oklch(0.55 0.18 25);
+  }
+  .feedback-textarea {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    font: inherit;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    resize: vertical;
+    min-height: 4rem;
+    box-sizing: border-box;
+  }
+  .feedback-textarea:focus {
+    outline: 2px solid var(--color-accent-blue);
+    outline-offset: 1px;
   }
   .review-tags {
     display: flex;
