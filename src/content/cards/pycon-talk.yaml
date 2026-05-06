@@ -1,8 +1,15 @@
 type: talk
 title: PyCon Maintainers Summit
-summary: Talk on open source community development and contribution models.
+summary: Talk on open source community development and contribution models, as a Dash contributor.
 tags:
   - python
   - open-source
   - speaking
+  - plotly-dash
+  - community
+  - conference
+cta:
+  label: Watch the talk
+  url: https://www.youtube.com/watch?v=b4TcvXK5-GQ
+  external: true
 order: 0

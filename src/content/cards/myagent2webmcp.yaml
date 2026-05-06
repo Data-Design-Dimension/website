@@ -1,0 +1,49 @@
+type: portfolio
+title: My Agent to WebMCP Personalization
+summary: "Bring-your-own-agent prototype: a fictitious outdoors brand site whose agentic tools are exposed via WebMCP, available behind experimental Chrome flags."
+tags:
+  - fantasy
+  - generative-ui
+  - webmcp
+  - ai
+  - agents
+  - prototype
+  - speculative
+  - typescript
+  - react
+  - nextjs
+  - node
+  - hono
+  - voice
+  - conference
+  - live-demo
+  - design-systems
+  - css
+  - schema
+  - a2ui
+featured: true
+cta:
+  label: Watch demo
+  url: https://vimeo.com/1187090326#t=11m23s
+  external: true
+order: 0
+body: |
+  Built in close partnership with Fantasy leadership with contributions by design developers, this prototype demonstrates interacting with a fictitious outdoors brand website by bringing your personal agent which interacts with the site's agentic tools through WebMCP available in development and behind experimental flags in Chrome browser.
+
+  ## Highlights
+
+  - Personalize tool parameters supports agents to collaboratively bring just the right content and layout to each person.
+  - Agent detection enables brands to see when a visitor's agent calls tools in model context window to determine capabilities or to choose whether to offer visitors a brand-owned simulated personal agent in order to use tools.
+  - Generative UI is achieved through secure data-based and validated streaming aligned with A2UI but optimized for React prior to availability of a stable native renderer.
+  - Animated transitions are thoughtful to communicate agent activity visually but subtly.
+  - Highly performant and low latency agent-enabled interactions.
+
+  ## Stack highlights
+
+  React (shell + generative UI components), Hono server (API route + static files), CSS custom properties (design tokens) plus CSS Modules.
+
+  WebMCP via Chrome 146 `navigator.modelContext`, Web Speech API (STT), Google Gemini model family, Vercel AI SDK, Zod for universal UI kit schema validation shared client and server.
+
+  ## What you're seeing in the demo
+
+  The recording opens at the live demo: Windridge, a fictional retailer powered by A2A. From 11:23 the demo walks through the core concepts (brand agent + personal agent rendering a visual canvas in real time) and into the live interaction.

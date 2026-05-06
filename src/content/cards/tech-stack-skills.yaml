@@ -1,16 +1,17 @@
 type: meta
-title: Tech Stack & Recent Work
-summary: "Some of my deepest recent work is at Fantasy under NDA. The tech I work with shows breadth across the stack. For specifics on what I'm building now, get in touch."
+title: More Projects by Request
+summary: Contact me to ask to see more of my portfolio.
 tags:
   - skills
-  - fantasy
   - ai
   - agents
-  - typescript
-  - python
   - webgl
+  - webmcp
+  - clients
+  - qlora
+  - content-generation
 cta:
-  label: Tell me about recent work
-  url: '#contact-prefill'
-  external: false
+  label: Email me
+  url: 'mailto:kathy.hurchla@fantasy.co?subject=More%20projects%20request'
+  external: true
 order: 1

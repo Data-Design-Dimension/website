@@ -1,6 +1,6 @@
 type: writing
 title: Spotlight on Sustainability Data Viz
-summary: "Five-page spread in the Special Section on sustainability of Nightingale Magazine Issue 5. A survey of noteworthy global data visualization projects and practitioners approaching sustainability through diverse lenses, from soil to satellite, climate to community."
+summary: "Five-page spread in the Special Section on sustainability of Nightingale Magazine Issue 5."
 tags:
   - nightingale
   - dvs
@@ -18,3 +18,5 @@ media:
   alt: Nightingale Magazine Issue 5 print cover
   aspectRatio: 1946 / 2039
 order: 2
+body: |
+  I researched and wrote a survey of noteworthy global data visualization projects and practitioners across a myriad of fields approaching sustainability through diverse lenses, from soil to water, local to across geopolitical bounds, and installations experienced in person to dashboards promoting accountability in development goals. This topic was close to home for me as a tree hugger at heart.

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { CardType, ScramblerCard, ScramblerPosition } from '../lib/scrambler/types';
   import { marked } from 'marked';
+  import { parseVideo, formatTimestamp } from '../lib/scrambler/video';
 
   interface Props {
     card: ScramblerCard;
@@ -140,6 +141,11 @@
   // (no user-submitted markdown reaches this), so marked's default
   // sanitization is sufficient. Only computed when card.body exists.
   const bodyHtml = $derived(card.body ? marked.parse(card.body, { async: false }) as string : '');
+
+  // Detect a video CTA (Vimeo / YouTube). When present, the expanded
+  // card renders the iframe inline and the collapsed CTA becomes a
+  // "play" affordance that triggers expand instead of navigating.
+  const videoEmbed = $derived(parseVideo(card.cta?.url));
 
   // ── Outside-click closes whichever state is active (expanded first,
   //    then focused). Once both are collapsed the card re-enters
@@ -435,6 +441,17 @@
          runs under it. -->
     {#if isExpanded}
       <div class="card-expanded-body">
+        {#if videoEmbed}
+          <div class="card-video">
+            <iframe
+              src={videoEmbed.embedUrl}
+              title={`${card.title} — video`}
+              loading="lazy"
+              allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+              allowfullscreen
+            ></iframe>
+          </div>
+        {/if}
         {#if briefAndRest.rest}
           <p class="card-summary">{briefAndRest.rest}</p>
         {/if}
@@ -452,7 +469,24 @@
             {/each}
           </ul>
         {/if}
-        {#if card.cta && card.cta.disabled}
+        {#if videoEmbed}
+          <a
+            class="card-cta-secondary external"
+            href={videoEmbed.watchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onclick={(e) => e.stopPropagation()}
+          >
+            <span class="cta-label-text">
+              Watch on {videoEmbed.providerLabel}{videoEmbed.startSeconds ? ` (${formatTimestamp(videoEmbed.startSeconds)})` : ''}
+            </span>
+            <svg viewBox="0 0 24 24" class="cta-external-icon" aria-hidden="true">
+              <path d="M15 3h6v6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+              <path d="M10 14L21 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        {:else if card.cta && card.cta.disabled}
           <span class="card-cta-link disabled" aria-disabled="true">
             <span class="cta-label-text">{card.cta.label}</span>
             <span class="cta-disabled-hint" aria-hidden="true">— in progress</span>
@@ -917,6 +951,30 @@
     color: var(--color-text-secondary);
     margin: 0 0 var(--space-3);
     line-height: 1.55;
+  }
+
+  /*
+   * Inline video embed (Vimeo / YouTube). Only renders in the expanded
+   * card state. Aspect-ratio 16:9 with rounded corners and full bleed
+   * inside the card-expanded-body. The companion "Watch on [Provider]"
+   * secondary link below gives users an external escape hatch with the
+   * timestamp baked in.
+   */
+  .card-video {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin: 0 0 var(--space-4);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: oklch(0.20 0.01 155);
+  }
+  .card-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
   }
 
   /*

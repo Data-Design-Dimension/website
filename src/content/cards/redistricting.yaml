@@ -1,12 +1,18 @@
-type: portfolio
+type: repo
 title: Redistricting Map
 summary: Animated Plotly Dash choropleth exploring U.S. population change and redistricting.
 tags:
   - python
   - plotly-dash
   - geospatial
+  - data-viz
+  - civic
+  - interactive
+  - timeline
+  - map
+archived: true
 cta:
-  label: View app
-  url: https://dadeda.pythonanywhere.com/
+  label: View repo
+  url: https://github.com/Data-Design-Dimension/redistricting
   external: true
 order: 3

@@ -1,6 +1,6 @@
 type: portfolio
 title: Freedom & Diplomacy Map
-summary: A static thematic map I designed for an international diplomacy nonprofit's annual fundraising appeal. Print + email + web; raised more than the previous year's highest, earlier in the cycle.
+summary: A static thematic map I designed for an international diplomacy nonprofit's annual fundraising appeal. Print + email + web; raised more than the previous year's highest campaign, earlier in the cycle.
 tags:
   - qgis
   - geospatial
@@ -9,25 +9,29 @@ tags:
   - cartography
   - print
   - fundraising
+  - global
+  - data-viz
+  - marketing
+  - dadeda
 date: '20201113'
 order: 1
 media:
-  src: /img/work/freedom-map.png
+  src: /img/work/freedom-map.webp
   alt: Static thematic world map showing countries that participated in CDIPHL diplomatic exchange programs, in its web-optimized production format
   position: center
 body: |
   ## What it was
 
-  A static thematic map for Citizen Diplomacy International of Philadelphia's annual fundraising campaign. It anchored the postal mail and email appeals, and was featured on cdiphila.org to drive visitors to a donation page during the campaign window. (CDIPHL has since been renamed the World Affairs Council of Philadelphia.)
+  A static thematic map for Citizen Diplomacy International of Philadelphia's annual fundraising campaign. It anchored the postal mail and email appeals, and was featured on cdiphila.org to drive visitors to a donation page during the campaign window. (CDIPHL has since been merged with the World Affairs Council of Philadelphia.)
 
-  ## Why it worked
+  ## Impact
 
-  Debrief uncovered that the campaign raised more than the highest preceding year's, at an earlier response rate. The map was the visual anchor for that lift. The kickoff interview shaped the tone: urgency for constituents from nations where the programs remain critical to human rights.
+  Debrief uncovered that the campaign raised more than the highest preceding year's campaign, at an earlier response rate. The map was the visual anchor for that lift. The kickoff interview shaped the tone: urgency for constituents from nations where the programs remain critical to human rights.
 
-  ## How I built it
+  ## How it's Made
 
-  QGIS for the geospatial layout, Adobe tools for design polish, exported in formats sized for both print production and fast web / mobile delivery. Independent states were rendered per the U.S. Department of State's Bureau of Intelligence and Research [Independent States in the World list](https://www.state.gov/independent-states-in-the-world/) at the time, so the diplomatic context matched what the client represents.
+  QGIS for the geospatial layout, Adobe tools for design polish, exported in formats sized for both print production and fast web / mobile delivery. Independent states were rendered per the U.S. Department of State's Bureau of Intelligence and Research [Independent States in the World list](https://www.state.gov/independent-states-in-the-world/) at the time, a data source produced by a key partner of the client, so the diplomatic visual context aligned with the client.
 
   ## What I'd do differently
 
-  A Winkel Tripel projection (shown to me in critical review by Christopher Sloan during MICA's Foundations in Visualization) would let viewers interpret distance and area more accurately than the equirectangular default. Cartographic projection is a substance choice, not a stylistic one: every map foregrounds something and distorts something else.
+  A Winkel Tripel projection would let viewers interpret distance and area more accurately than the equirectangular default. Cartographic projection is a substance choice, not a stylistic one: every map foregrounds something and distorts something else.

@@ -2,6 +2,7 @@ label: See Work
 orbit: inner
 order: 0
 cardIds:
+  - myagent2webmcp
   - do-websites-need-pages
   - sustain-our-soil
   - freedom-map

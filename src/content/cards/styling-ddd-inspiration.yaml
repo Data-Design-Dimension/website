@@ -1,6 +1,6 @@
 type: inspiration
 title: Visual Inspiration
-summary: "Mood board: Philadelphia industrial typography, embossed cast iron, found vernacular signage. Plus the design DNA of the cards themselves, drawn from vintage CRT tube televisions: bezel, asymmetric pillow shape, screen bulge, phosphor glow. Pre-flat-screen object design as a reference for tactile, dimensional digital surfaces."
+summary: "Mood board: Philadelphia industrial typography, embossed cast iron, found vernacular signage. Plus the design DNA of the cards themselves, drawn from vintage CRT tube televisions: bezel, asymmetric pillow shape, screen bulge, phosphor glow."
 tags:
   - inspiration
   - brand
@@ -9,6 +9,7 @@ tags:
   - industrial-typography
   - crt
   - object-design
+  - ui-design
 cta:
   label: Open inspiration gallery
   url: '#inspiration-styling-ddd'
@@ -23,3 +24,23 @@ mediaGrid:
   - src: /img/inspiration/styling-ddd-4.webp
     alt: Found vernacular signage and industrial lettering reference
 order: 1
+body: |
+  ## Mood board
+
+  These four are the working set from the Behance research project.
+
+  ![Brand styling research from the Data, Design & Daughters mood board](/img/inspiration/styling-ddd-1.webp)
+
+  ![Visual identity reference for the DADEDA brand](/img/inspiration/styling-ddd-2.webp)
+
+  ![Typography and material study from the inspiration board](/img/inspiration/styling-ddd-3.webp)
+
+  ![Found vernacular signage and industrial lettering reference](/img/inspiration/styling-ddd-4.webp)
+
+  ## Design DNA
+
+  The card form language across this site (bezel, asymmetric pillow shape, screen bulge, phosphor glow) comes directly from vintage CRT tube televisions. Pre-flat-screen object design as a reference for tactile, dimensional digital surfaces. CRT reference photography to be added; the card itself you're reading is the demonstration in the meantime.
+
+  ## Natural elements
+
+  Yellow shrub photography from Philadelphia source walks informs the brand's secondary accent palette. Image to be added; the OKLCH amber tokens in the [design system](/design-system) reflect that color choice today.

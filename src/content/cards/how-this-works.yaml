@@ -7,8 +7,15 @@ tags:
   - architecture
   - webmcp
   - agent-readiness
+  - aeo
+  - seo
+  - astro
+  - svelte
+  - css
+  - cloudflare
+featured: true
 cta:
-  label: See the architecture
+  label: Explore Diagram
   url: /how-this-works
   external: false
 secondaryCta:

@@ -9,6 +9,7 @@ tags:
   - civic-design
   - philadelphia
 date: '20220201'
+archived: true
 cta:
   label: Open the Tableau prototype
   url: https://public.tableau.com/app/profile/kathryn.hurchla/viz/PHL_Streets_Dept_Case_for_Investment/InvestasOneCouncilNowTowardsaZeroWasteLitter-freeCityby2035
@@ -35,7 +36,3 @@ body: |
   Charts top-and-left in each section, following the F-shaped reading pattern that eye-tracking research surfaces for data-dense layouts. Each section pulled one key point: spending breakdown, cost projections, marketing briefs. Visual hierarchy and short text chunks supported scanning over deep reading.
 
   Surveys informed the at-a-glance placards. Council deck and field signage read from the same data spine; only the framing changed per audience.
-
-  ## Try it
-
-  The prototype lives on [Tableau Public](https://public.tableau.com/app/profile/kathryn.hurchla/viz/PHL_Streets_Dept_Case_for_Investment/InvestasOneCouncilNowTowardsaZeroWasteLitter-freeCityby2035). More work on my [Tableau Public profile](https://public.tableau.com/app/profile/kathryn.hurchla/vizzes).

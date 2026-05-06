@@ -1,33 +1,31 @@
 type: portfolio
 title: Sustain Our Soil
-summary: My MICA MPS Data Analytics & Visualization capstone. An interactive Python Plotly Dash app exploring soil health, food trade, and climate change through linked geospatial views.
+summary: MICA MPS Data Analytics & Visualization capstone data-intensive application. An interactive Python Plotly Dash app exploring soil health, food trade, and climate change through linked geospatial views.
 tags:
-  - mica
-  - mps
   - capstone
   - python
   - plotly-dash
   - geospatial
   - data-viz
   - academic
+  - sustainability
+  - interactive
 date: '20220615'
 secondaryCta:
   label: View on MICA
   url: https://www.mica.edu/about-mica/offices-divisions/school-of-creative-professional-studies/mps-programs/mps-capstones/student/kathryn-hurchla/
   external: true
 media:
-  src: https://assets.mica.edu/files/modules/screen-shot-2022-06-15-at-10200-pm.png
-  alt: Sustain Our Soil capstone project visualization screenshot
+  src: /img/work/sustain-our-soil-densities.webp
+  alt: Soil organic-carbon density ranges screenshot from the Sustain Our Soil app
   position: top
 order: 1
 body: |
   ## What it was
 
-  A web app inviting food consumers to engage in their own ecological role, by exploring soil organic-carbon content for the countries some of their food comes from. Soil health as a metric that extends past the soil itself, to us, to the planet.
+  A web app inviting food consumers to engage in their own ecological role, by exploring soil organic-carbon content for the countries some of their food comes from. Soil health as a metric that extends past the soil itself.
 
-  I designed and built it as my graduate capstone for MICA's MPS in Data Analytics & Visualization (2022). It ran publicly through 2022 on its own Heroku-hosted domain, and is featured on MICA's institutional capstones page along with my cohort's work.
-
-  ![Soil organic-carbon density ranges screenshot from the Sustain Our Soil app](/img/work/sustain-our-soil-densities.png)
+  I designed and built it as my graduate project (2022), and its public Heroku-hosted domain has since been retired. It's featured on MICA's institutional capstones page along with my cohort's work.
 
   ## How
 
@@ -35,7 +33,7 @@ body: |
 
   ## Why this framing
 
-  7.9 billion humans on Earth as of November 2021, projected 10 billion by 2057 (UN / Worldometer). That scale gives consumer choice real leverage on food production sustainability. The visualization wasn't trying to be authoritative; it was trying to make a familiar object (food) feel connected to a less familiar one (soil carbon).
+  7.9 billion humans on Earth as of November 2021, projected 10 billion by 2057 (UN / Worldometer). That scale gives our consumer choices real leverage on food production sustainability. The visualization was deeply researched but not focused on being authoritative; it made a familiar aspect of our everyday lives (food) feel connected to a less familiar but a dependent need for continued human health (soil carbon).
 
   ## Status
 

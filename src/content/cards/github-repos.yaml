@@ -1,13 +1,14 @@
 type: repo
 title: Open Source Code
-summary: Full-stack, web development, and data viz on GitHub.
+summary: Full-stack, app development, and data viz on GitHub.
 tags:
-  - python
-  - typescript
-  - ai-engineering
-  - data-viz
   - full-stack
   - open-source
+  - ai-engineering
+  - web
+  - python
+  - typescript
+  - ai
 cta:
   label: View repos
   url: https://github.com/Data-Design-Dimension
@@ -18,3 +19,5 @@ media:
   aspect: wide
   position: right
 order: 0
+body: |
+  I contribute to multiple organizations and code repositories both private and public, including Fantasy and the DADEDA GitHub org.

@@ -1,8 +1,29 @@
 type: talk
 title: Customizing Plotly Styles
-summary: Outlier Unconf workshop on visual customization in Plotly.
+summary: Outlier Unconf workshop on visual customization in Plotly through custom reusable themes.
 tags:
   - plotly
   - data-viz
   - teaching
+  - workshop
+  - design-systems
+  - themes
+  - speaking
+  - virtual
+  - conference
+  - color
+  - 8-bit
+featured: true
+cta:
+  label: Watch the workshop
+  url: https://youtu.be/zUeQaeWWExw?si=IY_hTWx_HWOW9hBc&t=47
+  external: true
+secondaryCta:
+  label: Workshop notebooks on GitHub
+  url: https://github.com/Data-Design-Dimension/workshop-styles-plotly
+  external: true
+media:
+  src: /img/styling-plotly-themes-workshop-output.webp
+  alt: Output sample from the Plotly themes workshop showing styled chart variants
+  aspect: wide
 order: 1

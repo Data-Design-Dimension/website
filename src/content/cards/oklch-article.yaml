@@ -5,6 +5,10 @@ tags:
   - color
   - data-viz
   - css
+  - accessibility
+  - color-vision-deficiencies
+  - perception
+  - light
 cta:
   label: Read article
   url: /writing/oklch
