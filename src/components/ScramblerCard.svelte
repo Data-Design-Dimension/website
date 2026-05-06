@@ -10,13 +10,18 @@
     onDragStart?: () => void;
     onDragMove?: (cardId: string, clientX: number, clientY: number) => void;
     onDragEnd?: () => void;
-    /** Force initial state. Used by the Storybook review interface to
-     *  show collapsed + expanded side-by-side. Has no effect once the
-     *  user toggles state via the + button. */
+    /** Force initial state. Used by the /review interface to show
+     *  collapsed + expanded side-by-side. Has no effect once the user
+     *  toggles state via the + button. */
     initialExpanded?: boolean;
+    /** Review-mode preview. When true, all CTAs (primary + secondary)
+     *  open in a new tab so clicking a destination link doesn't
+     *  navigate the reviewer away from the /review page (which would
+     *  blow away their in-progress edits + feedback). */
+    previewMode?: boolean;
   }
 
-  let { card, position, onSelect, onDragStart, onDragMove, onDragEnd, initialExpanded = false }: Props = $props();
+  let { card, position, onSelect, onDragStart, onDragMove, onDragEnd, initialExpanded = false, previewMode = false }: Props = $props();
 
   let isHovered = $state(false);
   // Two interaction states:
@@ -444,8 +449,8 @@
             class="card-cta-link"
             class:external={card.cta.external}
             href={card.cta.url}
-            target={card.cta.external ? '_blank' : undefined}
-            rel={card.cta.external ? 'noopener noreferrer' : undefined}
+            target={card.cta.external || previewMode ? '_blank' : undefined}
+            rel={card.cta.external || previewMode ? 'noopener noreferrer' : undefined}
             onclick={(e) => e.stopPropagation()}
           >
             <span class="cta-label-text">{card.cta.label}</span>
@@ -465,8 +470,8 @@
             class="card-cta-secondary"
             class:external={card.secondaryCta.external}
             href={card.secondaryCta.url}
-            target={card.secondaryCta.external ? '_blank' : undefined}
-            rel={card.secondaryCta.external ? 'noopener noreferrer' : undefined}
+            target={card.secondaryCta.external || previewMode ? '_blank' : undefined}
+            rel={card.secondaryCta.external || previewMode ? 'noopener noreferrer' : undefined}
             onclick={(e) => e.stopPropagation()}
           >
             <span class="cta-label-text">{card.secondaryCta.label}</span>

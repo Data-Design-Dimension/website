@@ -12,10 +12,7 @@
   let index = $state(0);
   const card = $derived(cards[index]);
 
-  // Per-card local edits — keyed by card id so flipping cards keeps
-  // your edits intact. Reviewer copies the YAML output to clipboard
-  // and pastes into the file.
-  let edits = $state<Record<string, {
+  type CardEdit = {
     tags?: string[];
     approved?: boolean;
     archived?: boolean;
@@ -23,12 +20,53 @@
     /** Free-text feedback the reviewer wants to send back as a GitHub
      *  issue when the review is submitted. */
     feedback?: string;
-  }>>({});
+  };
 
+  const STORAGE_KEY = 'dadeda:review:edits:v1';
   const REPO = 'Data-Design-Dimension/website';
   /** Conservative URL length to keep GitHub's prefilled issue URL safe
    *  across browsers. Above this, fall back to clipboard + simpler URL. */
   const SAFE_URL_LENGTH = 6000;
+
+  // Restore any persisted edits on mount so a back-button or refresh
+  // never loses review work mid-session.
+  function loadEdits(): Record<string, CardEdit> {
+    if (typeof localStorage === 'undefined') return {};
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as Record<string, CardEdit>) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  // Per-card local edits — keyed by card id so flipping cards keeps
+  // your edits intact. Persisted to localStorage on every change.
+  let edits = $state<Record<string, CardEdit>>(loadEdits());
+
+  $effect(() => {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+    } catch {
+      // Quota exceeded or storage disabled; in-memory edits remain valid.
+    }
+  });
+
+  function resetAllEdits() {
+    if (typeof window !== 'undefined') {
+      const ok = window.confirm(
+        'Clear ALL review edits and feedback for every card? This cannot be undone.',
+      );
+      if (!ok) return;
+    }
+    edits = {};
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {}
+    }
+  }
 
   function getEdit(id: string) {
     return edits[id] ?? {};
@@ -331,6 +369,9 @@
       <span class="reviewed-count">
         {reviewedCount()} edited{feedbackCount() > 0 ? ` · ${feedbackCount()} with notes` : ''}
       </span>
+      <button class="reset-btn" onclick={resetAllEdits} title="Clear all review edits + feedback (with confirmation)">
+        Reset
+      </button>
       <button class="submit-btn" onclick={submitReview}>
         Submit review →
       </button>
@@ -383,7 +424,7 @@
       <h2>Collapsed</h2>
       <div class="card-frame">
         {#key card.id}
-          <ScramblerCard_ card={card} position={collapsedPosition} />
+          <ScramblerCard_ card={card} position={collapsedPosition} previewMode={true} />
         {/key}
       </div>
     </article>
@@ -391,7 +432,7 @@
       <h2>Expanded</h2>
       <div class="card-frame card-frame-expanded">
         {#key card.id}
-          <ScramblerCard_ card={card} position={expandedPosition} initialExpanded={true} />
+          <ScramblerCard_ card={card} position={expandedPosition} initialExpanded={true} previewMode={true} />
         {/key}
       </div>
     </article>
@@ -520,6 +561,19 @@
     font-size: 0.8rem;
     color: var(--color-text-muted);
     margin-left: auto;
+  }
+  .reset-btn {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    border-radius: 0.4rem;
+    padding: 0.5rem 0.8rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+  .reset-btn:hover {
+    color: oklch(0.55 0.18 25);
+    border-color: oklch(0.55 0.18 25);
   }
   .submit-btn {
     border: 1px solid oklch(0.55 0.16 145);
