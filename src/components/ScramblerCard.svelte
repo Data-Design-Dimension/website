@@ -1427,21 +1427,15 @@
      *     so wheel doesn't bubble up to the page;
      *   - scroll-behavior smooth applies to programmatic scrollTo
      *     calls (e.g., the on-expand jump-to-top below);
-     *   - thin OKLCH-tinted scrollbar matches brand;
-     *   - mask-image gradient at top + bottom signals there's more
-     *     content above / below without dedicating space to a
-     *     scrollbar track. */
+     *   - thin OKLCH-tinted scrollbar matches brand.
+     * (Earlier iteration had a mask-image fade at top + bottom of the
+     * card-screen; it created a visible colored band on cards whose
+     * content didn't actually overflow. Removed in favor of the
+     * scrollbar as the canonical scroll affordance.) */
     overscroll-behavior: contain;
     scroll-behavior: smooth;
     scrollbar-width: thin;
     scrollbar-color: oklch(0.55 0.05 90 / 0.6) transparent;
-    mask-image: linear-gradient(
-      to bottom,
-      transparent 0,
-      black 1.25rem,
-      black calc(100% - 1.25rem),
-      transparent 100%
-    );
     /* Keep the toggle reservation when the screen scrolls. */
     padding-bottom: 4rem;
   }
