@@ -953,12 +953,25 @@
       inset 0 -4px 12px -2px oklch(0.42 0.04 155 / 0.18),
       inset -2px 0 6px -2px oklch(0.42 0.04 155 / 0.12);
   }
-  /* In expanded state, the bottom inset shadow on card-media + the
-   * near-white card-media bg vs the glass-tint card-screen bg create
-   * a visible green/amber "band cutting through" at the media→body
-   * seam. Both are decorative depth treatments tuned for collapsed
-   * cards where media is the dominant visual; in expanded state the
-   * body is dominant and the seam is a visual artifact. Drop both. */
+  /* In expanded state, drop the decorative depth treatments that work
+   * on short collapsed cards but create visible bands on tall scroll
+   * content:
+   *   1. .card-media::after's bottom inset shadow projects a hard dark
+   *      line at the media→body seam.
+   *   2. .card-media's near-white bg vs card-screen's gradient bg
+   *      creates a color step-change at media's bottom edge.
+   *   3. .card-screen's radial-gradient + glass-tint stack creates a
+   *      soft band where the gradient transitions to transparent (~70%
+   *      of the ellipse's radius from center). On collapsed cards the
+   *      gradient covers the whole face uniformly; on tall expanded
+   *      cards the transition lands mid-body and reads as a
+   *      horizontal band across the content.
+   * All three eliminated for expanded state. card-screen falls back to
+   * uniform glass-tint with no gloss overlay; visually flat but
+   * consistent end-to-end. */
+  .scrambler-card.expanded .card-screen {
+    background: var(--glass-tint);
+  }
   .scrambler-card.expanded .card-media {
     background: transparent;
   }
@@ -1100,6 +1113,9 @@
     align-items: center;
     gap: 0.3rem;
     margin-top: 0.4rem;
+    /* Match .card-cta-link's bottom-margin so the underline doesn't
+     * sit flush against the next row of text below it. */
+    margin-bottom: var(--space-3);
     font-size: 0.75rem;
     color: var(--card-accent-dim);
     text-decoration: none;
@@ -1140,6 +1156,12 @@
     align-items: center;
     gap: 0.4rem;
     margin-top: var(--space-1);
+    /* Bottom margin gives the underline / external-icon breathing room
+     * from the next row of body text. CTAs now render at the TOP of
+     * the expanded body (above the prose), so they sit directly above
+     * paragraph text — without this, the underline crowds the next
+     * line. */
+    margin-bottom: var(--space-3);
     margin-right: 3rem;
     font-size: 0.875rem;
     font-weight: 600;
