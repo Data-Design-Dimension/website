@@ -447,7 +447,6 @@
           title={`${card.title} — video`}
           loading="lazy"
           allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-          allowfullscreen
         ></iframe>
       </div>
     {:else if card.mediaGrid && card.mediaGrid.length > 0}
@@ -953,24 +952,30 @@
       inset 0 -4px 12px -2px oklch(0.42 0.04 155 / 0.18),
       inset -2px 0 6px -2px oklch(0.42 0.04 155 / 0.12);
   }
-  /* In expanded state, drop the decorative depth treatments that work
-   * on short collapsed cards but create visible bands on tall scroll
-   * content:
-   *   1. .card-media::after's bottom inset shadow projects a hard dark
-   *      line at the media→body seam.
-   *   2. .card-media's near-white bg vs card-screen's gradient bg
-   *      creates a color step-change at media's bottom edge.
-   *   3. .card-screen's radial-gradient + glass-tint stack creates a
-   *      soft band where the gradient transitions to transparent (~70%
-   *      of the ellipse's radius from center). On collapsed cards the
-   *      gradient covers the whole face uniformly; on tall expanded
-   *      cards the transition lands mid-body and reads as a
-   *      horizontal band across the content.
-   * All three eliminated for expanded state. card-screen falls back to
-   * uniform glass-tint with no gloss overlay; visually flat but
-   * consistent end-to-end. */
+  /* In expanded state, eliminate every decorative overlay on card-screen
+   * that works on short collapsed cards but creates visible bands on
+   * tall scroll content. Three rounds of trying to fix isolated causes
+   * left the band visible because there's a fourth source I missed:
+   *
+   *   .card-screen::before and ::after are position:absolute children
+   *   of an overflow:auto parent. Their inset:0 sizes them to the
+   *   padding box (visible viewport ~100dvh), but they render as part
+   *   of the SCROLLABLE CONTENT — so when card-screen has tall content
+   *   and the user has scrolled (even briefly), the pseudo-elements
+   *   scroll with the content. ::before's bottom edge then becomes
+   *   visible mid-viewport as a horizontal seam where the gradient
+   *   overlay ends and bare card-screen bg begins. Same for ::after.
+   *
+   * Solution for expanded state: kill ::before and ::after entirely,
+   * use flat glass-tint background, drop card-media's bg + bottom
+   * shadow. Visually flatter but uniform top-to-bottom regardless of
+   * scroll position. Collapsed cards keep all the depth treatments. */
   .scrambler-card.expanded .card-screen {
     background: var(--glass-tint);
+  }
+  .scrambler-card.expanded .card-screen::before,
+  .scrambler-card.expanded .card-screen::after {
+    display: none;
   }
   .scrambler-card.expanded .card-media {
     background: transparent;
