@@ -21,25 +21,38 @@ npx lighthouse https://website.kathryn-89d.workers.dev/ \
 
 Open the HTML reports in a browser, transcribe the four scores into the table below.
 
-## Scores — v0.1.0-preview (TO FILL IN AT TAG TIME)
+## Scores — v0.1.0-preview (captured 2026-05-07)
+
+Run against staging URL `https://website.kathryn-89d.workers.dev/` via Lighthouse 13.3.0, headless Chrome.
 
 | Category | Desktop | Mobile |
 | --- | --- | --- |
-| Performance | _TBD_ | _TBD_ |
-| Accessibility | _TBD_ | _TBD_ |
-| Best Practices | _TBD_ | _TBD_ |
-| SEO | _TBD_ | _TBD_ |
+| Performance | **61** | **43** |
+| Accessibility | **100** | **100** |
+| Best Practices | **96** | **96** |
+| SEO | **100** | **100** |
 
-## Notable opportunities (from the most recent run)
+A11y and SEO at 100 confirm the structural choices (semantic HTML, ARIA landmarks, OKLCH-anchored contrast, JSON-LD, llms.txt) are solid. Performance is the iteration target — see the metrics breakdown below.
 
-_TBD — fill in any flagged items the audit surfaces. Common ones to watch for:_
+## Web Vitals breakdown — v0.1.0-preview
 
-- Largest Contentful Paint (LCP)
-- Total Blocking Time (TBT)
-- Cumulative Layout Shift (CLS)
-- Interaction to Next Paint (INP)
-- Image format / size opportunities
-- JavaScript bundle size
+| Metric | Desktop | Mobile |
+| --- | --- | --- |
+| First Contentful Paint (FCP) | 1.6 s | 4.8 s |
+| Largest Contentful Paint (LCP) | 7.1 s | 38.7 s |
+| Total Blocking Time (TBT) | 0 ms | 700 ms |
+| Cumulative Layout Shift (CLS) | 0.003 | 0.006 |
+| Speed Index | 4.8 s | 6.2 s |
+
+CLS is excellent (≤0.006 vs Google "good" threshold of 0.1). TBT is 0 on desktop — main thread is unblocked. The two metrics to investigate post-release:
+
+- **LCP is high**, especially on mobile (38.7s). Likely culprits to investigate:
+  - The orbital cards keep moving and could be deferring "largest paint stable" detection.
+  - Mermaid bundle on `/how-this-works` is 600KB lazy-loaded — verify the homepage isn't somehow including it.
+  - WebP images load but `srcset` is absent; mobile bandwidth assumptions may not be optimal.
+- **Mobile TBT 700ms** indicates the orbital animation + Svelte hydration are taxing the mobile main thread. Candidates: more aggressive `prefers-reduced-motion` detection on mobile, or animation-tier system that defaults to lower-fidelity orbital math on slow devices.
+
+These are flagged for #32 post-release work — not blocking v0.1.0-preview tag.
 
 ## What's already optimized at v0.1.0-preview
 
