@@ -2,12 +2,15 @@
 import Base from '../layouts/Base.astro';
 import { marked } from 'marked';
 import md from '../../docs/early-access-testing.md?raw';
+import TestingFeedbackForm from '../components/TestingFeedbackForm.svelte';
 
 /**
  * Live mirror of docs/early-access-testing.md so non-GitHub users
  * have a URL they can read without an account. Single source of
  * truth (the .md file); rendered server-side via marked at build
- * time.
+ * time. The interactive feedback form below the doc lets testers
+ * submit without leaving the site (opens a prefilled GitHub issue
+ * in a new tab, OR a prefilled mailto in their mail client).
  */
 const html = marked.parse(md, { async: false }) as string;
 ---
@@ -21,6 +24,7 @@ const html = marked.parse(md, { async: false }) as string;
   </Fragment>
   <main class="testing-container">
     <article class="testing-prose" set:html={html}></article>
+    <TestingFeedbackForm client:load />
     <footer class="testing-footer">
       <p><a href="/">← Back to the main site</a></p>
     </footer>

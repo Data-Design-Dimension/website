@@ -17,8 +17,9 @@ body:
   - type: input
     id: browser
     attributes:
-      label: Browser + device
-      placeholder: "e.g., Chrome 145 / macOS / 14-inch laptop, or Safari / iPhone 14 / iOS 18"
+      label: Browser + specific device
+      description: Be precise — the exact model matters for perf / CPU / GPU diagnostics.
+      placeholder: "e.g., Chrome 145 / MacBook Pro 16-inch 2019 / macOS 14.5, or Safari / iPhone 14 Pro / iOS 18, or Firefox 130 / Dell XPS 13 9310 / Windows 11"
     validations:
       required: true
 

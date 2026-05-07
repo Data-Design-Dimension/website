@@ -50,15 +50,15 @@ If you don't have a WebMCP-capable extension, skip this section — there's no f
 
 ## Submitting feedback
 
-Two paths, pick whichever is easier:
+Three paths, easiest first:
 
-**A. Structured GitHub issue** (preferred for technical testers).
-Use this link: <https://github.com/Data-Design-Dimension/website/issues/new?template=tester-feedback.yml>. Form fields cover the per-task pass/fail and open observations. Threaded so I can respond.
+**A. The form at [/testing](https://website.kathryn-89d.workers.dev/testing).** Below this doc on that page is an interactive form. Fill the fields, click **Submit via GitHub** (opens a prefilled issue in a new tab; you click submit on GitHub to send) or **Send via email** (opens your mail client with everything in the body). Universal — works whether or not you have a GitHub account.
 
-**B. Email** (universal fallback).
-`kathryn@dadeda.design` with the same fields filled in: per-task pass/fail + how-long + open notes. **Please include the browser and device you tested on** (e.g., Chrome 145 / macOS, Safari / iPhone 14 / iOS 18) — this matters for tracking visual + perf issues. No structure beyond that — just write what you saw.
+**B. The GitHub issue template directly.** <https://github.com/Data-Design-Dimension/website/issues/new?template=tester-feedback.yml>. Same fields, filled in on GitHub.
 
-Either way: **screenshots help a lot**, especially for visual issues. Drag-drop them into the GitHub issue or attach to the email.
+**C. Plain email.** `kathryn@dadeda.design` with the same fields. **Please include the specific browser and device you tested on** — be precise, the exact model matters for perf / CPU / GPU diagnostics (e.g., "Chrome 145 / MacBook Pro 16-inch 2019 / macOS 14.5", "Safari / iPhone 14 Pro / iOS 18", "Firefox 130 / Dell XPS 13 9310 / Windows 11"). No other structure required — just write what you saw.
+
+Either way: **screenshots help a lot**, especially for visual issues. Drag-drop them into the GitHub issue or attach to the email — neither prefilled URL can carry binary files, so add them after submission.
 
 ---
 
@@ -81,4 +81,4 @@ Either way: **screenshots help a lot**, especially for visual issues. Drag-drop 
 
 Reusable for whatever channel I'm using to invite people:
 
-> Hi. I'm rolling out an early-access preview of dadeda.design, my personal professional website, and would love your eyes on it. Visit https://website.kathryn-89d.workers.dev/. There's a short list of guided tasks to follow (~10 min) plus open exploration at https://website.kathryn-89d.workers.dev/testing. If you're a GitHub user, the same doc + a structured-feedback issue template are at https://github.com/Data-Design-Dimension/website/blob/main/docs/early-access-testing.md and https://github.com/Data-Design-Dimension/website/issues/new?template=tester-feedback.yml. Otherwise just email me your notes at kathryn@dadeda.design (please include the browser + device you tested on). Anything that surprises, frustrates, or feels good will help me. Thanks ✌️
+> Hi. I'm rolling out an early-access preview of dadeda.design, my personal professional website, and would love your eyes on it. Visit https://website.kathryn-89d.workers.dev/. There's a short list of guided tasks to follow (~10 min) plus open exploration, with a feedback form at the bottom of the page: https://website.kathryn-89d.workers.dev/testing. The form submits via GitHub if you have an account, or by email if you don't (please include the specific browser and device you tested on — model matters for perf diagnostics). Anything that surprises, frustrates, or feels good will help me. Thanks ✌️
