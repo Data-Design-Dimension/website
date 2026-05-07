@@ -161,8 +161,11 @@
     position: absolute;
     inset: 0;
     background: oklch(0.72 0.01 155 / 0.30);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    /* backdrop-filter blur is the single most expensive blur variant
+     * (browser captures full scene, blurs it, composites back). 1px
+     * keeps the frosted-glass cue without the heavy convolution. */
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
     opacity: 0;
     pointer-events: none;
     z-index: 40;
@@ -212,7 +215,10 @@
      set by the orbital math on each card. */
   .stage:has(:global(.scrambler-card.expanded)) :global(.scrambler-card:not(.expanded)) {
     opacity: 0.35 !important;
-    filter: blur(6px) brightness(0.7) !important;
+    /* Reduced from blur(6px) to blur(3px). 6px on 14+ simultaneous
+     * sibling cards is real GPU work; the brightness(0.7) + opacity
+     * already do most of the visual recede. */
+    filter: blur(3px) brightness(0.7) !important;
     transition: opacity var(--duration-normal) ease, filter var(--duration-normal) ease !important;
   }
 

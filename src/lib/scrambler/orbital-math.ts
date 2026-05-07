@@ -107,6 +107,10 @@ export function depthToVisuals(
   return {
     scale: 1 - depth * 0.6, // 1.0 → 0.4
     opacity: 1 - depth * 0.7, // 1.0 → 0.3
-    blur: depth * 4, // 0px → 4px
+    // Capped at 2.5px (down from 4px) — blur cost is roughly quadratic
+    // in radius, and receding cards still read as defocused at 2.5
+    // because they're also scaled down + opacity-reduced. Per #32 perf
+    // research, blur is the most expensive CSS filter.
+    blur: depth * 2.5, // 0px → 2.5px
   };
 }

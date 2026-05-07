@@ -143,6 +143,16 @@ describe('Orbital math', () => {
       expect(vis.blur).toBeGreaterThan(1);
     });
 
+    it('blur is capped at 2.5px so paint cost stays bounded (#32 perf)', () => {
+      // blur cost is ~quadratic in radius; the cap was reduced from 4
+      // to 2.5 in the v0.1.0-preview perf pass. Receding cards still
+      // read as defocused at 2.5 because they're also scaled down +
+      // opacity-reduced. If a future change reverts the cap upward
+      // without intent, this test catches it.
+      expect(depthToVisuals(1).blur).toBeLessThanOrEqual(2.5);
+      expect(depthToVisuals(2).blur).toBeLessThanOrEqual(2.5); // clamped z
+    });
+
     it('mid-depth has intermediate values', () => {
       const vis = depthToVisuals(0.5);
       expect(vis.scale).toBeGreaterThan(0.5);

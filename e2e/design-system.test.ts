@@ -23,7 +23,10 @@ test.describe('Design System page', () => {
   });
 
   test('has data viz palette section', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Data Visualization Palette' })).toBeVisible();
+    // Section was renamed during the v0.1.0 viz palette overhaul to
+    // "Data Viz — Categorical" (the page now also has Card-Safe
+    // Categorical and Scales sub-sections). Match by partial text.
+    await expect(page.getByRole('heading', { name: /Data Viz/i }).first()).toBeVisible();
   });
 
   test('has typography section', async ({ page }) => {
@@ -31,6 +34,10 @@ test.describe('Design System page', () => {
   });
 
   test('documents the design rationale', async ({ page }) => {
+    // "Why These Choices" is now collapsed by default per the v0.1.0
+    // design-system collapsibility refactor. Expand it before
+    // asserting the text is visible.
+    await page.locator('summary', { hasText: 'Why These Choices' }).click();
     await expect(page.getByText('Why OKLCH?')).toBeVisible();
     await expect(page.getByText('Why #DADEDA?')).toBeVisible();
   });

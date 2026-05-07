@@ -134,6 +134,16 @@
     let lastTime = performance.now();
 
     function tick(now: number) {
+      // Skip orbital work when the tab is hidden. Browsers throttle
+      // RAF in hidden tabs but don't always halt it (especially in
+      // iframe / PiP contexts). Explicit guard saves the math + state
+      // updates that would otherwise queue while invisible. lastTime
+      // still advances so dt doesn't jump on re-foreground.
+      if (document.hidden) {
+        lastTime = now;
+        animationId = requestAnimationFrame(tick);
+        return;
+      }
       const dt = (now - lastTime) / 1000;
       lastTime = now;
       if (!orbitPaused) {

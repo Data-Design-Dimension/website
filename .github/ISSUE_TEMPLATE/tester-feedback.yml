@@ -1,0 +1,115 @@
+name: Tester feedback (early access)
+description: Submit feedback from the v0.1.0-preview early-access round
+title: "[tester] "
+labels: ["tester-feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing! See [docs/early-access-testing.md](https://github.com/Data-Design-Dimension/website/blob/main/docs/early-access-testing.md) for the task list. Any field can be left blank.
+
+  - type: input
+    id: name
+    attributes:
+      label: Your name (optional)
+      placeholder: "How you'd like me to credit you, if at all"
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser + device
+      placeholder: "e.g., Chrome 145 / macOS / 14-inch laptop, or Safari / iPhone 14 / iOS 18"
+    validations:
+      required: true
+
+  - type: textarea
+    id: task1
+    attributes:
+      label: 'Task 1 — Discovery (See Work): find data-viz work'
+      description: Did you complete it? How did it feel (fast / normal / slow / couldn't)? Notes?
+      placeholder: |
+        - Result: completed / partial / couldn't
+        - Felt: fast / normal / slow
+        - Notes:
+
+  - type: textarea
+    id: task2
+    attributes:
+      label: 'Task 2 — Discovery (Get to Know): find an article'
+      placeholder: |
+        - Result:
+        - Felt:
+        - Notes:
+
+  - type: textarea
+    id: task3
+    attributes:
+      label: 'Task 3 — Reading: open one expanded card and scroll'
+      placeholder: |
+        - Result:
+        - Felt:
+        - Notes:
+
+  - type: textarea
+    id: task4
+    attributes:
+      label: 'Task 4 — Sharing: share the site with someone'
+      placeholder: |
+        - Path you took (agent / browser share / copy-paste / other):
+        - Result:
+        - Felt:
+        - Notes:
+
+  - type: textarea
+    id: task5
+    attributes:
+      label: 'Task 5 — Contact: email me about a hypothetical project'
+      placeholder: |
+        - Result:
+        - Felt:
+        - Notes:
+
+  - type: textarea
+    id: task6
+    attributes:
+      label: 'Task 6 — Architecture: find docs about how the site is built'
+      placeholder: |
+        - Result:
+        - Felt:
+        - Notes:
+
+  - type: textarea
+    id: open-feedback
+    attributes:
+      label: Open observations
+      description: What surprised you? What frustrated you? What felt good? Visual issues, performance impressions, anything unexpected.
+      placeholder: |
+        Surprised:
+        Frustrated:
+        Felt good:
+        Other:
+    validations:
+      required: true
+
+  - type: textarea
+    id: webmcp
+    attributes:
+      label: WebMCP / agent testing (optional)
+      description: If you tried any of the agent prompts via a WebMCP-capable extension, what worked? What didn't?
+      placeholder: |
+        Extension used (if any):
+        Tools that worked:
+        Tools that didn't:
+        Notes:
+
+  - type: textarea
+    id: mobile
+    attributes:
+      label: Mobile testing (optional)
+      description: Did you try on a phone? What worked / didn't?
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag-drop screenshots here, especially for any visual issue you flagged above.
