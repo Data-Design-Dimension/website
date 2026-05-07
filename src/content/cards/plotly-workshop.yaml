@@ -22,8 +22,8 @@ secondaryCta:
   label: Workshop notebooks on GitHub
   url: https://github.com/Data-Design-Dimension/workshop-styles-plotly
   external: true
-media:
-  src: /img/styling-plotly-themes-workshop-output.webp
-  alt: Output sample from the Plotly themes workshop showing styled chart variants
-  aspect: wide
 order: 1
+body: |
+  Had a little fun by making a theme inspired by the 1984 film *Electric Dreams*, using only 8-bit-compatible color equivalents.
+
+  ![Output sample from the Plotly themes workshop showing 8-bit-compatible chart variants](/img/styling-plotly-themes-workshop-output.webp)

@@ -1,6 +1,6 @@
 type: meta
 title: More Projects by Request
-summary: Contact me to ask to see more of my portfolio.
+summary: "Contact me to ask to see more of my portfolio: kathy.hurchla@fantasy.co."
 tags:
   - skills
   - ai
@@ -15,3 +15,5 @@ cta:
   url: 'mailto:kathy.hurchla@fantasy.co?subject=More%20projects%20request'
   external: true
 order: 1
+body: |
+  Reach me directly at **kathy.hurchla@fantasy.co**. The "Email me" button opens your mail client; if it lands on a blank tab (some browsers block `mailto:` from new-tab navigation), copy the address above instead.

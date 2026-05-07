@@ -88,6 +88,15 @@ export interface ScramblerCard {
    * Svelte's `{@html}`.
    */
   body?: string;
+  /**
+   * Set to false to skip the inline iframe embed even when cta.url is
+   * a video URL. Used when the source video has Vimeo/YouTube privacy
+   * settings that block embedding — the card then renders as a
+   * standard media+cta card (typically pairing a still-frame screenshot
+   * via `media` with the original watch link as the cta). Default
+   * undefined / true: detect video URLs and embed automatically.
+   */
+  inlineVideo?: boolean;
   order: number;
 }
 

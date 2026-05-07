@@ -11,6 +11,7 @@ tags:
   - sustainability
   - interactive
 date: '20220615'
+archived: true
 secondaryCta:
   label: View on MICA
   url: https://www.mica.edu/about-mica/offices-divisions/school-of-creative-professional-studies/mps-programs/mps-capstones/student/kathryn-hurchla/
@@ -34,7 +35,3 @@ body: |
   ## Why this framing
 
   7.9 billion humans on Earth as of November 2021, projected 10 billion by 2057 (UN / Worldometer). That scale gives our consumer choices real leverage on food production sustainability. The visualization was deeply researched but not focused on being authoritative; it made a familiar aspect of our everyday lives (food) feel connected to a less familiar but a dependent need for continued human health (soil carbon).
-
-  ## Status
-
-  The app retired in 2022. The thinking and the dataset selections it surfaced still hold up for me, and the methodology fed everything I've done with geospatial work since. More open-source DADEDA Python work lives on the [Data Design Dimension GitHub](https://github.com/Data-Design-Dimension).

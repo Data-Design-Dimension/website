@@ -1,6 +1,6 @@
 type: repo
 title: Redistricting Map
-summary: Animated Plotly Dash choropleth exploring U.S. population change and redistricting.
+summary: "Animated Plotly Dash choropleth exploring U.S. population change and redistricting."
 tags:
   - python
   - plotly-dash

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { CardType, ScramblerCard, ScramblerPosition } from '../lib/scrambler/types';
   import { marked } from 'marked';
-  import { parseVideo, formatTimestamp } from '../lib/scrambler/video';
+  import { parseVideo } from '../lib/scrambler/video';
 
   interface Props {
     card: ScramblerCard;
@@ -139,13 +139,27 @@
 
   // Long-form body markdown rendered to HTML. Trusted-author content
   // (no user-submitted markdown reaches this), so marked's default
-  // sanitization is sufficient. Only computed when card.body exists.
-  const bodyHtml = $derived(card.body ? marked.parse(card.body, { async: false }) as string : '');
+  // sanitization is sufficient. In previewMode (the /review page),
+  // body links get target="_blank" so reviewing destinations doesn't
+  // unload /review and lose in-progress edits.
+  const bodyHtml = $derived.by(() => {
+    if (!card.body) return '';
+    let html = marked.parse(card.body, { async: false }) as string;
+    if (previewMode) {
+      html = html.replace(/<a (href=)/g, '<a target="_blank" rel="noopener noreferrer" $1');
+    }
+    return html;
+  });
 
   // Detect a video CTA (Vimeo / YouTube). When present, the expanded
-  // card renders the iframe inline and the collapsed CTA becomes a
-  // "play" affordance that triggers expand instead of navigating.
-  const videoEmbed = $derived(parseVideo(card.cta?.url));
+  // card renders the iframe inline. Cards can opt out via
+  // `inlineVideo: false` in YAML — used when the source video has
+  // privacy settings that block embedding (in which case the YAML
+  // typically supplies a still screenshot via media + the cta still
+  // links to the video as a regular external destination).
+  const videoEmbed = $derived(
+    card.inlineVideo === false ? null : parseVideo(card.cta?.url),
+  );
 
   // ── Outside-click closes whichever state is active (expanded first,
   //    then focused). Once both are collapsed the card re-enters
@@ -290,8 +304,15 @@
 
   function handlePointerDown(e: PointerEvent) {
     if (!isDraggable) return;
-    if ((e.target as Element).closest('.card-toggle')) return;
-    if ((e.target as Element).closest('.card-cta-link')) return;
+    const target = e.target as Element;
+    // Bail on any interactive child so its native click works without
+    // the card's drag pointer-capture stealing the event. Previously
+    // only .card-toggle and .card-cta-link were excepted, which broke
+    // clicks on body markdown links, secondary CTAs, and iframes.
+    if (target.closest('.card-toggle')) return;
+    if (target.closest('a')) return;
+    if (target.closest('button')) return;
+    if (target.closest('iframe')) return;
     isDragging = true;
     dragStartX = e.clientX;
     dragStartY = e.clientY;
@@ -471,22 +492,12 @@
           </ul>
         {/if}
         {#if videoEmbed}
-          <a
-            class="card-cta-secondary external"
-            href={videoEmbed.watchUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onclick={(e) => e.stopPropagation()}
-          >
-            <span class="cta-label-text">
-              Watch on {videoEmbed.providerLabel}{videoEmbed.startSeconds ? ` (${formatTimestamp(videoEmbed.startSeconds)})` : ''}
-            </span>
-            <svg viewBox="0 0 24 24" class="cta-external-icon" aria-hidden="true">
-              <path d="M15 3h6v6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
-              <path d="M10 14L21 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a>
+          <!-- Iframe player provides its own "Watch on Provider" overlay
+               when the user mouses into it; rendering an additional
+               external watch link here was redundant and previously
+               failed to navigate from the / character escaping. If a
+               specific external destination is wanted alongside the
+               player, use card.secondaryCta. -->
         {:else if card.cta && card.cta.disabled}
           <span class="card-cta-link disabled" aria-disabled="true">
             <span class="cta-label-text">{card.cta.label}</span>

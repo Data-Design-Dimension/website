@@ -40,6 +40,7 @@ const cards = defineCollection({
     media: mediaSchema.optional(),
     mediaGrid: z.array(mediaSchema).optional(),
     body: z.string().optional(),
+    inlineVideo: z.boolean().optional(),
     order: z.number(),
     // YYYYMMDD; falls back to the entry file's git commit date when omitted.
     date: z.string().regex(/^\d{8}$/).optional(),
