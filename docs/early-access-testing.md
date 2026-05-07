@@ -12,13 +12,13 @@ Plan to spend ~10–15 minutes. The guided tasks below are not a script — they
 
 For each: did you complete it? How did it feel — fast / normal / slow / couldn't? Anything to flag?
 
-1. **Discovery (See Work).** Find work I've done on data visualization. Open the case study and read it.
+1. **Discovery (See Work).** Find work I've done on AI. Expand the card and read about it. Find a demo to watch.
 
 2. **Discovery (Get to Know).** Find an article I've written. Open it (it'll link out to the publishing site).
 
 3. **Reading.** Open one expanded card and scroll through its full body content. Use the navigation inside the card.
 
-4. **Sharing.** Share the site with someone. Any path counts: agent-driven via WebMCP, browser share menu, copy-paste, etc.
+4. **Sharing.** Share the site with someone. Any path counts: contact > share, browser share menu, copy-paste, etc.
 
 5. **Contact.** Email me about a hypothetical project (no need to actually send unless you want to). The path you take matters more than the message.
 
@@ -30,7 +30,11 @@ After the tasks: **5 minutes of open exploration**. Click around. Try things tha
 
 ## Optional — WebMCP / agent testing
 
-If you have a WebMCP-capable Chrome extension (e.g., a recent build of the Chrome WebMCP test extension or similar), the site exposes 10 tools. Try these prompts via your agent:
+If you have a WebMCP-capable Chrome extension (e.g., [WebMCP Inspector 3.0.0](https://chromewebstore.google.com/detail/webmcp-inspector/edfjnadfiapmddgplgnphlflgafmcino?pli=1) or [WebMCP - Model Context Tool Inspector](https://chromewebstore.google.com/detail/webmcp-model-context-tool/gbpdfapgefenggkahomfgkhfehlcenpd)) and the following pre-requisite Chrome flags enabled, the site exposes 10 tools.
+
+⚠️ **Prerequisites**: Go to `chrome://flags` and enable the "WebMCP for testing" flag in Chrome 146.0.7672.0 or higher.
+
+Try these prompts via your agent:
 
 - "List the clusters and cards on this site."
 - "Find cards tagged with 'data-viz' and summarize them."
@@ -52,17 +56,16 @@ Two paths, pick whichever is easier:
 Use this link: <https://github.com/Data-Design-Dimension/website/issues/new?template=tester-feedback.yml>. Form fields cover the per-task pass/fail and open observations. Threaded so I can respond.
 
 **B. Email** (universal fallback).
-`kathryn@dadeda.design` with the same fields filled in: per-task pass/fail + how-long + open notes + browser/device. No structure required — just write what you saw.
+`kathryn@dadeda.design` with the same fields filled in: per-task pass/fail + how-long + open notes. **Please include the browser and device you tested on** (e.g., Chrome 145 / macOS, Safari / iPhone 14 / iOS 18) — this matters for tracking visual + perf issues. No structure beyond that — just write what you saw.
 
-Either way: **screenshots are gold**, especially for visual issues. Drag-drop them into the GitHub issue or attach to the email.
+Either way: **screenshots help a lot**, especially for visual issues. Drag-drop them into the GitHub issue or attach to the email.
 
 ---
 
 ## What I'm NOT looking for in this round
 
 - Polish-level word smithing on case-study text. The bodies are first drafts and will iterate.
-- Missing case-study content for older works (sustain-our-soil, freedom-map, invest-as-one are sketches). Filling those out is post-launch.
-- The CRT-style scanlines / flicker enhancement question (issue #32). I want to hear if the cards feel insufficiently CRT BEFORE deciding whether to add those.
+- Missing case-study content for other works. Older projects were archived and I'll be adding more anonymized examples from NDA-protected agency work post-launch. For now, my goal is a slim balanced set of projects across AI / engineering and dataviz.
 
 ## What I AM looking for
 
@@ -78,4 +81,4 @@ Either way: **screenshots are gold**, especially for visual issues. Drag-drop th
 
 Reusable for whatever channel I'm using to invite people:
 
-> Hey — I'm rolling out an early-access preview of dadeda.design and would love your eyes on it. Visit https://website.kathryn-89d.workers.dev/. There's a short list of guided tasks (~10 min) plus open exploration here: https://github.com/Data-Design-Dimension/website/blob/main/docs/early-access-testing.md. Submit feedback via this issue template (https://github.com/Data-Design-Dimension/website/issues/new?template=tester-feedback.yml) or just email me at kathryn@dadeda.design. Anything that surprises, frustrates, or feels good is gold. Thanks ✌️
+> Hi. I'm rolling out an early-access preview of dadeda.design, my personal professional website, and would love your eyes on it. Visit https://website.kathryn-89d.workers.dev/. There's a short list of guided tasks to follow (~10 min) plus open exploration at https://website.kathryn-89d.workers.dev/testing. If you're a GitHub user, the same doc + a structured-feedback issue template are at https://github.com/Data-Design-Dimension/website/blob/main/docs/early-access-testing.md and https://github.com/Data-Design-Dimension/website/issues/new?template=tester-feedback.yml. Otherwise just email me your notes at kathryn@dadeda.design (please include the browser + device you tested on). Anything that surprises, frustrates, or feels good will help me. Thanks ✌️
