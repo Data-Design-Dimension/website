@@ -955,8 +955,13 @@
   }
 
   .card-expanded-body {
-    margin-top: var(--space-4);
-    padding: 0 var(--space-6);
+    /* In expanded state, sit flush against card-media's bottom edge.
+     * The previous 1rem margin-top exposed card-screen's glass-tint
+     * background between media and body, which read as a green/amber
+     * "band cutting through" the card. Internal padding keeps the
+     * text breathing room without revealing the seam. */
+    margin-top: 0;
+    padding: var(--space-4) var(--space-6) 0;
     position: relative;
     z-index: 0;
   }
@@ -1437,20 +1442,29 @@
   .scrambler-card.expanded .card-screen {
     max-height: calc(100dvh - 2.5rem);
     overflow-y: auto;
+    /* Sync the card-screen's rounded corners with the outer
+     * scrambler-card (1.5rem / 2.25rem) when expanded. The base
+     * card-screen radius (1.25rem / 1.85rem) is tighter and leaves a
+     * visible rim of scrambler-card's tint at the bottom-right corner
+     * where scrollable content meets the curve — looks like the
+     * scrollable area extends past the rounded edge. Matching the
+     * radius removes that mismatch. The "glass tube" depth illusion
+     * still comes from .scrambler-card::before (the side-wall) which
+     * renders behind card-screen and is unaffected. */
+    border-radius: 1.5rem / 2.25rem;
     /* 2026 scroll affordances per plan §I:
      *   - overscroll-behavior contains the scroll inside the card
      *     so wheel doesn't bubble up to the page;
      *   - scroll-behavior smooth applies to programmatic scrollTo
      *     calls (e.g., the on-expand jump-to-top below);
-     *   - thin OKLCH-tinted scrollbar matches brand.
-     * (Earlier iteration had a mask-image fade at top + bottom of the
-     * card-screen; it created a visible colored band on cards whose
-     * content didn't actually overflow. Removed in favor of the
-     * scrollbar as the canonical scroll affordance.) */
+     *   - thin OKLCH-tinted scrollbar matches brand;
+     *   - scrollbar-gutter:stable reserves scrollbar space so
+     *     content layout doesn't shift when scrollbar appears. */
     overscroll-behavior: contain;
     scroll-behavior: smooth;
     scrollbar-width: thin;
     scrollbar-color: oklch(0.55 0.05 90 / 0.6) transparent;
+    scrollbar-gutter: stable;
     /* Keep the toggle reservation when the screen scrolls. */
     padding-bottom: 4rem;
   }
@@ -1459,6 +1473,11 @@
   }
   .scrambler-card.expanded .card-screen::-webkit-scrollbar-track {
     background: transparent;
+    /* Inset the scrollbar track from top + bottom so its rectangular
+     * end doesn't visually butt against card-screen's rounded
+     * corners. ~1.5rem keeps the track entirely inside the curved
+     * boundary on both ends. */
+    margin: 1.5rem 0.25rem 1.5rem 0;
   }
   .scrambler-card.expanded .card-screen::-webkit-scrollbar-thumb {
     background: oklch(0.55 0.05 90 / 0.5);
