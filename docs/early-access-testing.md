@@ -38,7 +38,7 @@ Try these prompts via your agent:
 
 - "List the clusters and cards on this site."
 - "Find cards tagged with 'data-viz' and summarize them."
-- "Open the Sustain Our Soil card and read the full case study."
+- "Open the Do Websites Need Pages card and summarize its body."
 - "Get Kathryn's resume URL."
 - "Share this site with me as a brief intro."
 
