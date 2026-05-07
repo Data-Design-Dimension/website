@@ -1474,15 +1474,21 @@
      * shift never lets the card extend past the viewport. The
      * card-screen handles internal scroll for overflow content. */
     max-height: calc(100dvh - 2.5rem);
-    /* Clip everything inside the expanded card to the rounded outer
-     * boundary so scrollable content + scrollbar artifacts can't
-     * extend past the curve. `overflow: clip` (vs hidden) doesn't
-     * establish a scroll container, AND with overflow-clip-margin we
-     * allow .scrambler-card::before's 4px translate to still peek
-     * out as the side-wall depth illusion. Chrome 90+, Firefox 102+,
-     * Safari 16+ — modern-browser baseline OK for v1. */
+    /* Strict clip to the rounded outer boundary. Earlier iteration
+     * used overflow-clip-margin: 4px to let .scrambler-card::before's
+     * 4px translate peek as a sidewall depth illusion, but on a large
+     * expanded card that 4px peek reads as a white strip "jutting
+     * out" past the rounded corner — the depth nuance isn't worth
+     * the visual artifact. ::before is now hidden in expanded state
+     * (see rule below), so no clip-margin allowance is needed. */
     overflow: clip;
-    overflow-clip-margin: 4px;
+  }
+  /* Hide the side-wall depth pseudo-element in expanded state. On
+   * collapsed cards it gives subtle 3D weight; on expanded cards its
+   * 4px translate creates a visible white sliver past the rounded
+   * bottom edge that reads as a layout bug rather than depth. */
+  .scrambler-card.expanded::before {
+    display: none;
   }
 
   .scrambler-card.expanded .card-screen {
