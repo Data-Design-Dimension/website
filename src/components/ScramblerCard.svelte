@@ -953,6 +953,18 @@
       inset 0 -4px 12px -2px oklch(0.42 0.04 155 / 0.18),
       inset -2px 0 6px -2px oklch(0.42 0.04 155 / 0.12);
   }
+  /* In expanded state, the bottom inset shadow on card-media + the
+   * near-white card-media bg vs the glass-tint card-screen bg create
+   * a visible green/amber "band cutting through" at the media→body
+   * seam. Both are decorative depth treatments tuned for collapsed
+   * cards where media is the dominant visual; in expanded state the
+   * body is dominant and the seam is a visual artifact. Drop both. */
+  .scrambler-card.expanded .card-media {
+    background: transparent;
+  }
+  .scrambler-card.expanded .card-media::after {
+    box-shadow: none;
+  }
 
   .card-expanded-body {
     /* In expanded state, sit flush against card-media's bottom edge.
@@ -1432,6 +1444,15 @@
      * shift never lets the card extend past the viewport. The
      * card-screen handles internal scroll for overflow content. */
     max-height: calc(100dvh - 2.5rem);
+    /* Clip everything inside the expanded card to the rounded outer
+     * boundary so scrollable content + scrollbar artifacts can't
+     * extend past the curve. `overflow: clip` (vs hidden) doesn't
+     * establish a scroll container, AND with overflow-clip-margin we
+     * allow .scrambler-card::before's 4px translate to still peek
+     * out as the side-wall depth illusion. Chrome 90+, Firefox 102+,
+     * Safari 16+ — modern-browser baseline OK for v1. */
+    overflow: clip;
+    overflow-clip-margin: 4px;
   }
 
   .scrambler-card.expanded .card-screen {
