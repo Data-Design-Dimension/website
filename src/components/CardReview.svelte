@@ -140,14 +140,28 @@
     copyTimer = setTimeout(() => (copyState = 'idle'), 1800);
   }
 
+  function tagsActuallyChanged(c: ScramblerCard): boolean {
+    const editTags = edits[c.id]?.tags;
+    if (editTags === undefined) return false;
+    const original = c.tags ?? [];
+    if (editTags.length !== original.length) return true;
+    const a = [...editTags].sort();
+    const b = [...original].sort();
+    return a.some((tag, i) => tag !== b[i]);
+  }
+
   function reviewedCount(): number {
-    return Object.values(edits).filter(
-      (e) =>
+    return cards.filter((c) => {
+      const e = edits[c.id];
+      if (!e) return false;
+      return (
         e.approved !== undefined ||
         e.archived !== undefined ||
-        e.tags !== undefined ||
-        (e.feedback && e.feedback.trim().length > 0),
-    ).length;
+        e.featured !== undefined ||
+        tagsActuallyChanged(c) ||
+        (e.feedback !== undefined && e.feedback.trim().length > 0)
+      );
+    }).length;
   }
 
   function feedbackCount(): number {
@@ -172,7 +186,7 @@
         e.approved !== undefined ||
         e.archived !== undefined ||
         e.featured !== undefined ||
-        e.tags !== undefined
+        tagsActuallyChanged(c)
       );
     });
     if (editedCards.length > 0) {
@@ -185,7 +199,7 @@
         const approved = e.approved ?? c.approved ?? false;
         const featured = e.featured ?? c.featured ?? false;
         const archived = e.archived ?? c.archived ?? false;
-        const tagsChanged = e.tags !== undefined ? 'yes' : '';
+        const tagsChanged = tagsActuallyChanged(c) ? 'yes' : '';
         lines.push(
           `| \`${c.id}\` | ${approved ? '✓' : ''} | ${featured ? '★' : ''} | ${archived ? '✕' : ''} | ${tagsChanged} |`,
         );
@@ -194,7 +208,7 @@
     }
 
     // Tag changes detail
-    const tagChanges = cards.filter((c) => edits[c.id]?.tags !== undefined);
+    const tagChanges = cards.filter((c) => tagsActuallyChanged(c));
     if (tagChanges.length > 0) {
       lines.push('## Tag changes');
       lines.push('');

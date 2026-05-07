@@ -1,6 +1,6 @@
 type: portfolio
 title: Do Websites Need Pages?
-summary: "Speculative web app prototype demoed by Fantasy. I built the working application that explores what happens when AI agents drive a graphical canvas UI instead of static pages."
+summary: "Speculative web app prototype demoed by Fantasy. I built the application that explores what happens when AI agents drive a graphical canvas UI instead of static pages."
 tags:
   - fantasy
   - ai
@@ -23,7 +23,7 @@ media:
   aspectRatio: 8 / 5
 order: 0
 body: |
-  Voice-first interaction with a real-time over WebSocket manages conversation and tool calling, infers human intent, and uses a fast mini AI model to translate intent into cinematic prompts. Workflow automates the intent-driven drift of the world model through those prompts and rendered onto the canvas element of the page through constantly streaming data using WebRTC.
+  Voice-first interaction with a real-time multi-modal model (audio + text) over WebSocket manages conversation and tool calling, infers human intent, and uses a fast mini AI model to translate intent into cinematic prompts. Workflow automates the intent-driven drift of the world model through those prompts and renders the resulting output onto the canvas element of the page through constantly streaming data using WebRTC.
 
   Multiple experience modes (dreamlike or website) are configurable through environment variables and alter prompt engineering that impacts conversational style and the visual stream. A bespoke cognitive and visual state management system is at the heart of both agents and their outputs, making orchestration more natural and cohesive. R&D was built in close partnership with Fantasy leadership and used in thought leadership, organic accounts growth, and business development.
 

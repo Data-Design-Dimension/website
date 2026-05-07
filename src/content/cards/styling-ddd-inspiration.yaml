@@ -10,10 +10,6 @@ tags:
   - crt
   - object-design
   - ui-design
-cta:
-  label: Open inspiration gallery
-  url: '#inspiration-styling-ddd'
-  external: false
 mediaGrid:
   - src: /img/inspiration/styling-ddd-1.webp
     alt: Brand styling research from the Data, Design & Daughters mood board

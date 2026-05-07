@@ -24,20 +24,20 @@ tags:
 featured: true
 inlineVideo: false
 cta:
-  label: Watch demo
-  url: https://vimeo.com/1187090326
+  label: Watch demo (11:23)
+  url: https://vimeo.com/1187090326#t=11m23s
   external: true
 media:
   src: /img/work/myagent2webmcp-screenshot.webp
   alt: Screenshot from the My Agent to WebMCP live demo showing the Windridge fictional retailer's generative canvas
 order: 0
 body: |
-  Built in close partnership with Fantasy leadership with contributions by design developers, this prototype demonstrates interacting with a fictitious outdoors brand website by bringing your personal agent which interacts with the site's agentic tools through WebMCP available in development and behind experimental flags in Chrome browser.
+  Built as a participant of Google Chrome's Developers Early Preview Program, in close partnership with Fantasy leadership, and with contributions by two design developers, this prototype demonstrates interacting with a fictitious outdoors brand website by bringing your personal agent which interacts with the site's agentic tools through WebMCP, a W3C draft web spec while available in Chrome browser beta release and behind experimental flags. In this recording, Fantasy Chief Experience Officer presented and demoed this live on stage in context of the future of the web at MIT 2026 EmTech conference.
 
   ## Highlights
 
-  - Personalize tool parameters supports agents to collaboratively bring just the right content and layout to each person.
-  - Agent detection enables brands to see when a visitor's agent calls tools in model context window to determine capabilities or to choose whether to offer visitors a brand-owned simulated personal agent in order to use tools.
+  - Personalize tool parameters support agents to collaboratively bring just the right content and layout to each person.
+  - Agent detection enables brands to see when a visitor's agent calls tools in model context window to determine capabilities. Brands can choose whether to offer visitors a brand-owned simulated personal agent in order to use tools.
   - Generative UI is achieved through secure data-based and validated streaming aligned with A2UI but optimized for React prior to availability of a stable native renderer.
   - Animated transitions are thoughtful to communicate agent activity visually but subtly.
   - Highly performant and low latency agent-enabled interactions.
@@ -46,8 +46,4 @@ body: |
 
   React (shell + generative UI components), Hono server (API route + static files), CSS custom properties (design tokens) plus CSS Modules.
 
-  WebMCP via Chrome 146 `navigator.modelContext`, Web Speech API (STT), Google Gemini model family, Vercel AI SDK, Zod for universal UI kit schema validation shared client and server.
-
-  ## What you're seeing in the demo
-
-  The recording opens at the live demo around 11:23: Windridge, a fictional retailer powered by A2A. The demo walks through the core concepts (brand agent + personal agent rendering a visual canvas in real time) and into the live interaction.
+  WebMCP via Chrome 146 `navigator.modelContext`, Web Speech API (STT), Google Gemini model family, Vercel AI SDK, Zod for universal UI kit schema validation (shared client and server).

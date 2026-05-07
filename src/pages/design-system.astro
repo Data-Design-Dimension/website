@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ColorSwatch from '../components/ColorSwatch.svelte';
+import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/tokens';
 ---
 
 <Base title="Design System — DADEDA">
@@ -15,8 +16,8 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
       </p>
     </header>
 
-    <section class="ds-section">
-      <h2>Brand Canvas</h2>
+    <details class="ds-section" open>
+      <summary><h2>Brand Canvas</h2></summary>
       <p>
         <code>#DADEDA</code> — RGB(218, 222, 218). A sage mist with barely perceptible
         green undertone. 86% lightness, 1% saturation. The foundation everything lives on.
@@ -26,10 +27,10 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
         <ColorSwatch client:load name="--color-canvas-light" value="oklch(0.95 0.004 155)" label="Light variant" />
         <ColorSwatch client:load name="--color-canvas-dark" value="oklch(0.82 0.010 155)" label="Dark variant" />
       </div>
-    </section>
+    </details>
 
-    <section class="ds-section">
-      <h2>Brand Accents</h2>
+    <details class="ds-section" open>
+      <summary><h2>Brand Accents</h2></summary>
       <p>
         Bold colors that pop against the sage canvas. Inspired by Philadelphia industrial
         patina and neon energy.
@@ -39,10 +40,10 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
         <ColorSwatch client:load name="--color-accent-blue" value="oklch(0.55 0.15 250)" label="Blueprint cyan — systems" />
         <ColorSwatch client:load name="--color-accent-hot" value="oklch(0.65 0.25 0)" label="Energy accent" />
       </div>
-    </section>
+    </details>
 
-    <section class="ds-section">
-      <h2>Neutrals</h2>
+    <details class="ds-section" open>
+      <summary><h2>Neutrals</h2></summary>
       <div class="ds-grid-5">
         <ColorSwatch client:load name="--color-surface" value="oklch(0.99 0.002 155)" label="Surface" />
         <ColorSwatch client:load name="--color-text-primary" value="oklch(0.20 0.01 155)" label="Text primary" />
@@ -50,10 +51,10 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
         <ColorSwatch client:load name="--color-text-muted" value="oklch(0.65 0.005 155)" label="Text muted" />
         <ColorSwatch client:load name="--color-border" value="oklch(0.80 0.008 155)" label="Border" />
       </div>
-    </section>
+    </details>
 
-    <section class="ds-section">
-      <h2>Data Viz — Categorical</h2>
+    <details class="ds-section" open>
+      <summary><h2>Data Viz — Categorical</h2></summary>
       <p>
         Okabe-Ito hue identity, re-anchored on a monotonic lightness ladder
         (L 0.32 → 0.92, ≥8 units between adjacent stops) so the palette also
@@ -72,21 +73,17 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
         <ColorSwatch client:load name="--viz-7" value="oklch(0.84 0.09 230)" label="Sky blue" />
         <ColorSwatch client:load name="--viz-8" value="oklch(0.92 0.16 95)" label="Yellow" />
       </div>
-      <p class="ds-strip-caption">Grayscale check — each stop should remain visibly distinct:</p>
-      <div class="ds-strip is-grayscale" aria-hidden="true">
-        <span style="background: oklch(0.32 0.10 155);"></span>
-        <span style="background: oklch(0.42 0.18 250);"></span>
-        <span style="background: oklch(0.52 0.18 40);"></span>
-        <span style="background: oklch(0.60 0.13 165);"></span>
-        <span style="background: oklch(0.68 0.16 350);"></span>
-        <span style="background: oklch(0.76 0.16 70);"></span>
-        <span style="background: oklch(0.84 0.09 230);"></span>
-        <span style="background: oklch(0.92 0.16 95);"></span>
+      <p class="ds-strip-caption">Compact comparison — color above, grayscale below. Each stop should remain visibly distinct in both bars when testing CVD types:</p>
+      <div class="ds-strip" aria-hidden="true">
+        {viz.map((c) => <span style={`background: ${c};`}></span>)}
       </div>
-    </section>
+      <div class="ds-strip is-grayscale" aria-hidden="true">
+        {viz.map((c) => <span style={`background: ${c};`}></span>)}
+      </div>
+    </details>
 
-    <section class="ds-section">
-      <h2>Data Viz — Card-Safe Categorical</h2>
+    <details class="ds-section" open>
+      <summary><h2>Data Viz — Card-Safe Categorical</h2></summary>
       <p>
         The site's category accents already carry meaning: <strong>green</strong>
         signals See Work cards (H ≈ 130–170), <strong>amber</strong> signals
@@ -109,20 +106,17 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
         <ColorSwatch client:load name="vizCardSafe[5]" value="oklch(0.82 0.08 220)" label="Sky blue" />
         <ColorSwatch client:load name="vizCardSafe[6]" value="oklch(0.92 0.10 0)" label="Light coral" />
       </div>
-      <p class="ds-strip-caption">Grayscale check — each stop should remain visibly distinct:</p>
-      <div class="ds-strip is-grayscale" aria-hidden="true">
-        <span style="background: oklch(0.30 0.005 155);"></span>
-        <span style="background: oklch(0.42 0.18 250);"></span>
-        <span style="background: oklch(0.52 0.18 25);"></span>
-        <span style="background: oklch(0.62 0.16 350);"></span>
-        <span style="background: oklch(0.72 0.13 290);"></span>
-        <span style="background: oklch(0.82 0.08 220);"></span>
-        <span style="background: oklch(0.92 0.10 0);"></span>
+      <p class="ds-strip-caption">Compact comparison — color above, grayscale below:</p>
+      <div class="ds-strip" aria-hidden="true">
+        {vizCardSafe.map((c) => <span style={`background: ${c};`}></span>)}
       </div>
-    </section>
+      <div class="ds-strip is-grayscale" aria-hidden="true">
+        {vizCardSafe.map((c) => <span style={`background: ${c};`}></span>)}
+      </div>
+    </details>
 
-    <section class="ds-section">
-      <h2>Data Viz — Scales</h2>
+    <details class="ds-section" open>
+      <summary><h2>Data Viz — Scales</h2></summary>
       <p>
         Sequential, diverging, and cyclical scales live in
         <code>src/lib/tokens.ts</code> (array-shaped, consumed directly by D3).
@@ -131,30 +125,41 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
       </p>
       <dl class="ds-rationale">
         <dt>Sequential single-hue (7 stops, light → dark)</dt>
-        <dd><code>vizSeq.sage</code>, <code>vizSeq.blueprint</code>, <code>vizSeq.amber</code>,
-            <code>vizSeq.brown</code>, <code>vizSeq.gray</code>. Default to <code>gray</code>
-            or <code>brown</code> when color would distract from the data.</dd>
+        <dd>
+          <div class="scale-row"><code>vizSeq.sage</code><span class="scale-strip">{vizSeq.sage.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <div class="scale-row"><code>vizSeq.blueprint</code><span class="scale-strip">{vizSeq.blueprint.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <div class="scale-row"><code>vizSeq.amber</code><span class="scale-strip">{vizSeq.amber.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <div class="scale-row"><code>vizSeq.brown</code><span class="scale-strip">{vizSeq.brown.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <div class="scale-row"><code>vizSeq.gray</code><span class="scale-strip">{vizSeq.gray.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <p class="scale-note">Default to <code>gray</code> or <code>brown</code> when color would distract from the data.</p>
+        </dd>
         <dt>Sequential multi-hue (7 stops)</dt>
         <dd>
-          Default: <code>vizSeqMulti.cividis</code> (CVD-verified;
-          no green hues that confuse protan / deutan).
-          <br />
-          Brand-flavored option: <code>vizSeqMulti.dadeda</code>
-          (blueprint → sage → neon green). Passes the L-monotonicity test
-          in <code>tests/viz-palettes.test.ts</code>, but visual review
-          under deutan / protan / tritan simulators is required before using
-          it in any shipped viz. If a simulation flattens or inverts the
-          ramp, fall back to <code>cividis</code>.
+          <div class="scale-row"><code>vizSeqMulti.cividis</code><span class="scale-strip">{vizSeqMulti.cividis.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <div class="scale-row"><code>vizSeqMulti.dadeda</code><span class="scale-strip">{vizSeqMulti.dadeda.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <p class="scale-note">
+            Default: <code>cividis</code> (CVD-verified; no green hues that confuse protan / deutan). Brand-flavored
+            option <code>dadeda</code> passes the L-monotonicity test but requires visual review under deutan /
+            protan / tritan simulators before using it in shipped viz; if a simulation flattens or inverts the ramp,
+            fall back to <code>cividis</code>.
+          </p>
         </dd>
         <dt>Diverging (7 stops, neutral midpoint)</dt>
-        <dd><code>vizDiv.brbg</code> (brown ↔ teal-green; the project's default
-            diverging), <code>vizDiv.rdbu</code> (classic, CVD-safe),
-            <code>vizDiv.puor</code> (CVD-safe alternative to RdYlGn),
-            <code>vizDiv.gray</code> (warm-cool through light, very low chroma;
-            for direction without color attention).</dd>
+        <dd>
+          <div class="scale-row"><code>vizDiv.brbg</code><span class="scale-strip">{vizDiv.brbg.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <div class="scale-row"><code>vizDiv.rdbu</code><span class="scale-strip">{vizDiv.rdbu.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <div class="scale-row"><code>vizDiv.puor</code><span class="scale-strip">{vizDiv.puor.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <div class="scale-row"><code>vizDiv.gray</code><span class="scale-strip">{vizDiv.gray.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <p class="scale-note">
+            <code>brbg</code> is the project's default. <code>gray</code> (warm-cool through light, very low chroma)
+            for direction without color attention.
+          </p>
+        </dd>
         <dt>Cyclical (12 stops, constant L, hue rotation)</dt>
-        <dd><code>vizCyc</code>. Use for time-of-day, day-of-year, angles,
-            phase. Never use a sequential ramp for cyclical data.</dd>
+        <dd>
+          <div class="scale-row"><code>vizCyc</code><span class="scale-strip">{vizCyc.map((c) => <span style={`background: ${c};`}></span>)}</span></div>
+          <p class="scale-note">Use for time-of-day, day-of-year, angles, phase. Never use a sequential ramp for cyclical data.</p>
+        </dd>
       </dl>
       <h3 class="ds-subsection-h">Palette governance</h3>
       <ul class="ds-bullets">
@@ -176,14 +181,11 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
             through <code>vizSeq.gray</code> with explicit hour / phase labels.</li>
         <li>D3 scales import from <code>tokens.ts</code>; no inline hex in
             viz code.</li>
-        <li>Accountability calibration:
-            <a href="https://www.frank.computer/" target="_blank" rel="noopener">
-              frank.computer / Chartability</a> for ongoing viz a11y review.</li>
       </ul>
-    </section>
+    </details>
 
-    <section class="ds-section">
-      <h2>Typography</h2>
+    <details class="ds-section" open>
+      <summary><h2>Typography</h2></summary>
       <div class="ds-type-scale">
         <div style="font-size: 3rem; font-weight: 700; letter-spacing: -0.02em;">DADEDA</div>
         <div style="font-size: 2rem; font-weight: 700;">Heading Level 2</div>
@@ -193,10 +195,10 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
         <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Small — metadata, labels, timestamps</div>
         <div style="font-size: 0.875rem; font-family: var(--font-mono);">Mono — code, tokens, technical details</div>
       </div>
-    </section>
+    </details>
 
-    <section class="ds-section">
-      <h2>Spacing</h2>
+    <details class="ds-section" open>
+      <summary><h2>Spacing</h2></summary>
       <div class="ds-spacing">
         {[1, 2, 3, 4, 6, 8, 12, 16, 24].map((n) => (
           <div class="ds-spacing-row">
@@ -206,10 +208,10 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
           </div>
         ))}
       </div>
-    </section>
+    </details>
 
-    <section class="ds-section">
-      <h2>AI Interaction Design</h2>
+    <details class="ds-section" open>
+      <summary><h2>AI Interaction Design</h2></summary>
       <p>
         The site is built for two audiences in parallel: humans who arrive at
         a browser, and agents who arrive on behalf of a human or alongside
@@ -277,10 +279,10 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
         principles for transparency. Accessibility calibration via
         <a href="https://www.frank.computer/" target="_blank" rel="noopener">frank.computer / Chartability</a>.
       </p>
-    </section>
+    </details>
 
-    <section class="ds-section">
-      <h2>Why These Choices</h2>
+    <details class="ds-section" open>
+      <summary><h2>Why These Choices</h2></summary>
       <dl class="ds-rationale">
         <dt>Why OKLCH?</dt>
         <dd>Perceptually uniform — equal numeric changes produce equal visual changes. Critical for data viz palettes where lightness differences encode meaning.</dd>
@@ -291,7 +293,7 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
         <dt>Why no shadow DOM?</dt>
         <dd>D3.js needs direct DOM access for <code>d3.select()</code>. Svelte compiles to direct DOM operations — no encapsulation barrier, no workarounds needed.</dd>
       </dl>
-    </section>
+    </details>
   </div>
 </Base>
 
@@ -445,6 +447,94 @@ import ColorSwatch from '../components/ColorSwatch.svelte';
   }
   .ds-strip.is-grayscale {
     filter: grayscale(1);
+  }
+  .ds-strip + .ds-strip {
+    margin-top: 4px;
+  }
+  .scale-row {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    align-items: center;
+    gap: var(--space-3);
+    margin: var(--space-2) 0;
+  }
+  .scale-row code {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+  .scale-strip {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 1px;
+    height: 1.6rem;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+  .scale-strip > span {
+    display: block;
+  }
+  .scale-note {
+    grid-column: 1 / -1;
+    margin: var(--space-3) 0 var(--space-4);
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.55;
+  }
+  .scale-note code {
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    background: var(--color-canvas-light);
+    padding: 0.05rem 0.3rem;
+    border-radius: 0.2rem;
+  }
+  @media (max-width: 768px) {
+    .scale-row {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+  /* Collapsible section affordance using native <details>. The <summary>
+   * holds the section h2 and gets a hover/focus indicator + a chevron
+   * marker that rotates open / closed. */
+  details.ds-section > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+  details.ds-section > summary::-webkit-details-marker {
+    display: none;
+  }
+  details.ds-section > summary::before {
+    content: '▸';
+    color: var(--color-text-muted);
+    font-size: 0.85em;
+    transition: transform var(--duration-fast) ease;
+    display: inline-block;
+  }
+  details.ds-section[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  details.ds-section > summary > h2 {
+    margin: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  details.ds-section > summary:hover {
+    color: var(--color-text-primary);
+  }
+  details.ds-section > summary:focus-visible {
+    outline: 2px solid var(--color-accent-blue);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
   }
   @media (max-width: 768px) {
     .ds-grid-3 { grid-template-columns: repeat(2, 1fr); }

@@ -382,7 +382,7 @@
   class:hovered={isHovered}
   class:focused={isFocused}
   class:expanded={isExpanded}
-  class:has-media={!!card.media || !!card.mediaGrid?.length}
+  class:has-media={!!card.media || !!card.mediaGrid?.length || !!videoEmbed}
   style:--phosphor-intensity={isLifted ? 1 : phosphorIntensity}
   style:transform={
     isLifted
@@ -435,7 +435,22 @@
          (1) mediaGrid → 2×2 mosaic for inspiration/lookbook cards
          (2) single media → standard image with aspect/position
          (3) neither → no media area, card stays text-focused -->
-    {#if card.mediaGrid && card.mediaGrid.length > 0}
+    {#if videoEmbed}
+      <!-- Inline video player. Lives in the media slot so it's
+           visible in both collapsed and expanded states (per #31).
+           Iframe is privacy-friendly (vimeo dnt=1, youtube-nocookie)
+           and provides its own "Watch on Provider" overlay when the
+           user mouses into it. -->
+      <div class="card-media card-media-video">
+        <iframe
+          src={videoEmbed.embedUrl}
+          title={`${card.title} — video`}
+          loading="lazy"
+          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+          allowfullscreen
+        ></iframe>
+      </div>
+    {:else if card.mediaGrid && card.mediaGrid.length > 0}
       <div class="card-media card-media-grid">
         {#each card.mediaGrid.slice(0, 4) as img, i (i)}
           <img src={img.src} alt={img.alt} loading="lazy" />
@@ -463,42 +478,12 @@
          runs under it. -->
     {#if isExpanded}
       <div class="card-expanded-body">
-        {#if videoEmbed}
-          <div class="card-video">
-            <iframe
-              src={videoEmbed.embedUrl}
-              title={`${card.title} — video`}
-              loading="lazy"
-              allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-              allowfullscreen
-            ></iframe>
-          </div>
-        {/if}
-        {#if briefAndRest.rest}
-          <p class="card-summary">{briefAndRest.rest}</p>
-        {/if}
-        {#if card.body && bodyHtml}
-          <!-- Long-form case-study content. Rendered from card.body
-               markdown via `marked` (trusted-author content). Use for
-               in-card case studies that should not require a separate
-               page navigation. -->
-          <div class="card-body">{@html bodyHtml}</div>
-        {/if}
-        {#if card.tags && card.tags.length > 0}
-          <ul class="card-tags" aria-label="Tags">
-            {#each card.tags as tag}
-              <li class="card-tag">{tag}</li>
-            {/each}
-          </ul>
-        {/if}
-        {#if videoEmbed}
-          <!-- Iframe player provides its own "Watch on Provider" overlay
-               when the user mouses into it; rendering an additional
-               external watch link here was redundant and previously
-               failed to navigate from the / character escaping. If a
-               specific external destination is wanted alongside the
-               player, use card.secondaryCta. -->
-        {:else if card.cta && card.cta.disabled}
+        <!-- CTA group sits at the TOP of the expanded body, directly
+             under the media / video iframe, so the "Watch demo" /
+             "Read article" call to action is the first thing the
+             reader sees rather than scrolling past the body to find
+             it (per #31 review feedback). -->
+        {#if card.cta && card.cta.disabled}
           <span class="card-cta-link disabled" aria-disabled="true">
             <span class="cta-label-text">{card.cta.label}</span>
             <span class="cta-disabled-hint" aria-hidden="true">— in progress</span>
@@ -542,6 +527,21 @@
               </svg>
             {/if}
           </a>
+        {/if}
+        {#if briefAndRest.rest}
+          <p class="card-summary">{briefAndRest.rest}</p>
+        {/if}
+        {#if card.body && bodyHtml}
+          <!-- Long-form case-study content. Rendered from card.body
+               markdown via `marked` (trusted-author content). -->
+          <div class="card-body">{@html bodyHtml}</div>
+        {/if}
+        {#if card.tags && card.tags.length > 0}
+          <ul class="card-tags" aria-label="Tags">
+            {#each card.tags as tag}
+              <li class="card-tag">{tag}</li>
+            {/each}
+          </ul>
         {/if}
       </div>
     {/if}
@@ -974,22 +974,17 @@
   }
 
   /*
-   * Inline video embed (Vimeo / YouTube). Only renders in the expanded
-   * card state. Aspect-ratio 16:9 with rounded corners and full bleed
-   * inside the card-expanded-body. The companion "Watch on [Provider]"
-   * secondary link below gives users an external escape hatch with the
-   * timestamp baked in.
+   * Inline video embed (Vimeo / YouTube). Lives in the card-media slot
+   * so it's visible in BOTH collapsed and expanded states. The iframe
+   * loads lazy + privacy-friendly (vimeo dnt=1, youtube-nocookie) and
+   * provides its own "Watch on Provider" overlay on hover. 16:9 fills
+   * the same slot a card-media image would.
    */
-  .card-video {
-    position: relative;
-    width: 100%;
+  .card-media-video {
     aspect-ratio: 16 / 9;
-    margin: 0 0 var(--space-4);
-    border-radius: 0.5rem;
-    overflow: hidden;
     background: oklch(0.20 0.01 155);
   }
-  .card-video iframe {
+  .card-media-video iframe {
     position: absolute;
     inset: 0;
     width: 100%;

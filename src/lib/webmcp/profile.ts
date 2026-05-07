@@ -6,7 +6,7 @@
  */
 export const PROFILE = {
   name: 'Kathryn Hurchla',
-  contactEmail: 'kathy.hurchla@fantasy.co',
+  contactEmail: 'kathryn@dadeda.design',
   oneLiner:
     "Associate Principal Engineer at Fantasy. AI-first creative engineering and data visualization, where design and engineering blur.",
   siteUrl: 'https://dadeda.design',
