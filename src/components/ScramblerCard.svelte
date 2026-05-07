@@ -151,14 +151,17 @@
     return html;
   });
 
-  // Detect a video CTA (Vimeo / YouTube). When present, the expanded
-  // card renders the iframe inline. Cards can opt out via
-  // `inlineVideo: false` in YAML — used when the source video has
-  // privacy settings that block embedding (in which case the YAML
-  // typically supplies a still screenshot via media + the cta still
-  // links to the video as a regular external destination).
+  // Detect a video CTA (Vimeo / YouTube). When present, the card
+  // renders the iframe inline. Resolution order:
+  //   1. card.videoUrl (explicit video source — used when the primary
+  //      cta points elsewhere, e.g. a workshop's GitHub repo)
+  //   2. card.cta.url (backwards compat — cards where the cta IS the
+  //      video link)
+  // Cards can opt out via `inlineVideo: false` (used when the source
+  // video has privacy settings that block embedding; the card then
+  // renders as a still-frame + cta card).
   const videoEmbed = $derived(
-    card.inlineVideo === false ? null : parseVideo(card.cta?.url),
+    card.inlineVideo === false ? null : parseVideo(card.videoUrl ?? card.cta?.url),
   );
 
   // ── Outside-click closes whichever state is active (expanded first,

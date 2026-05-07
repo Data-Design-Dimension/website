@@ -29,7 +29,7 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       </div>
     </details>
 
-    <details class="ds-section" open>
+    <details class="ds-section">
       <summary><h2>Brand Accents</h2></summary>
       <p>
         Bold colors that pop against the sage canvas. Inspired by Philadelphia industrial
@@ -42,7 +42,7 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       </div>
     </details>
 
-    <details class="ds-section" open>
+    <details class="ds-section">
       <summary><h2>Neutrals</h2></summary>
       <div class="ds-grid-5">
         <ColorSwatch client:load name="--color-surface" value="oklch(0.99 0.002 155)" label="Surface" />
@@ -53,7 +53,7 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       </div>
     </details>
 
-    <details class="ds-section" open>
+    <details class="ds-section">
       <summary><h2>Data Viz — Categorical</h2></summary>
       <p>
         Okabe-Ito hue identity, re-anchored on a monotonic lightness ladder
@@ -82,7 +82,7 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       </div>
     </details>
 
-    <details class="ds-section" open>
+    <details class="ds-section">
       <summary><h2>Data Viz — Card-Safe Categorical</h2></summary>
       <p>
         The site's category accents already carry meaning: <strong>green</strong>
@@ -115,7 +115,7 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       </div>
     </details>
 
-    <details class="ds-section" open>
+    <details class="ds-section">
       <summary><h2>Data Viz — Scales</h2></summary>
       <p>
         Sequential, diverging, and cyclical scales live in
@@ -184,7 +184,7 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       </ul>
     </details>
 
-    <details class="ds-section" open>
+    <details class="ds-section">
       <summary><h2>Typography</h2></summary>
       <div class="ds-type-scale">
         <div style="font-size: 3rem; font-weight: 700; letter-spacing: -0.02em;">DADEDA</div>
@@ -197,7 +197,7 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       </div>
     </details>
 
-    <details class="ds-section" open>
+    <details class="ds-section">
       <summary><h2>Spacing</h2></summary>
       <div class="ds-spacing">
         {[1, 2, 3, 4, 6, 8, 12, 16, 24].map((n) => (
@@ -210,7 +210,7 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       </div>
     </details>
 
-    <details class="ds-section" open>
+    <details class="ds-section">
       <summary><h2>AI Interaction Design</h2></summary>
       <p>
         The site is built for two audiences in parallel: humans who arrive at
@@ -281,7 +281,7 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       </p>
     </details>
 
-    <details class="ds-section" open>
+    <details class="ds-section">
       <summary><h2>Why These Choices</h2></summary>
       <dl class="ds-rationale">
         <dt>Why OKLCH?</dt>
@@ -514,14 +514,21 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
     display: none;
   }
   details.ds-section > summary::before {
-    content: '▸';
-    color: var(--color-text-muted);
-    font-size: 0.85em;
-    transition: transform var(--duration-fast) ease;
+    content: '▶';
+    color: var(--color-text-secondary);
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: transform var(--duration-normal) var(--ease-spring);
     display: inline-block;
+    flex-shrink: 0;
+    width: 1.25rem;
+    text-align: center;
   }
   details.ds-section[open] > summary::before {
     transform: rotate(90deg);
+  }
+  details.ds-section > summary:hover::before {
+    color: var(--color-text-primary);
   }
   details.ds-section > summary > h2 {
     margin: 0;

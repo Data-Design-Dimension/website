@@ -97,6 +97,16 @@ export interface ScramblerCard {
    * undefined / true: detect video URLs and embed automatically.
    */
   inlineVideo?: boolean;
+  /**
+   * Explicit video source URL (Vimeo / YouTube) for the inline iframe
+   * player. When present, takes precedence over cta.url for video
+   * detection. Use when the primary cta should point somewhere other
+   * than the video (e.g. a workshop card whose cta opens the GitHub
+   * notebook repo while the video player still embeds the recording).
+   * If omitted, the iframe falls back to detecting a video URL in
+   * cta.url for backwards compatibility.
+   */
+  videoUrl?: string;
   order: number;
 }
 

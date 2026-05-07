@@ -12,6 +12,6 @@ tags:
   - content-generation
 cta:
   label: Email me
-  url: 'mailto:kathryn@dadeda.design?subject=More%20projects%20request'
+  url: 'mailto:kathryn@dadeda.design?subject=portfolio%20projects%20request'
   external: true
 order: 1
