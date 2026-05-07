@@ -294,6 +294,10 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
         <dd>D3.js needs direct DOM access for <code>d3.select()</code>. Svelte compiles to direct DOM operations — no encapsulation barrier, no workarounds needed.</dd>
       </dl>
     </details>
+
+    <footer class="ds-footer">
+      <p><a href="/">← Back to the main site</a></p>
+    </footer>
   </div>
 </Base>
 
@@ -528,6 +532,28 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
     transform: rotate(90deg);
   }
   details.ds-section > summary:hover::before {
+    color: var(--color-text-primary);
+  }
+  /* Back-to-main-site footer. Lives OUTSIDE any <details> so it's
+   * always reachable regardless of section collapse state. Mirrors
+   * the footer treatment on /how-this-works for consistency. */
+  .ds-footer {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-6);
+    margin-top: var(--space-12);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  .ds-footer p {
+    margin: 0;
+  }
+  .ds-footer a {
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .ds-footer a:hover,
+  .ds-footer a:focus-visible {
     color: var(--color-text-primary);
   }
   details.ds-section > summary > h2 {
