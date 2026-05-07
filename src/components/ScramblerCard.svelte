@@ -245,6 +245,8 @@
       const rawRight = rect.right - currentShiftX;
       const rawTop = rect.top - currentShiftY;
       const rawBottom = rect.bottom - currentShiftY;
+      const cardHeight = rawBottom - rawTop;
+      const availableHeight = window.innerHeight - 2 * margin;
       let dx = 0;
       let dy = 0;
       if (rawRight > window.innerWidth - margin) {
@@ -253,11 +255,23 @@
       if (rawLeft + dx < margin) {
         dx = margin - rawLeft;
       }
-      if (rawBottom > window.innerHeight - margin) {
+      // Vertical clamp: when the card fits in the viewport, prefer
+      // top-at-margin (standard clamp). When the card is TALLER than
+      // the viewport (e.g., expanded card with long body content),
+      // anchor the BOTTOM at margin so the toggle button is always
+      // visible. The internal card-screen overflow-y:auto lets the
+      // user scroll inside the card to reach the top content.
+      if (cardHeight > availableHeight) {
+        // Card too tall: bottom-anchor.
         dy = window.innerHeight - margin - rawBottom;
-      }
-      if (rawTop + dy < margin) {
-        dy = margin - rawTop;
+      } else {
+        // Card fits: standard clamp, top-priority.
+        if (rawBottom > window.innerHeight - margin) {
+          dy = window.innerHeight - margin - rawBottom;
+        }
+        if (rawTop + dy < margin) {
+          dy = margin - rawTop;
+        }
       }
       // Skip the write if shift didn't actually change, to avoid
       // unnecessary re-renders / reactivity churn.
@@ -1517,8 +1531,12 @@
     scrollbar-width: thin;
     scrollbar-color: oklch(0.55 0.05 90 / 0.6) transparent;
     scrollbar-gutter: stable;
-    /* Keep the toggle reservation when the screen scrolls. */
-    padding-bottom: 4rem;
+    /* Bottom space reserves room for the toggle button (2.4rem +
+     * 0.4rem offset = 2.8rem) AND adds breathing room above the
+     * last row of content (especially when tags wrap to multiple
+     * rows on tall scrolling cards). 5.5rem total: ~2.7rem of
+     * actual breathing room above the toggle's top. */
+    padding-bottom: 5.5rem;
   }
   .scrambler-card.expanded .card-screen::-webkit-scrollbar {
     width: 6px;
