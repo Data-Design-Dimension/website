@@ -90,6 +90,25 @@
   aria-live="polite"
 >
   {#each clusters as cluster, i (cluster.id)}
+    <!--
+      timeOffset staggers each cluster's phase so the same card index
+      doesn't sit at the foreground angle in every orbit. CONSEQUENCE
+      for content authoring: the card that lands at the FOREGROUND
+      angle at time=0 is NOT always sorted index 0. It's whichever
+      sorted index satisfies (i_card * angleStep + timeOffset) ≡ 0
+      mod 2π, where i_card is the post-load-content sorted index.
+
+      For the current setup with three clusters and N cards each:
+        - See Work (cluster i=0, timeOffset=0): FG = sorted index 0.
+        - Get to Know (cluster i=1, timeOffset≈0.838): with N=7,
+          FG = sorted index 6 (closest to satisfying the equation).
+        - How This Works (cluster i=2, timeOffset≈1.676): N=1,
+          single card lives wherever its phase plus the offset puts it.
+
+      Authors choosing which card to feature at each cluster's
+      foreground should set per-card `order` so the desired card
+      lands at THIS cluster's FG sorted index, not at index 0.
+    -->
     <ScramblerClusterComponent
       {cluster}
       containerWidth={width}

@@ -3,9 +3,9 @@ orbit: middle
 order: 1
 cardIds:
   - plotly-workshop
-  - pycon-talk
-  - oklch-article
   - nightingale
   - nightingale-issue-5-sustainability
   - whylogs-monitoring
+  - oklch-article
   - styling-ddd-inspiration
+  - pycon-talk

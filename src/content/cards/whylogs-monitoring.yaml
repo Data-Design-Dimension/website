@@ -25,6 +25,6 @@ secondaryCta:
   label: WhyLogs example notebooks on GitHub
   url: https://github.com/khurchla/whylogs-examples
   external: true
-order: 5
+order: 3
 body: |
   Written in partnership with [WhyLabs](https://whylabs.ai/), who later closed and open-sourced their entire ML observability platform.
