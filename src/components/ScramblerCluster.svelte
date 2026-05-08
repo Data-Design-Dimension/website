@@ -62,6 +62,19 @@
           recentlyCollapsed = false;
           collapseTimer = undefined;
         }, 800);
+        /* Release any focus pin inside the cluster. The cluster's
+         * onfocusin set isPaused=true when the user tapped the
+         * toggle button (or any other focusable child); if focus
+         * never moves OUT of the cluster, focusout never fires and
+         * isPaused stays true forever, pinning the orbit indefinitely
+         * after collapse — the actual root cause of "orbit doesn't
+         * restart" reports. Blurring the active descendant on the
+         * collapse transition forces focusout to fire next tick,
+         * letting the orbit resume. */
+        const active = document.activeElement;
+        if (active && active !== document.body && clusterEl?.contains(active)) {
+          (active as HTMLElement).blur();
+        }
       }
     };
     update();

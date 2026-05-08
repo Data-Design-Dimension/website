@@ -306,17 +306,29 @@
     const observer = new ResizeObserver(recompute);
     observer.observe(cardEl);
 
-    const t1 = setTimeout(recompute, 80);
-    const t2 = setTimeout(recompute, 350);
-    const t3 = setTimeout(recompute, 700);
+    /* Final recompute after the spring transition settles (#3).
+     * Previously we sampled at 80/350/700ms guess timers, but
+     * --duration-slow is 600ms with spring overshoot, so the 700ms
+     * sample could still be mid-rebound — leaving the card visibly
+     * past the viewport edge on first expand. transitionend fires
+     * once when the transform transition truly completes, so the
+     * rect read in recompute is the final, settled rect.
+     *
+     * Each recompute may apply a new shift, retriggering the
+     * transition; the recompute's "if (dx === currentShiftX) return"
+     * guard breaks the chain once the clamp converges. */
+    const onTransitionEnd = (e: TransitionEvent) => {
+      if (e.propertyName === 'transform' && e.target === cardEl) {
+        recompute();
+      }
+    };
+    cardEl.addEventListener('transitionend', onTransitionEnd);
 
-    /* Debounce window-resize-driven recomputes (#1, #2). On iOS the
-     * address bar collapses/expands during scroll, firing many
-     * resize events with small height deltas. Each one re-ran the
-     * clamp and could push the card sideways mid-scroll, sometimes
-     * sliding it half off-screen. Wait 120ms after the last resize
-     * before recomputing — long enough to settle through chrome
-     * transitions, short enough that real rotations feel responsive. */
+    /* Debounce window-resize-driven recomputes. On iOS the address
+     * bar collapses/expands during scroll, firing many resize
+     * events with small height deltas. Each one re-ran the clamp
+     * and could push the card sideways mid-scroll. Wait 120ms after
+     * the last resize before recomputing. */
     let resizeTimer: ReturnType<typeof setTimeout> | undefined;
     const debouncedResize = () => {
       if (resizeTimer !== undefined) clearTimeout(resizeTimer);
@@ -329,9 +341,7 @@
     return () => {
       cancelAnimationFrame(initialRaf);
       observer.disconnect();
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
+      cardEl?.removeEventListener('transitionend', onTransitionEnd);
       if (resizeTimer !== undefined) clearTimeout(resizeTimer);
       window.removeEventListener('resize', debouncedResize);
     };
@@ -453,7 +463,7 @@
   }
   style:opacity={isLifted ? 1 : position.opacity}
   style:filter={isLifted || position.opacity < 0.08 ? 'none' : `blur(${position.blur}px)`}
-  style:visibility={!isLifted && position.opacity < 0.04 ? 'hidden' : null}
+  style:visibility={!isLifted && !isInteractive && position.opacity < 0.04 ? 'hidden' : null}
   role="button"
   tabindex={isInteractive ? 0 : -1}
   aria-label={card.title}
