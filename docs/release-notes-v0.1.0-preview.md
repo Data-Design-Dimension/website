@@ -51,6 +51,16 @@ First tagged release of dadeda.design, marking it ready for early-access user te
 - pycon-talk auto-expand-on-play (#34) needs YouTube IFrame API integration; deferred.
 - Issue #32 backlog: Lighthouse CI, web-vitals RUM, optional CRT-style scanlines / flicker.
 
+## Mobile fixes (post-tag refresh)
+
+This tag has been moved forward once after initial cut to roll in five mobile UX fixes from on-device iPhone 14 Pro testing:
+
+- **#35 Contact tap-through** — opening the flyout via mouseenter let the synthetic click iOS fires on the same tap fall through to the GitHub item. Open only on hover-pointer (mouse / pen) plus a 300ms guard on item clicks after open.
+- **#36 Design-system copy edits.**
+- **#37 iOS scroll on expanded cards** — added `touch-action:pan-y` and `-webkit-overflow-scrolling:touch` so the card-screen handles vertical pans instead of letting the parent's `overflow:clip` swallow them.
+- **#38 Cards jumping on mobile setup** — debounced ResizeObserver by 120ms and ignored height-only deltas under 80px so iOS address-bar transitions don't repeatedly recompute orbital radii during initial paint.
+- **#39 Cards looping after close** — held the orbit for 800ms after the last expanded card collapses so the spring transition on `transform` settles before per-frame orbital scale updates re-target it. Also clear `isHovered` on touch `pointerleave/cancel` so iOS taps don't leave cards in stale `.hovered` state.
+
 ## Tag context
 
 Pre-release flag: `--prerelease`. Tooling that auto-deploys "stable" tags should skip this one.
