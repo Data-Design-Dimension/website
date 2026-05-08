@@ -30,7 +30,7 @@ cta:
 media:
   src: /img/work/myagent2webmcp-screenshot.webp
   alt: Screenshot from the My Agent to WebMCP live demo showing the Windridge fictional retailer's generative canvas
-order: 0
+order: -1
 body: |
   Built as a participant of Google Chrome's Developers Early Preview Program, in close partnership with Fantasy leadership, and with contributions by two design developers, this prototype demonstrates interacting with a fictitious outdoors brand website by bringing your personal agent which interacts with the site's agentic tools through WebMCP, a W3C draft web spec while available in Chrome browser beta release. The corresponding webMCP API has since been included in GA Chrome releases behind experimental flags. In this recording, Fantasy Chief Experience Officer presented and demoed this live on stage in context of the future of the web at MIT 2026 EmTech conference.
 

@@ -213,8 +213,16 @@
   class:paused={orbitPaused}
   role="group"
   aria-label="{cluster.label} — {cluster.cards.length} items"
-  onmouseenter={() => (isPaused = true)}
-  onmouseleave={() => (isPaused = false)}
+  onpointerenter={(e) => {
+    /* Pause only for real hover-pointers. On touch, mouseenter is
+     * synthesized by tap and the matching mouseleave often never
+     * fires — that left the cluster paused indefinitely (#3, #6).
+     * For touch, the orbit pauses via hasExpandedCard alone. */
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') isPaused = true;
+  }}
+  onpointerleave={(e) => {
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') isPaused = false;
+  }}
   onfocusin={() => (isPaused = true)}
   onfocusout={() => (isPaused = false)}
 >

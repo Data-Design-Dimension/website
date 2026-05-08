@@ -164,12 +164,27 @@
     card.inlineVideo === false ? null : parseVideo(card.videoUrl ?? card.cta?.url),
   );
 
-  // ── Outside-click closes whichever state is active (expanded first,
+  // ── Outside-tap closes whichever state is active (expanded first,
   //    then focused). Once both are collapsed the card re-enters
   //    orbital rotation. ESC steps down the same ladder.
+  //
+  //    We listen on POINTERDOWN (not click) for two reasons:
+  //      1. iOS Safari's synthesized click after touchend can be
+  //         delayed long enough to fire after our setTimeout(0) and
+  //         catch the same tap that opened the card — collapsing it
+  //         immediately.  pointerdown fires synchronously with the
+  //         finger touch so our same-tap is already past.
+  //      2. pointerdown lets us inspect pointerType and bail on
+  //         non-input events.
+  //
+  //    A 300ms grace period after open swallows any pointerdown that
+  //    raced past the setTimeout — defensive against the "tap a card,
+  //    it disappears in a loop with another card" bug (#4).
   $effect(() => {
     if (!isFocused && !isExpanded) return;
-    function handleOutside(e: MouseEvent) {
+    const openedAt = performance.now();
+    function handleOutside(e: PointerEvent) {
+      if (performance.now() - openedAt < 300) return;
       if (cardEl && !cardEl.contains(e.target as Node)) {
         isExpanded = false;
         isFocused = false;
@@ -177,12 +192,12 @@
     }
     let attached = false;
     const t = setTimeout(() => {
-      document.addEventListener('click', handleOutside, true);
+      document.addEventListener('pointerdown', handleOutside, true);
       attached = true;
     }, 0);
     return () => {
       clearTimeout(t);
-      if (attached) document.removeEventListener('click', handleOutside, true);
+      if (attached) document.removeEventListener('pointerdown', handleOutside, true);
     };
   });
 
@@ -295,14 +310,30 @@
     const t2 = setTimeout(recompute, 350);
     const t3 = setTimeout(recompute, 700);
 
-    window.addEventListener('resize', recompute);
+    /* Debounce window-resize-driven recomputes (#1, #2). On iOS the
+     * address bar collapses/expands during scroll, firing many
+     * resize events with small height deltas. Each one re-ran the
+     * clamp and could push the card sideways mid-scroll, sometimes
+     * sliding it half off-screen. Wait 120ms after the last resize
+     * before recomputing — long enough to settle through chrome
+     * transitions, short enough that real rotations feel responsive. */
+    let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+    const debouncedResize = () => {
+      if (resizeTimer !== undefined) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        recompute();
+        resizeTimer = undefined;
+      }, 120);
+    };
+    window.addEventListener('resize', debouncedResize);
     return () => {
       cancelAnimationFrame(initialRaf);
       observer.disconnect();
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
-      window.removeEventListener('resize', recompute);
+      if (resizeTimer !== undefined) clearTimeout(resizeTimer);
+      window.removeEventListener('resize', debouncedResize);
     };
   });
 
@@ -321,6 +352,12 @@
 
   function handlePointerDown(e: PointerEvent) {
     if (!isDraggable) return;
+    /* When the card is focused or expanded, the user's pointer
+     * gesture is for reading / scrolling, not orbital repositioning.
+     * Bailing here prevents setPointerCapture from hijacking iOS
+     * scroll inside the expanded card-screen (#1). Drag stays
+     * available on collapsed orbital cards. */
+    if (isLifted) return;
     const target = e.target as Element;
     // Bail on any interactive child so its native click works without
     // the card's drag pointer-capture stealing the event. Previously
@@ -416,22 +453,22 @@
   aria-disabled={!isInteractive ? true : undefined}
   aria-hidden={!isInteractive}
   aria-grabbed={isDraggable ? isDragging : undefined}
-  onmouseenter={() => (isHovered = true)}
-  onmouseleave={() => (isHovered = false)}
+  onpointerenter={(e) => {
+    /* Only real hover-pointers (mouse, pen) drive isHovered. Touch
+     * never sets it: on iOS the synthesized mouseenter / pointerleave
+     * pair was unreliable, and a card lifting under-finger fired
+     * pointerleave → cleared isHovered → card shrank → finger over
+     * card again → loop (#4). Touch interactions go straight from
+     * tap → isFocused via handlePointerUp; no hover intermediate. */
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') isHovered = true;
+  }}
+  onpointerleave={(e) => {
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') isHovered = false;
+  }}
   onpointerdown={handlePointerDown}
   onpointermove={handlePointerMove}
   onpointerup={handlePointerUp}
-  onpointercancel={(e) => {
-    handlePointerUp(e);
-    /* Touch pointers never fire mouseleave, so isHovered would
-     * stay true after the finger lifts — the recompute effect
-     * keeps running and the card remains in CSS .hovered state.
-     * Clear it on pointercancel/leave for touch. */
-    if (e.pointerType === 'touch') isHovered = false;
-  }}
-  onpointerleave={(e) => {
-    if (e.pointerType === 'touch') isHovered = false;
-  }}
+  onpointercancel={handlePointerUp}
   onkeydown={handleCardKeydown}
   style:cursor={isDragging ? 'grabbing' : isDraggable ? 'grab' : 'default'}
 >
@@ -1506,6 +1543,15 @@
      * the visual artifact. ::before is now hidden in expanded state
      * (see rule below), so no clip-margin allowance is needed. */
     overflow: clip;
+    /* Per-spec, ancestor touch-action restricts every descendant's
+     * effective gesture set, regardless of what the descendant
+     * declares. Setting pan-y here means iOS will always honor a
+     * vertical pan gesture started anywhere inside the expanded card
+     * — even on text, images, or the toggle button — instead of
+     * letting JS pointer handlers (drag, link, etc.) hijack the
+     * gesture (#1). Tap and click still work; horizontal pan and
+     * pinch-zoom are blocked. */
+    touch-action: pan-y;
   }
   /* Hide the side-wall depth pseudo-element in expanded state. On
    * collapsed cards it gives subtle 3D weight; on expanded cards its

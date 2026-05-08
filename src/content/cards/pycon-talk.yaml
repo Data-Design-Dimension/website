@@ -8,8 +8,5 @@ tags:
   - plotly-dash
   - community
   - conference
-cta:
-  label: Watch the talk
-  url: https://www.youtube.com/watch?v=b4TcvXK5-GQ
-  external: true
+videoUrl: https://www.youtube.com/watch?v=b4TcvXK5-GQ
 order: 0
