@@ -28,6 +28,15 @@
   let clusterEl: HTMLDivElement | undefined = $state();
   let hasExpandedCard = $state(false);
   let isDraggingCard = $state(false);
+  // True for ~800ms after the last expanded/focused card closes (#39).
+  // .scrambler-card has a spring CSS transition on `transform`, so when
+  // `isLifted` flips off the scale interpolates from 1.0 back to the
+  // card's orbital scale. The orbit's per-frame scale updates re-target
+  // the spring constantly during that window — visible as two cards
+  // jockeying for position. Holding the orbit while the spring settles
+  // gives the card a stable target to land on.
+  let recentlyCollapsed = $state(false);
+  let collapseTimer: ReturnType<typeof setTimeout> | undefined;
 
   // Per-card phase offsets — added to a card's natural orbit phase so
   // the user can DRAG cards along the orbit. The offset persists after
@@ -42,9 +51,18 @@
   $effect(() => {
     if (!clusterEl || typeof MutationObserver === 'undefined') return;
     const update = () => {
+      const wasExpanded = hasExpandedCard;
       hasExpandedCard = !!clusterEl?.querySelector(
         '.scrambler-card.focused, .scrambler-card.expanded',
       );
+      if (wasExpanded && !hasExpandedCard) {
+        recentlyCollapsed = true;
+        if (collapseTimer !== undefined) clearTimeout(collapseTimer);
+        collapseTimer = setTimeout(() => {
+          recentlyCollapsed = false;
+          collapseTimer = undefined;
+        }, 800);
+      }
     };
     update();
     const obs = new MutationObserver(update);
@@ -53,7 +71,10 @@
       attributes: true,
       attributeFilter: ['class'],
     });
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+      if (collapseTimer !== undefined) clearTimeout(collapseTimer);
+    };
   });
 
   // Pause the orbital animation if hovered/focused, if any card is
@@ -61,7 +82,9 @@
   // (collapses the expanded card or releases the drag), the cluster
   // resumes orbital rotation — but with any drag-induced phase
   // offsets still applied, so cards stay where they were dragged.
-  const orbitPaused = $derived(isPaused || hasExpandedCard || isDraggingCard);
+  const orbitPaused = $derived(
+    isPaused || hasExpandedCard || isDraggingCard || recentlyCollapsed,
+  );
 
   // ── DRAG handlers ──────────────────────────────────────────────
   function handleCardDragStart() {

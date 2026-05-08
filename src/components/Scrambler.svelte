@@ -17,16 +17,43 @@
   $effect(() => {
     if (!containerEl) return;
 
+    /* Debounced + thresholded resize handling (#38). On iOS Safari,
+     * the address bar collapses/expands during initial page load and
+     * scroll, firing many ResizeObserver entries with small height
+     * deltas — each one recomputes the orbital radii and visibly
+     * jumps every card. We:
+     *   1. Ignore height-only deltas under 80px (typical address-bar
+     *      shifts are 60–80px; rotation changes are much larger).
+     *   2. Debounce by 120ms so we settle on the final size after a
+     *      transition completes rather than animating along with it. */
+    let pending: ReturnType<typeof setTimeout> | undefined;
+    let nextW = width;
+    let nextH = height;
+
     const observer = new ResizeObserver((entries) => {
       const entry = entries[0];
-      if (entry) {
-        width = entry.contentRect.width;
-        height = entry.contentRect.height;
-      }
+      if (!entry) return;
+      const w = entry.contentRect.width;
+      const h = entry.contentRect.height;
+      const widthChanged = Math.abs(w - width) > 1;
+      const heightDelta = Math.abs(h - height);
+      const heightChanged = heightDelta > 80;
+      if (!widthChanged && !heightChanged) return;
+      nextW = w;
+      nextH = h;
+      if (pending !== undefined) clearTimeout(pending);
+      pending = setTimeout(() => {
+        width = nextW;
+        height = nextH;
+        pending = undefined;
+      }, 120);
     });
 
     observer.observe(containerEl);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (pending !== undefined) clearTimeout(pending);
+    };
   });
 </script>
 

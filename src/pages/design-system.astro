@@ -241,8 +241,6 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
           The system reflects the user's choices rather than imposing a
           default. The Scrambler arrangement is one valid state of many;
           agents can rearrange it. Privacy preferences are user-controlled.
-          When an agent shares the user's profile on their behalf, the user
-          decides the message and the type.
         </dd>
         <dt>Privacy-by-design defaults</dt>
         <dd>
@@ -261,13 +259,13 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
           in <code>&lt;head&gt;</code>, and a planned <code>.md</code> endpoint
           per content page. The Scrambler card collection is
           agent-queryable via <code>getSiteMap</code> /
-          <code>searchCards</code> with full content shape — no scraping.
+          <code>searchCards</code> with full content shape to alleviate a need for agents to scrape the rendered HTML.
         </dd>
         <dt>Progressive enhancement</dt>
         <dd>
           The site works without agents. The Scrambler navigates by mouse,
           keyboard, and touch; the Knob has direct human controls; cards
-          link normally. Agent capability is additive — bring an agent and
+          link normally. Agent capability is additive. Bring an agent and
           you get more, but you don't need one.
         </dd>
       </dl>
@@ -285,13 +283,13 @@ import { viz, vizCardSafe, vizSeq, vizSeqMulti, vizDiv, vizCyc } from '../lib/to
       <summary><h2>Why These Choices</h2></summary>
       <dl class="ds-rationale">
         <dt>Why OKLCH?</dt>
-        <dd>Perceptually uniform — equal numeric changes produce equal visual changes. Critical for data viz palettes where lightness differences encode meaning.</dd>
+        <dd>Perceptually uniform, which means that equal numeric changes produce equal visual changes. Critical for data viz palettes where lightness differences encode meaning.</dd>
         <dt>Why #DADEDA?</dt>
         <dd>The brand IS the color. dadeda.design, the hex code, the sage mist canvas. One identity.</dd>
         <dt>Why Tailwind + vanilla CSS?</dt>
         <dd>Tailwind for layout and structural utility. Vanilla CSS for animation, D3 viz, and the Scrambler 3D transforms where programmatic control matters. Each tool where it's strongest.</dd>
         <dt>Why no shadow DOM?</dt>
-        <dd>D3.js needs direct DOM access for <code>d3.select()</code>. Svelte compiles to direct DOM operations — no encapsulation barrier, no workarounds needed.</dd>
+        <dd>I plan to add D3.js works to the site. D3 needs direct DOM access for <code>d3.select()</code>. Svelte compiles to direct DOM operations, so there's no encapsulation barrier, no workarounds needed.</dd>
       </dl>
     </details>
 

@@ -421,7 +421,17 @@
   onpointerdown={handlePointerDown}
   onpointermove={handlePointerMove}
   onpointerup={handlePointerUp}
-  onpointercancel={handlePointerUp}
+  onpointercancel={(e) => {
+    handlePointerUp(e);
+    /* Touch pointers never fire mouseleave, so isHovered would
+     * stay true after the finger lifts — the recompute effect
+     * keeps running and the card remains in CSS .hovered state.
+     * Clear it on pointercancel/leave for touch. */
+    if (e.pointerType === 'touch') isHovered = false;
+  }}
+  onpointerleave={(e) => {
+    if (e.pointerType === 'touch') isHovered = false;
+  }}
   onkeydown={handleCardKeydown}
   style:cursor={isDragging ? 'grabbing' : isDraggable ? 'grab' : 'default'}
 >
@@ -1508,6 +1518,14 @@
   .scrambler-card.expanded .card-screen {
     max-height: calc(100dvh - 2.5rem);
     overflow-y: auto;
+    /* iOS Safari touch scroll fix (#37). Without these, expanded
+     * cards on iPhone don't scroll at all — taps land on the body
+     * and pan gestures fall through to the page. touch-action:pan-y
+     * tells the browser this element handles vertical pans (instead
+     * of letting the parent's overflow:clip swallow them). The
+     * -webkit prefix re-enables momentum scroll on older iOS WebKit. */
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
     /* Sync the card-screen's rounded corners with the outer
      * scrambler-card (1.5rem / 2.25rem) when expanded. The base
      * card-screen radius (1.25rem / 1.85rem) is tighter and leaves a

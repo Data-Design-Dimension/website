@@ -55,11 +55,20 @@
   // those transient leaves; re-entering cancels the pending close.
   let closeTimer: ReturnType<typeof setTimeout> | undefined;
 
+  // Tap-through guard (#35). On iOS Safari, a tap on the Contact pad
+  // synthesizes mouseenter → click in one gesture; the menu opens
+  // and the synthetic click immediately lands on whichever item just
+  // rendered under the finger. Ignoring item clicks within 300ms of
+  // the menu opening blocks that pass-through without affecting real
+  // user interactions (which take longer than 300ms to land).
+  let openedAt = 0;
+
   function openContactNow() {
     if (closeTimer !== undefined) {
       clearTimeout(closeTimer);
       closeTimer = undefined;
     }
+    if (!contactOpen) openedAt = performance.now();
     contactOpen = true;
   }
 
@@ -336,7 +345,13 @@
     aria-haspopup="menu"
     aria-label="Open contact and share options"
     onclick={() => (contactOpen ? (contactOpen = false) : openContactNow())}
-    onmouseenter={openContactNow}
+    onpointerenter={(e) => {
+      /* On iOS Safari a tap fires pointerenter (pointerType:'touch')
+       * just before click. Opening on touch-pointerenter would let
+       * the synthetic click fall through onto an item. Only open on
+       * a real hover-pointer (mouse / pen). */
+      if (e.pointerType === 'mouse' || e.pointerType === 'pen') openContactNow();
+    }}
     onmouseleave={scheduleClose}
     onfocus={openContactNow}
   ></button>
@@ -387,6 +402,11 @@
           style={flyoutItemStyle(item)}
           onmouseenter={cancelClose}
           onclick={() => {
+            /* Tap-through guard (#35). If the menu opened <300ms ago,
+             * this click is almost certainly the synthetic click iOS
+             * fires on the same tap that opened the menu — ignore it
+             * so the user has to tap the item deliberately. */
+            if (performance.now() - openedAt < 300) return;
             cancelClose();
             onContactAction(item.key);
             contactOpen = false;
