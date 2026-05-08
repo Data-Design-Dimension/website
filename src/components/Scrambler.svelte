@@ -14,6 +14,31 @@
   let width = $state(800);
   let height = $state(600);
 
+  /* Single source of truth for "any card is open anywhere on the
+   * Scrambler". Hoisted from each cluster so when one cluster has an
+   * expanded card, ALL clusters pause — keeping the user's reading
+   * focus on the open card rather than letting sibling clusters orbit
+   * in the background. Also smooths a UX glitch where one cluster
+   * frozen + another moving read as "broken state". */
+  let anyCardOpen = $state(false);
+
+  $effect(() => {
+    if (!containerEl || typeof MutationObserver === 'undefined') return;
+    const update = () => {
+      anyCardOpen = !!containerEl?.querySelector(
+        '.scrambler-card.focused, .scrambler-card.expanded',
+      );
+    };
+    update();
+    const obs = new MutationObserver(update);
+    obs.observe(containerEl, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    return () => obs.disconnect();
+  });
+
   $effect(() => {
     if (!containerEl) return;
 
@@ -71,6 +96,7 @@
       containerHeight={height}
       timeOffset={i * (Math.PI * 2 / 3) * 0.4 + manualTimeOffset}
       onCardSelect={onCardSelect}
+      {anyCardOpen}
     />
   {/each}
 

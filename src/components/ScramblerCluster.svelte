@@ -14,6 +14,10 @@
     containerHeight: number;
     timeOffset?: number;
     onCardSelect?: (card: import('../lib/scrambler/types').ScramblerCard) => void;
+    /* Hoisted from Scrambler — true when ANY cluster has a focused
+     * or expanded card. All clusters pause together so background
+     * orbits don't compete with the user's reading focus. */
+    anyCardOpen?: boolean;
   }
 
   let {
@@ -22,6 +26,7 @@
     containerHeight,
     timeOffset = 0,
     onCardSelect,
+    anyCardOpen = false,
   }: Props = $props();
 
   /* Two distinct pause sources, kept separate so each can be cleared
@@ -42,7 +47,6 @@
   let focusPaused = $state(false);
   let isKeyboardActive = $state(false);
   let clusterEl: HTMLDivElement | undefined = $state();
-  let hasExpandedCard = $state(false);
   let isDraggingCard = $state(false);
   // True for ~800ms after the last expanded/focused card closes (#39).
   // .scrambler-card has a spring CSS transition on `transform`, so when
@@ -60,35 +64,38 @@
   // phase position when the orbit resumes.
   let phaseOffsets = $state<Map<string, number>>(new Map());
 
-  // While ANY card inside this cluster is FOCUSED (clicked to pause)
-  // or EXPANDED (clicked + to fully open), freeze the orbit so the
-  // active card stays put. Detected via a MutationObserver watching
-  // for either class on any descendant.
+  /* React to the global anyCardOpen signal: when it transitions
+   * true → false, hold this cluster's orbit for 800ms so any
+   * spring transitions inside this cluster's cards finish settling
+   * before motion resumes. When it goes false → true we cancel
+   * any pending grace (we're going back to a paused state anyway).
+   *
+   * prevAnyCardOpen is intentionally a plain variable, not $state —
+   * we don't want writes to it to retrigger the effect. */
+  let prevAnyCardOpen = false;
   $effect(() => {
-    if (!clusterEl || typeof MutationObserver === 'undefined') return;
-    const update = () => {
-      const wasExpanded = hasExpandedCard;
-      hasExpandedCard = !!clusterEl?.querySelector(
-        '.scrambler-card.focused, .scrambler-card.expanded',
-      );
-      if (wasExpanded && !hasExpandedCard) {
-        recentlyCollapsed = true;
-        if (collapseTimer !== undefined) clearTimeout(collapseTimer);
-        collapseTimer = setTimeout(() => {
-          recentlyCollapsed = false;
-          collapseTimer = undefined;
-        }, 800);
+    const open = anyCardOpen;
+    if (prevAnyCardOpen && !open) {
+      recentlyCollapsed = true;
+      if (collapseTimer !== undefined) clearTimeout(collapseTimer);
+      collapseTimer = setTimeout(() => {
+        recentlyCollapsed = false;
+        collapseTimer = undefined;
+      }, 800);
+    } else if (!prevAnyCardOpen && open) {
+      if (collapseTimer !== undefined) {
+        clearTimeout(collapseTimer);
+        collapseTimer = undefined;
       }
-    };
-    update();
-    const obs = new MutationObserver(update);
-    obs.observe(clusterEl, {
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['class'],
-    });
+      recentlyCollapsed = false;
+    }
+    prevAnyCardOpen = open;
+  });
+
+  /* Separate unmount cleanup — runs only when the cluster unmounts,
+   * not on every anyCardOpen change. */
+  $effect(() => {
     return () => {
-      obs.disconnect();
       if (collapseTimer !== undefined) clearTimeout(collapseTimer);
     };
   });
@@ -99,7 +106,7 @@
   // resumes orbital rotation — but with any drag-induced phase
   // offsets still applied, so cards stay where they were dragged.
   const orbitPaused = $derived(
-    hoverPaused || focusPaused || hasExpandedCard || isDraggingCard || recentlyCollapsed,
+    hoverPaused || focusPaused || anyCardOpen || isDraggingCard || recentlyCollapsed,
   );
 
   /* Track keyboard vs pointer mode globally so focusin can decide
