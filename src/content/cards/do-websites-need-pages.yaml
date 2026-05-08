@@ -21,7 +21,7 @@ media:
   src: /img/do-websites-need-pages-demo.webp
   alt: Demo screenshot of the Do Websites Need Pages? speculative web app prototype
   aspectRatio: 8 / 5
-order: 2
+order: 1
 body: |
   Voice-first interaction with a real-time multi-modal model (audio + text) over WebSocket manages conversation and tool calling, infers human intent, and uses a fast mini AI model to translate intent into cinematic prompts. Workflow automates the intent-driven drift of the world model through those prompts and renders the resulting output onto the canvas element of the page through constantly streaming data using WebRTC.
 
