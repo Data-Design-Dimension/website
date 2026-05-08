@@ -24,7 +24,23 @@
     onCardSelect,
   }: Props = $props();
 
-  let isPaused = $state(false);
+  /* Two distinct pause sources, kept separate so each can be cleared
+   * independently — this is what fixes the "orbit doesn't restart"
+   * bug on both mobile and desktop. Previously a single isPaused
+   * flag was pinned true by focusin (clicking the toggle button
+   * focuses it, focusout never fires because the button stays
+   * rendered after collapse). Splitting the source lets pointer
+   * activity override stale focus state without affecting hover.
+   *
+   *   hoverPaused — true while a mouse/pen is over the cluster.
+   *                 Cleared by pointerleave. Touch never sets it.
+   *   focusPaused — true ONLY when keyboard-driven focus enters a
+   *                 descendant. Cleared by focusout OR any
+   *                 pointerdown anywhere on the document. Touch /
+   *                 mouse focus never sets it. */
+  let hoverPaused = $state(false);
+  let focusPaused = $state(false);
+  let isKeyboardActive = $state(false);
   let clusterEl: HTMLDivElement | undefined = $state();
   let hasExpandedCard = $state(false);
   let isDraggingCard = $state(false);
@@ -62,19 +78,6 @@
           recentlyCollapsed = false;
           collapseTimer = undefined;
         }, 800);
-        /* Release any focus pin inside the cluster. The cluster's
-         * onfocusin set isPaused=true when the user tapped the
-         * toggle button (or any other focusable child); if focus
-         * never moves OUT of the cluster, focusout never fires and
-         * isPaused stays true forever, pinning the orbit indefinitely
-         * after collapse — the actual root cause of "orbit doesn't
-         * restart" reports. Blurring the active descendant on the
-         * collapse transition forces focusout to fire next tick,
-         * letting the orbit resume. */
-        const active = document.activeElement;
-        if (active && active !== document.body && clusterEl?.contains(active)) {
-          (active as HTMLElement).blur();
-        }
       }
     };
     update();
@@ -96,8 +99,40 @@
   // resumes orbital rotation — but with any drag-induced phase
   // offsets still applied, so cards stay where they were dragged.
   const orbitPaused = $derived(
-    isPaused || hasExpandedCard || isDraggingCard || recentlyCollapsed,
+    hoverPaused || focusPaused || hasExpandedCard || isDraggingCard || recentlyCollapsed,
   );
+
+  /* Track keyboard vs pointer mode globally so focusin can decide
+   * whether it was triggered by a Tab (pause is desired UX so cards
+   * don't move under keyboard nav) or by a click/tap on a button
+   * (which also focuses the button on most browsers — but the user
+   * doesn't expect a click to pin the orbit). */
+  $effect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (
+        e.key === 'Tab' ||
+        e.key === 'Enter' ||
+        e.key === ' ' ||
+        e.key.startsWith('Arrow')
+      ) {
+        isKeyboardActive = true;
+      }
+    };
+    const onPointer = () => {
+      isKeyboardActive = false;
+      /* Pointer activity always overrides any stale focus pause —
+       * defense against iOS/desktop browsers that don't reliably
+       * fire focusout when focus stays on a still-rendered button
+       * after a card collapses. */
+      focusPaused = false;
+    };
+    window.addEventListener('keydown', onKey, true);
+    window.addEventListener('pointerdown', onPointer, true);
+    return () => {
+      window.removeEventListener('keydown', onKey, true);
+      window.removeEventListener('pointerdown', onPointer, true);
+    };
+  });
 
   // ── DRAG handlers ──────────────────────────────────────────────
   function handleCardDragStart() {
@@ -227,17 +262,21 @@
   role="group"
   aria-label="{cluster.label} — {cluster.cards.length} items"
   onpointerenter={(e) => {
-    /* Pause only for real hover-pointers. On touch, mouseenter is
-     * synthesized by tap and the matching mouseleave often never
-     * fires — that left the cluster paused indefinitely (#3, #6).
-     * For touch, the orbit pauses via hasExpandedCard alone. */
-    if (e.pointerType === 'mouse' || e.pointerType === 'pen') isPaused = true;
+    /* Hover pause is a separate signal from focus pause so each can
+     * be cleared independently. Touch is excluded — there's no
+     * lingering hover state on touch. */
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') hoverPaused = true;
   }}
   onpointerleave={(e) => {
-    if (e.pointerType === 'mouse' || e.pointerType === 'pen') isPaused = false;
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') hoverPaused = false;
   }}
-  onfocusin={() => (isPaused = true)}
-  onfocusout={() => (isPaused = false)}
+  onfocusin={() => {
+    /* Only pause for keyboard-driven focus. A click or tap also
+     * triggers focusin (on the focusable target, e.g. a button) but
+     * the user doesn't expect that to pin the orbit. */
+    if (isKeyboardActive) focusPaused = true;
+  }}
+  onfocusout={() => (focusPaused = false)}
 >
   <span class="cluster-label" style:opacity={cluster.orbit === 'inner' ? 0.7 : 0.3}>
     {cluster.label}

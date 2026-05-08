@@ -2,11 +2,11 @@ label: See Work
 orbit: inner
 order: 0
 cardIds:
+  - tech-stack-skills
+  - github-repos
   - do-websites-need-pages
   - myagent2webmcp
-  - sustain-our-soil
   - freedom-map
+  - sustain-our-soil
   - invest-as-one
   - redistricting
-  - github-repos
-  - tech-stack-skills

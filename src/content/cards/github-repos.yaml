@@ -18,6 +18,6 @@ media:
   alt: "GitHub contributions heatmap for @khurchla: recent commit activity"
   aspect: wide
   position: right
-order: 6
+order: 1
 body: |
   I contribute to multiple organizations and code repositories both private and public, including Fantasy and the DADEDA GitHub org.
