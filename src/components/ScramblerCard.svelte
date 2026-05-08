@@ -419,7 +419,15 @@
   function handleToggleClick(e: MouseEvent) {
     e.stopPropagation();
     if (isExpanded) {
+      /* Tapping the – button is a "close" gesture: fully return to
+       * orbital. Previously this only cleared isExpanded, leaving
+       * isFocused true; the .focused class kept the cluster's
+       * MutationObserver reading hasExpandedCard as true, which
+       * pinned orbitPaused = true and the orbit never restarted (#6).
+       * The intermediate focused state is reachable via single tap
+       * (handlePointerUp); keyboard users still step down via ESC. */
       isExpanded = false;
+      isFocused = false;
     } else {
       isExpanded = true;
       isFocused = true; // expanding implies focused
