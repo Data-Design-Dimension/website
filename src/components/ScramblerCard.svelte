@@ -362,12 +362,13 @@
 
   function handlePointerDown(e: PointerEvent) {
     if (!isDraggable) return;
-    /* When the card is focused or expanded, the user's pointer
-     * gesture is for reading / scrolling, not orbital repositioning.
-     * Bailing here prevents setPointerCapture from hijacking iOS
-     * scroll inside the expanded card-screen (#1). Drag stays
-     * available on collapsed orbital cards. */
-    if (isLifted) return;
+    /* On expanded cards, the user's pointer gesture is for reading /
+     * scrolling — bail so setPointerCapture doesn't hijack iOS
+     * scroll inside the card-screen (#1). On focused-but-not-
+     * expanded cards we still want pointerdown so a second tap can
+     * expand the card (handlePointerUp). Drag stays available on
+     * collapsed orbital cards. */
+    if (isExpanded) return;
     const target = e.target as Element;
     // Bail on any interactive child so its native click works without
     // the card's drag pointer-capture stealing the event. Previously
@@ -402,12 +403,21 @@
     isDragging = false;
     cardEl?.releasePointerCapture(e.pointerId);
     if (onDragEnd) onDragEnd();
-    if (!dragMoved && isInteractive && !isFocused) {
-      // Pure click (no drag movement) → FOCUS the card. Orbit pauses,
-      // the card lifts forward at its current size so you can read
-      // the visible content. Click + to fully expand from there.
-      isFocused = true;
-      if (onSelect) onSelect(card);
+    if (!dragMoved && isInteractive) {
+      if (!isFocused) {
+        // First tap on an orbital card → FOCUS. Orbit pauses, the
+        // card lifts forward at its current size so the user can
+        // read the visible content.
+        isFocused = true;
+        if (onSelect) onSelect(card);
+      } else if (!isExpanded) {
+        // Second tap on a focused (but not expanded) card → EXPAND.
+        // Without this, a back-orbit card the user clicked to look
+        // at felt "frozen" — the orbit had paused but the card
+        // hadn't grown, and tapping again did nothing. Now a tap
+        // is a clear "show me more" gesture.
+        isExpanded = true;
+      }
     }
   }
 

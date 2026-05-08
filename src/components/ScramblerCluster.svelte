@@ -293,7 +293,31 @@
     <div
       class="card-wrapper"
       style:transform="translate3d({position.x}px, {position.y}px, 0) translate(-50%, -50%)"
-      style:z-index={Math.round((1 - position.z) * 100)}
+      style:z-index={
+        /* Per-orbit z-index offset so the user's primary content
+         * (See Work / inner orbit) always layers ABOVE secondary
+         * content (Get to Know / middle, How This Works / outer)
+         * when both clusters' FG cards land at the same visual
+         * angle. Without this, GTK renders later in the DOM and
+         * its FG card paints over See Work's FG card — burying
+         * myagent2webmcp behind whatever GTK card was at FG.
+         *
+         * Ranges:
+         *   inner:  200–300  (See Work — primary content)
+         *   middle: 100–200  (Get to Know)
+         *   outer:    0–100  (How This Works)
+         * Tie-points (inner back vs middle FG at 200; middle back
+         * vs outer FG at 100) only matter when an invisible deep-
+         * back card stacks against a visible FG card; DOM order
+         * paints the FG card on top, which is the desired result.
+         *
+         * Stays safely below Avatar.open (999), Knob (30), Avatar
+         * (50), card-backdrop (40), phosphor wordmark (10).
+         * Hover / focused / expanded bump above this in the CSS
+         * rules below. */
+        (cluster.orbit === 'inner' ? 200 : cluster.orbit === 'middle' ? 100 : 0)
+        + Math.round((1 - position.z) * 100)
+      }
     >
       <ScramblerCardComponent
         {card}
@@ -336,16 +360,20 @@
      Expanded cards are bumped even higher so they float over their
      orbital siblings while the user reads them.
      :global() needed because .scrambler-card is rendered by the child
-     ScramblerCard component which has its own scope hash. */
+     ScramblerCard component which has its own scope hash.
+     These !important values must sit above the inline orbital
+     z-index range (max 300 = inner FG), so hover/focused/expanded
+     cards always layer above any orbital sibling regardless of
+     orbit level. Stays below Avatar.open (999). */
   .card-wrapper:hover,
   .card-wrapper:has(:global(:focus-visible)) {
-    z-index: 200 !important;
+    z-index: 500 !important;
   }
 
   /* Focused or expanded card lifts above all orbital siblings. */
   .card-wrapper:has(:global(.scrambler-card.focused)),
   .card-wrapper:has(:global(.scrambler-card.expanded)) {
-    z-index: 250 !important;
+    z-index: 800 !important;
   }
 
   .paused .card-wrapper {
