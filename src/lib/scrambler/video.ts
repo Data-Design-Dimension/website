@@ -28,6 +28,12 @@ export interface VideoEmbed {
   startSeconds?: number;
   /** Display name for "Watch on" copy. */
   providerLabel: string;
+  /**
+   * Poster image URL to render behind the iframe so the video slot
+   * doesn't flash a dark empty box during page load. YouTube exposes
+   * a deterministic URL pattern; Vimeo requires an API call (deferred).
+   */
+  thumbnailUrl?: string;
 }
 
 const VIMEO_ID = /vimeo\.com\/(?:video\/)?(\d+)/;
@@ -79,6 +85,11 @@ export function parseVideo(url: string | undefined | null): VideoEmbed | null {
       watchUrl: url,
       startSeconds,
       providerLabel: 'YouTube',
+      /* hqdefault is universally available across YouTube videos
+       * (480x360, 4:3 — browser scales/crops to our 16:9 slot).
+       * maxresdefault would be sharper but 404s on videos without
+       * a max-res thumbnail, which would re-introduce the flash. */
+      thumbnailUrl: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
     };
   }
 

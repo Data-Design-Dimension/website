@@ -532,8 +532,19 @@
            visible in both collapsed and expanded states (per #31).
            Iframe is privacy-friendly (vimeo dnt=1, youtube-nocookie)
            and provides its own "Watch on Provider" overlay when the
-           user mouses into it. -->
-      <div class="card-media card-media-video">
+           user mouses into it.
+
+           thumbnailUrl (YouTube only) renders as a background image
+           so the video slot shows a still frame instead of an empty
+           dark box during the iframe's lazy load. Iframe paints on
+           top once ready. Vimeo has no easy URL-based thumbnail, so
+           those still flash dark briefly. -->
+      <div
+        class="card-media card-media-video"
+        style:background-image={videoEmbed.thumbnailUrl
+          ? `url(${videoEmbed.thumbnailUrl})`
+          : null}
+      >
         <iframe
           src={videoEmbed.embedUrl}
           title={`${card.title} — video`}
@@ -1104,7 +1115,14 @@
    */
   .card-media-video {
     aspect-ratio: 16 / 9;
-    background: oklch(0.20 0.01 155);
+    /* background-color (not shorthand) so the inline background-image
+     * from a derived YouTube thumbnail can sit on top of the dark
+     * fallback color. The fallback shows during the brief moment
+     * before the thumbnail jpg loads (and for Vimeo videos, where no
+     * URL-based thumbnail is available). */
+    background-color: oklch(0.20 0.01 155);
+    background-size: cover;
+    background-position: center;
   }
   .card-media-video iframe {
     position: absolute;
