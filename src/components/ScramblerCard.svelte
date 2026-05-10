@@ -39,10 +39,13 @@
   let cardEl: HTMLDivElement | undefined = $state();
 
   const isForeground = $derived(position.z < 0.3);
-  const isInteractive = $derived(position.z < 0.4);
-  // Cards remain DRAGGABLE further into the back than they are
-  // clickable — a fading card that catches your eye should still be
-  // grabbable so you can pull it back into focus before reading.
+  // Tester feedback (#40, #41): users were frustrated waiting for back-
+  // of-orbit cards to surface again before they could click. Match the
+  // interactive threshold to the draggable threshold so any card you
+  // can grab you can also tap directly. Depth blur/opacity still cue
+  // the back state; visibility:hidden takes over past the draggable
+  // boundary.
+  const isInteractive = $derived(position.z < 0.6);
   const isDraggable = $derived(position.z < 0.6);
   const phosphorIntensity = $derived(Math.max(0, 1 - position.z * 2));
 
@@ -1760,7 +1763,11 @@
   }
 
   @media (max-width: 640px) {
-    .scrambler-card { width: 240px; }
+    /* Tester #41 mobile: pair the boosted orbit radii in
+       ScramblerCluster (mobile rx/ry scale) with a slightly smaller
+       card so spreading the orbit translates into actual breathing
+       room between cards. Was 240px → 200px. */
+    .scrambler-card { width: 200px; }
     .card-toggle {
       width: 2rem;
       height: 2rem;
@@ -1774,6 +1781,17 @@
     .card-header { padding-right: 0.5rem; }
     .card-type-icon { width: 2rem; height: 1.4rem; }
     .card-type-icon svg { width: 1.25rem; height: 1.25rem; }
+    /* Tester #41 (Nicole, iPhone 15 Pro Max): tag chips were clipping
+       at the right edge. Tighten body horizontal padding (so chips have
+       more room to wrap) and add a small right padding on the tag list
+       so the last chip in a wrapped row never butts against the card
+       screen edge. */
+    .card-expanded-body {
+      padding: var(--space-4) var(--space-4) 0;
+    }
+    .card-tags {
+      padding-right: 0.25rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

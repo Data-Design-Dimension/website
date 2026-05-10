@@ -45,6 +45,11 @@
    *                 mouse focus never sets it. */
   let hoverPaused = $state(false);
   let focusPaused = $state(false);
+  // Tester feedback (#40, #41): both testers wanted to stop the orbit
+  // to read at their own pace. Tapping the cluster background (not a
+  // card) toggles a sticky pause — separate from hover/focus so the
+  // user can intentionally hold the orbit still on touch devices.
+  let tapPaused = $state(false);
   let isKeyboardActive = $state(false);
   let clusterEl: HTMLDivElement | undefined = $state();
   let isDraggingCard = $state(false);
@@ -106,7 +111,7 @@
   // resumes orbital rotation — but with any drag-induced phase
   // offsets still applied, so cards stay where they were dragged.
   const orbitPaused = $derived(
-    hoverPaused || focusPaused || anyCardOpen || isDraggingCard || recentlyCollapsed,
+    hoverPaused || focusPaused || tapPaused || anyCardOpen || isDraggingCard || recentlyCollapsed,
   );
 
   /* Track keyboard vs pointer mode globally so focusin can decide
@@ -188,7 +193,25 @@
     outer: { rxFactor: 0.40, ryFactor: 0.38, speed: 0.045 },
   } as const;
 
-  const config = $derived(orbitConfig[cluster.orbit]);
+  // Tester #41 (Nicole, iPhone 15 Pro Max): cards overlapped on mobile
+  // because rxFactor/ryFactor are viewport-fraction multipliers and the
+  // viewport shrinks faster than the card width does. Boost the radii
+  // on narrow viewports so cards spread out instead of crowding the
+  // center. Inner orbit gets the largest boost (it's the tightest).
+  // Cheap — derived once per resize, no extra animation work.
+  const config = $derived.by(() => {
+    const base = orbitConfig[cluster.orbit];
+    if (containerWidth > 0 && containerWidth < 640) {
+      const mobileScale =
+        cluster.orbit === 'inner' ? 1.55 : cluster.orbit === 'middle' ? 1.25 : 1.10;
+      return {
+        ...base,
+        rxFactor: base.rxFactor * mobileScale,
+        ryFactor: base.ryFactor * mobileScale,
+      };
+    }
+    return base;
+  });
 
   const path = $derived(
     createOrbitalPath({
@@ -284,6 +307,16 @@
     if (isKeyboardActive) focusPaused = true;
   }}
   onfocusout={() => (focusPaused = false)}
+  onclick={(e) => {
+    /* Tap on the cluster background (not on a card) toggles a sticky
+     * pause. e.target === e.currentTarget rules out clicks that bubbled
+     * up from a card, the cluster label, or any descendant. Drag in
+     * progress is also excluded so a release-after-drag doesn't flip
+     * the pause state. */
+    if (e.target !== e.currentTarget) return;
+    if (isDraggingCard) return;
+    tapPaused = !tapPaused;
+  }}
 >
   <span class="cluster-label" style:opacity={cluster.orbit === 'inner' ? 0.7 : 0.3}>
     {cluster.label}
@@ -347,6 +380,25 @@
     letter-spacing: 0.1em;
     color: var(--color-text-muted);
     pointer-events: none;
+    /* Explicit z-index keeps the cluster label below the DADEDA
+       phosphor wordmark (z-index 10) so a future positioning change
+       can't accidentally stack it over the brand mark. */
+    z-index: 5;
+  }
+
+  /* Tester #41 (Nicole, iPhone 15 Pro Max): on mobile, the cluster
+     label rendered at the same top-left anchor as the DADEDA wordmark
+     and the two superimposed visually ("SE2 Work Works"). Push the
+     cluster label below the wordmark so DADEDA stays the top-left
+     identity anchor and the cluster name reads as a stacked sub-line.
+     Wordmark sits at top: 0.75rem with line-height 1 and font-size
+     min 2.25rem, so its bottom edge is ~3rem; offset the label a bit
+     further so they breathe. */
+  @media (max-width: 640px) {
+    .cluster-label {
+      top: 3.25rem;
+      left: 0.75rem;
+    }
   }
 
   .card-wrapper {

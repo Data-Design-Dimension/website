@@ -1,6 +1,6 @@
 type: portfolio
 title: My Agent to WebMCP Personalization
-summary: "Bring-your-own-agent prototype: a fictitious outdoors brand site whose agentic tools are exposed via WebMCP, available behind experimental Chrome flags."
+summary: "Bring-your-own-agent prototype where a fictitious outdoors brand exposes agentic tools your personal agent can call through WebMCP (Chrome experimental flags)."
 tags:
   - fantasy
   - generative-ui

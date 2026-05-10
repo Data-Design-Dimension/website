@@ -23,3 +23,7 @@ secondaryCta:
   url: /design-system
   external: false
 order: 0
+body: |
+  Built static-first with Astro, interactive islands in Svelte 5, and CSS-driven 3D for the orbital scrambler. Content lives in YAML/MD so adding a card means adding a file, not editing components. Designed dual-audience from the start — agents read the same content layer humans do, with WebMCP tools registered for browser-native agent interactions.
+
+  [View the repo on GitHub](https://github.com/Data-Design-Dimension/website)

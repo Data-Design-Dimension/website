@@ -12,6 +12,7 @@
    * pad as extensions of the dial, like labels on a retro car dashboard.
    */
 
+  import { onMount } from 'svelte';
   import { toolInFlight } from '../lib/webmcp/state.svelte';
 
   interface Props {
@@ -47,6 +48,27 @@
   let dialAngle = $state(0);
   let isDragging = $state(false);
   let dialEl: HTMLDivElement | undefined = $state();
+  // First-visit nudge: tester feedback (#40, #41) — both testers
+  // didn't realize the gray center was a draggable rotation control.
+  // On first mount we run a one-shot CSS animation that wiggles a
+  // wrapper around the dial indicator ±10°, drawing the eye to it as
+  // a "this rotates" hint. Gated by sessionStorage so it doesn't
+  // replay every page view; muted under prefers-reduced-motion.
+  let showNudge = $state(false);
+
+  onMount(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    try {
+      if (sessionStorage.getItem('dadeda:knob-seen')) return;
+      sessionStorage.setItem('dadeda:knob-seen', '1');
+    } catch {
+      // sessionStorage may be unavailable (Safari private mode etc.) —
+      // fall through and show the nudge anyway. It's a one-time visual,
+      // not load-bearing.
+    }
+    showNudge = true;
+  });
 
   // Grace-period timer for closing the contact flyout. Without this, a
   // brief cursor transit through the gap between two adjacent flyout
@@ -364,6 +386,7 @@
     role="slider"
     tabindex="0"
     aria-label="Manual card cycling dial — drag or use arrow keys to navigate"
+    aria-describedby="knob-dial-tooltip"
     aria-valuemin="-180"
     aria-valuemax="180"
     aria-valuenow={Math.round((dialAngle * 180) / Math.PI)}
@@ -373,11 +396,16 @@
     onpointercancel={handleDialPointerUp}
     onkeydown={handleDialKeydown}
   >
-    <span
-      class="dial-indicator"
-      style:transform="translate(-50%, -100%) rotate({dialAngle}rad)"
-      aria-hidden="true"
-    ></span>
+    <span class="dial-nudge-wrap" class:nudging={showNudge} aria-hidden="true">
+      <span
+        class="dial-indicator"
+        style:transform="translate(-50%, -100%) rotate({dialAngle}rad)"
+        aria-hidden="true"
+      ></span>
+    </span>
+    <span id="knob-dial-tooltip" class="dial-tooltip" role="tooltip">
+      Drag to rotate the orbit
+    </span>
   </div>
 
   {#if contactOpen}
@@ -454,23 +482,30 @@
      Inactive: a light YELLOW-leaning green (hue 130) — reads as "green
      at low glow" rather than sage.
      Active: --color-accent-green, the same neon green used by .card-cta
-     so the dial visually rhymes with the cards' call-to-action color. */
+     so the dial visually rhymes with the cards' call-to-action color.
+     Active also gets a soft phosphor halo (drop-shadow) so the toggle
+     state reads at a glance — tester #40 didn't notice the previous
+     chroma-only diff was a toggle until both pads were turned off. */
   .pad-green {
     fill: oklch(0.93 0.09 130);
   }
   .pad-green.active {
     fill: var(--color-accent-green);
+    filter: drop-shadow(0 0 5px oklch(0.75 0.20 145 / 0.50));
   }
 
   /* AMBER pad — Get to Know, CRT amber text glow.
      Inactive: pale amber (lightness ≈ See Work's inactive) so the
      two off-state pads feel equally "quiet". Still clearly amber, not
-     sage. Active brightens toward the full #FFCC00 phosphor glow. */
+     sage. Active brightens toward a fuller #FFCC00 phosphor glow with
+     a matching halo. Was 0.18 chroma — boosted to 0.22 for a clearer
+     on/off read at the same lightness band as See Work's active. */
   .pad-amber {
     fill: oklch(0.92 0.10 85); /* pale amber pre-glow */
   }
   .pad-amber.active {
-    fill: oklch(0.88 0.18 95); /* ≈ #FFCC00 — light CRT amber */
+    fill: oklch(0.85 0.22 95); /* ≈ deeper CRT amber */
+    filter: drop-shadow(0 0 5px oklch(0.85 0.22 95 / 0.50));
   }
 
   /* NEUTRAL pad — Contact, warm tan/gray range so it reads as quiet
@@ -703,6 +738,57 @@
       inset -1px -1px 0 oklch(0.18 0.010 250 / 0.65);
   }
 
+  /* Nudge wrapper — applies an additive ±10° rotation on top of the
+     indicator's dialAngle transform during the first-visit hint. The
+     two transforms compose: wrapper rotates around dial center while
+     the indicator continues to track its dialAngle from inside. The
+     animation runs twice (~2.8s total) then leaves the wrapper at 0°
+     so it has no effect on subsequent user interaction. */
+  .dial-nudge-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform-origin: center;
+  }
+
+  .dial-nudge-wrap.nudging {
+    animation: knob-dial-nudge 1.4s ease-in-out 600ms 2;
+  }
+
+  @keyframes knob-dial-nudge {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+  }
+
+  /* Help tooltip above the dial. Hidden at rest; fades in on hover or
+     keyboard focus. aria-describedby on the dial means screen readers
+     also announce this on focus. */
+  .dial-tooltip {
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.3rem 0.6rem;
+    background: oklch(0.20 0.010 155 / 0.95);
+    color: oklch(0.95 0.005 155);
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    border-radius: 0.4rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast) ease;
+    z-index: 60;
+  }
+
+  .knob-dial:hover .dial-tooltip,
+  .knob-dial:focus-visible .dial-tooltip,
+  .knob-dial:focus-within .dial-tooltip {
+    opacity: 1;
+  }
+
   /* Flyout container — anchored to knob center, but its hover bounds
      extend via the .contact-bridge child so cursor transit between
      items doesn't trigger a stray mouseleave. */
@@ -841,6 +927,12 @@
   @media (prefers-reduced-motion: reduce) {
     .radial-item {
       animation: none;
+    }
+    .dial-nudge-wrap.nudging {
+      animation: none;
+    }
+    .dial-tooltip {
+      transition: none;
     }
   }
 

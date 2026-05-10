@@ -28,23 +28,57 @@
   let { onExpand, onOpenChange }: Props = $props();
 
   let hovered = $state(false);
+  let avatarBtn: HTMLButtonElement | undefined = $state();
+  let closeBtn: HTMLButtonElement | undefined = $state();
 
   function setOpen(value: boolean) {
     if (value === hovered) return;
     hovered = value;
     onOpenChange?.(value);
   }
+
+  // True when focus/pointer is moving to a sibling element that's part of
+  // the avatar UI (avatar button ↔ close button). Without this, tabbing
+  // from avatar to close button would fire blur → close, then re-focus
+  // would never happen and the close button vanishes.
+  function withinAvatarUi(target: EventTarget | null): boolean {
+    if (!(target instanceof Node)) return false;
+    return Boolean(avatarBtn?.contains(target) || closeBtn?.contains(target));
+  }
+
+  function handleLeave(e: MouseEvent) {
+    if (withinAvatarUi(e.relatedTarget)) return;
+    setOpen(false);
+  }
+
+  function handleBlur(e: FocusEvent) {
+    if (withinAvatarUi(e.relatedTarget)) return;
+    setOpen(false);
+  }
+
+  function handleClose() {
+    setOpen(false);
+  }
+
+  function handleEscape(e: KeyboardEvent) {
+    if (e.key === 'Escape' && hovered) {
+      setOpen(false);
+    }
+  }
 </script>
 
+<svelte:window onkeydown={handleEscape} />
+
 <button
+  bind:this={avatarBtn}
   class="avatar"
   class:open={hovered}
   aria-label="About Kathryn Hurchla — click to open full bio"
   aria-expanded={hovered}
   onmouseenter={() => setOpen(true)}
-  onmouseleave={() => setOpen(false)}
+  onmouseleave={handleLeave}
   onfocus={() => setOpen(true)}
-  onblur={() => setOpen(false)}
+  onblur={handleBlur}
   onclick={onExpand}
 >
   <span class="avatar-shell" aria-hidden="true">
@@ -76,6 +110,24 @@
     </span>
   </span>
 </button>
+
+{#if hovered}
+  <button
+    bind:this={closeBtn}
+    class="avatar-close"
+    type="button"
+    aria-label="Close about me"
+    onmouseenter={() => setOpen(true)}
+    onmouseleave={handleLeave}
+    onfocus={() => setOpen(true)}
+    onblur={handleBlur}
+    onclick={handleClose}
+  >
+    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+      <line x1="4" y1="8" x2="12" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+    </svg>
+  </button>
+{/if}
 
 <style>
   /*
@@ -448,13 +500,71 @@
     }
   }
 
+  /*
+   * Explicit close button for the expanded panel. Sits 0.4rem inside the
+   * top-right corner of the open card — within the 1.5rem right padding
+   * band, away from the floated photo (top-left) and bio text. Mirrors
+   * the ScramblerCard `.card-toggle` shape language (asymmetric pillow
+   * radius, hover lift) but simplified to a static minus glyph.
+   * Positioned `fixed` to the same viewport anchor as the avatar so it
+   * appears at the visual top-right of the open card without nesting a
+   * second <button> inside the avatar's button (invalid HTML).
+   */
+  .avatar-close {
+    position: fixed;
+    top: 1.4rem;
+    right: 1.4rem;
+    z-index: 51;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid oklch(0.30 0.04 155 / 0.25);
+    background: oklch(0.96 0.005 155 / 0.92);
+    color: oklch(0.30 0.04 155);
+    border-radius: 0.55rem 0 0.95rem 0 / 0.55rem 0 1.4rem 0;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px oklch(0.2 0.01 155 / 0.18);
+    transition:
+      transform var(--duration-fast) ease,
+      box-shadow var(--duration-fast) ease,
+      background-color var(--duration-fast) ease;
+  }
+
+  .avatar-close:hover {
+    transform: translateY(-2px);
+    background: oklch(0.98 0.005 155 / 0.96);
+    box-shadow: 0 4px 12px oklch(0.2 0.01 155 / 0.22);
+  }
+
+  .avatar-close:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px oklch(0.2 0.01 155 / 0.18);
+  }
+
+  .avatar-close:focus-visible {
+    outline: 2px solid var(--color-accent-green);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .avatar-close {
+      top: 1.15rem;
+      right: 1.15rem;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .avatar,
     .avatar-shell,
     .avatar-photo-wrap,
     .avatar-photo,
     .halftone,
-    .avatar-bio {
+    .avatar-bio,
+    .avatar-close {
       transition: none;
     }
   }
