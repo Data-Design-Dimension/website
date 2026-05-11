@@ -100,3 +100,94 @@ describe('openCards Set semantics (unified-pause refactor)', () => {
     expect(s.size).toBe(0);
   });
 });
+
+/* Single-selection invariant on the Scrambler parent. Models the
+ * combined openCards + selectedCardId state machine that's wired
+ * into Scrambler.svelte's onCardLiftedChange.
+ *
+ * The fully-reactive flow (cards force-collapsing themselves via a
+ * $effect when selectedCardId names someone else, which fires their
+ * own onLiftedChange(false)) can't be unit-tested without mounting
+ * the components, so we model the parent's bookkeeping directly:
+ * given any sequence of lift / unlift calls, where does selectedCardId
+ * land and is openCards consistent?
+ */
+describe('single-selection invariant — parent bookkeeping', () => {
+  interface State {
+    openCards: Set<string>;
+    selectedCardId: string | null;
+  }
+  function applyLifted(state: State, cardId: string, lifted: boolean): State {
+    const openCards = new Set(state.openCards);
+    let selectedCardId = state.selectedCardId;
+    if (lifted) {
+      openCards.add(cardId);
+      selectedCardId = cardId;
+    } else {
+      openCards.delete(cardId);
+      if (selectedCardId === cardId) selectedCardId = null;
+    }
+    return { openCards, selectedCardId };
+  }
+  const empty: State = { openCards: new Set(), selectedCardId: null };
+
+  it('lifting a card names it the active selection', () => {
+    const next = applyLifted(empty, 'card-a', true);
+    expect(next.selectedCardId).toBe('card-a');
+    expect(next.openCards.has('card-a')).toBe(true);
+  });
+
+  it('lifting a second card REPLACES the active selection', () => {
+    let s = applyLifted(empty, 'card-a', true);
+    s = applyLifted(s, 'card-b', true);
+    expect(s.selectedCardId).toBe('card-b');
+    // Both still in openCards at this instant — the older one will
+    // self-collapse via its selectedCardId-watching effect (modeled
+    // below as the simulate-collapse step).
+    expect(s.openCards.has('card-a')).toBe(true);
+    expect(s.openCards.has('card-b')).toBe(true);
+  });
+
+  it('after force-collapse, openCards holds only the new selection', () => {
+    /* Models the convergence after a two-thumb tap: B becomes the
+     * selection, A's effect fires onLiftedChange(false). End state
+     * is single-selected. */
+    let s = applyLifted(empty, 'card-a', true);
+    s = applyLifted(s, 'card-b', true);
+    // Simulate card-a's selectedCardId effect → it fires onLifted(false).
+    s = applyLifted(s, 'card-a', false);
+    expect(s.selectedCardId).toBe('card-b');
+    expect(s.openCards.size).toBe(1);
+    expect(s.openCards.has('card-b')).toBe(true);
+  });
+
+  it('closing the active selection clears selectedCardId', () => {
+    let s = applyLifted(empty, 'card-a', true);
+    s = applyLifted(s, 'card-a', false);
+    expect(s.selectedCardId).toBeNull();
+    expect(s.openCards.size).toBe(0);
+  });
+
+  it('unlifting a stale card does NOT clobber the active selection', () => {
+    /* The race during force-collapse: B is the new selection. A's
+     * selectedCardId-watching effect runs and fires onLifted(A,
+     * false). selectedCardId must remain B — the unlift of A must
+     * only clear selectedCardId when A WAS the selection. */
+    let s = applyLifted(empty, 'card-a', true);
+    s = applyLifted(s, 'card-b', true);
+    // selectedCardId is B; openCards has both.
+    s = applyLifted(s, 'card-a', false); // stale unlift of A
+    expect(s.selectedCardId).toBe('card-b');
+  });
+
+  it('three rapid taps converge to the most-recent selection', () => {
+    let s = applyLifted(empty, 'card-a', true);
+    s = applyLifted(s, 'card-b', true);
+    s = applyLifted(s, 'card-c', true);
+    // Two stale unlifts:
+    s = applyLifted(s, 'card-a', false);
+    s = applyLifted(s, 'card-b', false);
+    expect(s.selectedCardId).toBe('card-c');
+    expect([...s.openCards]).toEqual(['card-c']);
+  });
+});

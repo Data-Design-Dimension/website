@@ -18,6 +18,11 @@
      *  single source of truth for the shared `anyCardOpen` pause
      *  reason. */
     onLiftedChange?: (lifted: boolean) => void;
+    /** Currently-selected card id from the Scrambler parent. When
+     *  this is a non-null id that doesn't match this card's id, the
+     *  card force-collapses itself — that's how the single-selection
+     *  invariant converges multi-thumb taps to one selection. */
+    selectedCardId?: string | null;
     /** Force initial state. Used by the /review interface to show
      *  collapsed + expanded side-by-side. Has no effect once the user
      *  toggles state via the + button. */
@@ -29,7 +34,7 @@
     previewMode?: boolean;
   }
 
-  let { card, position, onSelect, onDragStart, onDragMove, onDragEnd, onLiftedChange, initialExpanded = false, previewMode = false }: Props = $props();
+  let { card, position, onSelect, onDragStart, onDragMove, onDragEnd, onLiftedChange, selectedCardId = null, initialExpanded = false, previewMode = false }: Props = $props();
 
   let isHovered = $state(false);
   // Two interaction states:
@@ -64,6 +69,24 @@
     return () => {
       if (prevLifted) onLiftedChange?.(false);
     };
+  });
+
+  /* Single-selection invariant. When the parent names a different
+   * card as the active selection, force-collapse this one. Two-thumb
+   * mobile taps used to land two cards in the lifted state at once
+   * (the 300ms outside-tap grace blocks the natural dismissal of the
+   * earlier tap), and closing one of them left the other selected →
+   * anyCardOpen pinned → orbit never resumed without a separate
+   * bg-tap. With this effect each new selection deterministically
+   * collapses any prior selection regardless of which tap's effects
+   * flushed first. */
+  $effect(() => {
+    if (selectedCardId === null || selectedCardId === undefined) return;
+    if (selectedCardId === card.id) return;
+    if (isFocused || isExpanded) {
+      isFocused = false;
+      isExpanded = false;
+    }
   });
 
   const isForeground = $derived(position.z < 0.3);

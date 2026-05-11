@@ -22,6 +22,12 @@
      * consequence of per-cluster bookkeeping; lifting it to the
      * parent eliminates it at the root. */
     paused: boolean;
+    /* Currently-selected card id (null when none). Drives the
+     * single-selection invariant — a card whose id doesn't match
+     * this prop force-collapses itself. Lives on the Scrambler
+     * parent so multi-thumb taps converge to a single selection
+     * regardless of which card's local pointerup fired first. */
+    selectedCardId: string | null;
     onToggleTapPause: () => void;
     onCardLiftedChange: (cardId: string, lifted: boolean) => void;
     onCardDragChange: (isDragging: boolean) => void;
@@ -34,6 +40,7 @@
     timeOffset = 0,
     onCardSelect,
     paused,
+    selectedCardId,
     onToggleTapPause,
     onCardLiftedChange,
     onCardDragChange,
@@ -241,6 +248,7 @@
       <ScramblerCardComponent
         {card}
         {position}
+        {selectedCardId}
         onSelect={onCardSelect}
         onDragStart={handleCardDragStart}
         onDragMove={handleCardDragMove}
