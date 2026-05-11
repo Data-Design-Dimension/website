@@ -339,9 +339,19 @@
      * here pauses every cluster together; the next click resumes
      * every cluster together. e.target === e.currentTarget rules
      * out bubbled clicks from a card / label; isDraggingCard
-     * filters out the release event at the end of a drag. */
+     * filters out the release event at the end of a drag.
+     *
+     * Also bail when a card is open: ScramblerCard's outside-tap
+     * effect uses the same background click to collapse the card,
+     * and we don't want the close gesture to silently switch the
+     * orbit into sticky-pause as a side effect. The orbit is
+     * already paused via anyCardOpen while the card is open, and
+     * once it closes the user expects motion to resume — flipping
+     * tapPaused here would freeze everything in a way they didn't
+     * ask for. */
     if (e.target !== e.currentTarget) return;
     if (isDraggingCard) return;
+    if (anyCardOpen) return;
     onToggleTapPause?.();
   }}
 >

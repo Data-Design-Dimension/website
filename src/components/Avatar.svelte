@@ -84,6 +84,19 @@
     }, 250);
   }
 
+  /* Cancel any pending suppression timer if the component is
+   * unmounted (route change, Astro island swap) before it fires.
+   * Without this the timeout callback would write to runes after
+   * the state container is torn down. */
+  $effect(() => {
+    return () => {
+      if (reopenTimer !== undefined) {
+        clearTimeout(reopenTimer);
+        reopenTimer = undefined;
+      }
+    };
+  });
+
   function handleEscape(e: KeyboardEvent) {
     if (e.key === 'Escape' && hovered) {
       setOpen(false);

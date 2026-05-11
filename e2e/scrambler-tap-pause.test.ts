@@ -51,6 +51,61 @@ test.describe('Scrambler — background tap pauses all clusters (#43)', () => {
     }
   });
 
+  test('background tap that closes an open card does NOT flip tap-pause', async ({
+    page,
+  }) => {
+    // Regression for the clarity-review bug (A1): when a card is
+    // open and the user clicks the cluster background to close it,
+    // that same gesture used to also flip the shared tap-pause —
+    // silently freezing the orbit after the close.
+    const clusters = page.locator('.scrambler-cluster');
+    const firstCard = page.locator('.scrambler-card').first();
+    await firstCard.scrollIntoViewIfNeeded();
+
+    // Open a card via two pointerup taps on its center (orbital →
+    // focused → expanded).
+    for (let i = 0; i < 2; i++) {
+      await firstCard.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const down = new PointerEvent('pointerdown', {
+          bubbles: true,
+          pointerType: 'mouse',
+          clientX: cx,
+          clientY: cy,
+          pointerId: 1,
+        });
+        const up = new PointerEvent('pointerup', {
+          bubbles: true,
+          pointerType: 'mouse',
+          clientX: cx,
+          clientY: cy,
+          pointerId: 1,
+        });
+        el.dispatchEvent(down);
+        el.dispatchEvent(up);
+      });
+    }
+    await expect(firstCard).toHaveClass(/expanded/);
+
+    // Background click on the cluster — closes the card via the
+    // outside-tap effect in ScramblerCard.
+    await clusters.nth(0).evaluate((el) => {
+      el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    await expect(firstCard).not.toHaveClass(/expanded/);
+
+    // The close gesture must NOT have switched the orbit into
+    // sticky-pause. After 1s (well past the 800ms recentlyCollapsed
+    // grace window) no cluster should carry the .paused class.
+    await page.waitForTimeout(1000);
+    const count = await clusters.count();
+    for (let i = 0; i < count; i++) {
+      await expect(clusters.nth(i)).not.toHaveClass(/paused/);
+    }
+  });
+
   test('clicking a different cluster background still toggles every cluster', async ({
     page,
   }) => {

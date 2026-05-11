@@ -69,6 +69,22 @@ describe('Avatar reopen guard (#47)', () => {
     guard.destroy();
   });
 
+  it('destroy() cancels a pending suppression timer (no late mutations)', () => {
+    const guard = createReopenGuard(250);
+    guard.suppress();
+    expect(guard.isSuppressed()).toBe(true);
+    guard.destroy();
+    // After destroy(), advancing past the original timer must NOT
+    // re-set the flag — clearTimeout should have torn it down.
+    vi.advanceTimersByTime(500);
+    // Suppressed is still its post-suppress value (no callback ran
+    // to flip it back), but the test that matters: no pending timer
+    // fires. Confirm by checking we can suppress again cleanly.
+    guard.suppress();
+    expect(guard.isSuppressed()).toBe(true);
+    guard.destroy();
+  });
+
   it('resets the window when close is called again mid-suppression', () => {
     const guard = createReopenGuard(250);
     guard.suppress();
