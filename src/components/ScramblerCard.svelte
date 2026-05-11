@@ -12,6 +12,12 @@
     onDragStart?: () => void;
     onDragMove?: (cardId: string, clientX: number, clientY: number) => void;
     onDragEnd?: () => void;
+    /** Fires whenever isFocused/isExpanded transition into or out of
+     *  the "lifted" state (orbital → focused / expanded → orbital).
+     *  Drives the parent Scrambler's openCards Set, which is the
+     *  single source of truth for the shared `anyCardOpen` pause
+     *  reason. */
+    onLiftedChange?: (lifted: boolean) => void;
     /** Force initial state. Used by the /review interface to show
      *  collapsed + expanded side-by-side. Has no effect once the user
      *  toggles state via the + button. */
@@ -23,7 +29,7 @@
     previewMode?: boolean;
   }
 
-  let { card, position, onSelect, onDragStart, onDragMove, onDragEnd, initialExpanded = false, previewMode = false }: Props = $props();
+  let { card, position, onSelect, onDragStart, onDragMove, onDragEnd, onLiftedChange, initialExpanded = false, previewMode = false }: Props = $props();
 
   let isHovered = $state(false);
   // Two interaction states:
@@ -37,6 +43,28 @@
   let isExpanded = $state(initialExpanded);
   const isLifted = $derived(isFocused || isExpanded);
   let cardEl: HTMLDivElement | undefined = $state();
+
+  /* Report lift-state transitions up to the Scrambler parent so it
+   * can keep the openCards Set current. Idempotent on the parent
+   * side, but we still gate on edge changes here to avoid spamming
+   * the callback on every reactive re-evaluation. */
+  let prevLifted = false;
+  $effect(() => {
+    const lifted = isLifted;
+    if (lifted !== prevLifted) {
+      onLiftedChange?.(lifted);
+      prevLifted = lifted;
+    }
+  });
+
+  /* If the card unmounts while it was lifted (route change, content
+   * swap), tell the parent so its openCards Set doesn't keep a stale
+   * id and leave anyCardOpen pinned true. */
+  $effect(() => {
+    return () => {
+      if (prevLifted) onLiftedChange?.(false);
+    };
+  });
 
   const isForeground = $derived(position.z < 0.3);
   // Tester feedback round 2 (post-#237445d): make EVERY card pointer-
@@ -407,6 +435,19 @@
     }
   }
 
+  function handleLostPointerCapture() {
+    /* Defensive drag-end. Pointer capture can be silently lost
+     * (system gesture, OS preemption, dev tools opening, mid-drag
+     * navigation) without firing pointerup or pointercancel. Without
+     * this handler, isDragging stayed true → onDragEnd never fired
+     * → the parent's `dragging` pause reason stuck on, freezing the
+     * orbit indefinitely. Mirror the cleanup half of handlePointerUp
+     * (no tap-state advancement — capture was lost, not released). */
+    if (!isDragging) return;
+    isDragging = false;
+    if (onDragEnd) onDragEnd();
+  }
+
   function handlePointerUp(e: PointerEvent) {
     if (!isDragging) return;
     isDragging = false;
@@ -504,6 +545,7 @@
   onpointermove={handlePointerMove}
   onpointerup={handlePointerUp}
   onpointercancel={handlePointerUp}
+  onlostpointercapture={handleLostPointerCapture}
   onkeydown={handleCardKeydown}
   style:cursor={isDragging ? 'grabbing' : isDraggable ? 'grab' : 'default'}
 >
