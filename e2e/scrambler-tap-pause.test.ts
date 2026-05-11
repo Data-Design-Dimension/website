@@ -122,3 +122,109 @@ test.describe('Scrambler — background tap pauses all clusters (#43)', () => {
     }
   });
 });
+
+/**
+ * Critical post-v0.1.0 regression: after a user collapsed a card via
+ * the – button, the cluster that owned that card stayed paused
+ * indefinitely. Sibling clusters resumed normally, and bg-tap
+ * unpause didn't unstick the affected cluster. Root cause:
+ * .scrambler-cluster is inset: 0 so the cluster fills the entire
+ * Scrambler; collapsing under-cursor never fires pointerleave, so
+ * hoverPaused stays true forever after anyCardOpen flips false.
+ */
+test.describe('Scrambler — cluster resumes after collapse with pointer parked', () => {
+  test('cluster orbit resumes after card collapses, pointer still over cluster', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await page.waitForSelector('.scrambler-card', { timeout: 5000 });
+
+    const firstCard = page.locator('.scrambler-card').first();
+    const cluster = page.locator('.scrambler-cluster').first();
+
+    // Mouse-hover the card so the cluster registers a mouse-pointer
+    // hoverPaused (touch never sets it; the bug is desktop-only).
+    await firstCard.hover();
+    await expect(cluster).toHaveClass(/paused/);
+
+    // Two pointerup taps to advance orbital → focused → expanded.
+    for (let i = 0; i < 2; i++) {
+      await firstCard.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const down = new PointerEvent('pointerdown', {
+          bubbles: true,
+          pointerType: 'mouse',
+          clientX: cx,
+          clientY: cy,
+          pointerId: 1,
+        });
+        const up = new PointerEvent('pointerup', {
+          bubbles: true,
+          pointerType: 'mouse',
+          clientX: cx,
+          clientY: cy,
+          pointerId: 1,
+        });
+        el.dispatchEvent(down);
+        el.dispatchEvent(up);
+      });
+    }
+    await expect(firstCard).toHaveClass(/expanded/);
+
+    // Click the – toggle on the now-expanded card. The pointer ends
+    // up at the – button screen position — still inside the cluster's
+    // bounds — and the card shrinks under it. This is the exact
+    // gesture that produces the stuck-pause bug.
+    await page.locator('.scrambler-card.expanded .card-toggle').click();
+    await expect(firstCard).not.toHaveClass(/expanded/);
+    await expect(firstCard).not.toHaveClass(/focused/);
+
+    // Past the 800ms recentlyCollapsed grace + margin. The cluster
+    // must NOT carry .paused — that's the regression we're guarding.
+    await page.waitForTimeout(1200);
+    await expect(cluster).not.toHaveClass(/paused/);
+  });
+
+  test('cluster also resumes when card is dismissed via background tap', async ({
+    page,
+  }) => {
+    // Same shape but with the outside-tap close path (the bg-tap
+    // route from #43's A1 regression). Covers the second close
+    // pathway end-to-end.
+    await page.goto('/');
+    await page.waitForSelector('.scrambler-card', { timeout: 5000 });
+
+    const firstCard = page.locator('.scrambler-card').first();
+    const cluster = page.locator('.scrambler-cluster').first();
+
+    await firstCard.hover();
+    await expect(cluster).toHaveClass(/paused/);
+
+    for (let i = 0; i < 2; i++) {
+      await firstCard.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        el.dispatchEvent(new PointerEvent('pointerdown', {
+          bubbles: true, pointerType: 'mouse', clientX: cx, clientY: cy, pointerId: 1,
+        }));
+        el.dispatchEvent(new PointerEvent('pointerup', {
+          bubbles: true, pointerType: 'mouse', clientX: cx, clientY: cy, pointerId: 1,
+        }));
+      });
+    }
+    await expect(firstCard).toHaveClass(/expanded/);
+
+    // Bg-tap on cluster — closes the card via ScramblerCard's
+    // outside-tap effect.
+    await cluster.evaluate((el) => {
+      el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    await expect(firstCard).not.toHaveClass(/expanded/);
+
+    await page.waitForTimeout(1200);
+    await expect(cluster).not.toHaveClass(/paused/);
+  });
+});

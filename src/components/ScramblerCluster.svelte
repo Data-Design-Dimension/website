@@ -97,6 +97,31 @@
         recentlyCollapsed = false;
         collapseTimer = undefined;
       }, 800);
+      /* Critical: clear hoverPaused and focusPaused on collapse.
+       *
+       * .scrambler-cluster is `position: absolute; inset: 0`, so the
+       * cluster fills the entire Scrambler region. When an expanded
+       * card collapses while the user's pointer is on its `–` close
+       * button, the card shrinks back to its orbital size but the
+       * pointer remains inside the cluster's bounds — no pointerleave
+       * fires. hoverPaused stays true forever, locking that single
+       * cluster's orbit even after anyCardOpen flips false and the
+       * recentlyCollapsed grace expires. Sibling clusters resume
+       * normally because the pointer was never over them, so the
+       * symptom presents as "the cluster whose card I just closed
+       * is the only one stuck", and bg-tap unpause doesn't help
+       * because it toggles tapPaused, not hoverPaused.
+       *
+       * Clearing both flags here resets the local pause state to the
+       * just-collapsed baseline. If the user actually moves the
+       * pointer onto a cluster from outside afterward, pointerenter
+       * will re-engage hover-pause as usual; if they keep the pointer
+       * parked, the orbit resumes (which is the intended close-gesture
+       * UX). focusPaused is force-cleared as belt-and-braces alongside
+       * — the global pointerdown listener usually handles it, but a
+       * keyboard-driven close path (Esc) doesn't fire pointerdown. */
+      hoverPaused = false;
+      focusPaused = false;
     } else if (!prevAnyCardOpen && open) {
       if (collapseTimer !== undefined) {
         clearTimeout(collapseTimer);
