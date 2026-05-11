@@ -30,6 +30,31 @@ function escapeForRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+describe('Knob pad hover-preview gating (iOS sticky-hover regression)', () => {
+  /* iOS Safari (and Chrome on iOS) treats a tap as a sticky :hover
+   * that persists until something else is tapped. Without a
+   * `(hover: hover) and (pointer: fine)` gate, the pad's hover-warming
+   * rule clamps the fill on the first tap so a subsequent
+   * deselection never reveals the transparent inactive state until
+   * the user also taps the background. This test guards the gate
+   * structurally — it lives in the source, so any future drop of the
+   * @media wrapper trips the assertion immediately. */
+  it('wraps every pad :hover rule in @media (hover: hover) and (pointer: fine)', () => {
+    const hoverGateRe = /@media\s*\(hover:\s*hover\)\s*and\s*\(pointer:\s*fine\)\s*\{[\s\S]*?\.knob:has\(\.target-(?:top|bl|br):hover\)[\s\S]*?\.knob:has\(\.target-(?:top|bl|br):hover\)[\s\S]*?\.knob:has\(\.target-(?:top|bl|br):hover\)[\s\S]*?\}/;
+    expect(KNOB_SVELTE).toMatch(hoverGateRe);
+  });
+
+  it('does NOT carry any ungated `.target-*:hover` selector that fills a pad', () => {
+    // Strip out everything inside `@media (hover: hover) ...` blocks
+    // first; any `.target-*:hover` selector left over would be a leak.
+    const withoutGated = KNOB_SVELTE.replace(
+      /@media\s*\(hover:\s*hover\)\s*and\s*\(pointer:\s*fine\)\s*\{[\s\S]*?\n  \}/g,
+      '',
+    );
+    expect(withoutGated).not.toMatch(/\.knob:has\(\.target-(?:top|bl|br):hover\)\s*\.pad-/);
+  });
+});
+
 describe('Knob pad fills (#46)', () => {
   it('inactive See-Work pad uses an alpha-bearing oklch fill', () => {
     const fill = extractFill('.pad-green');

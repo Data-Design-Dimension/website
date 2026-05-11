@@ -7,7 +7,25 @@ import { test, expect } from '@playwright/test';
  * mouseenter/focus handlers. After the fix, the close button
  * actually closes the panel and the bio stays closed even with the
  * cursor still over the avatar.
+ *
+ * Follow-up iOS bug (post-#47): on touch a tap fires onclick but
+ * neither onmouseenter nor onfocus fired reliably on the avatar
+ * button, so the bio panel never opened on iPhone/iPad. The fix
+ * routes onclick through maybeOpen so a tap opens the panel.
  */
+test.describe('Avatar — tap on touch opens the bio panel (iOS regression)', () => {
+  test.use({ hasTouch: true });
+
+  test('tap opens the panel even without hover/focus events', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForSelector('.avatar', { timeout: 5000 });
+    const avatar = page.locator('.avatar');
+    await expect(avatar).not.toHaveClass(/open/);
+    await avatar.tap();
+    await expect(avatar).toHaveClass(/open/);
+  });
+});
+
 test.describe('Avatar — "–" closes and stays closed (#47)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
