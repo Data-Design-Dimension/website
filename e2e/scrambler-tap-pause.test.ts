@@ -124,13 +124,80 @@ test.describe('Scrambler — background tap pauses all clusters (#43)', () => {
 });
 
 /**
- * Critical post-v0.1.0 regression: after a user collapsed a card via
- * the – button, the cluster that owned that card stayed paused
- * indefinitely. Sibling clusters resumed normally, and bg-tap
- * unpause didn't unstick the affected cluster. Root cause:
- * .scrambler-cluster is inset: 0 so the cluster fills the entire
- * Scrambler; collapsing under-cursor never fires pointerleave, so
- * hoverPaused stays true forever after anyCardOpen flips false.
+ * Unified-pause contract (post-refactor): all clusters share the
+ * same pause state, sourced from the Scrambler parent. There is no
+ * supported configuration where one cluster is paused while another
+ * orbits. These tests guard the all-or-nothing invariant at the DOM
+ * class level.
+ */
+test.describe('Scrambler — every cluster shares the same pause state', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await page.waitForSelector('.scrambler-cluster', { timeout: 5000 });
+  });
+
+  test('hovering anywhere on the Scrambler paints .paused on every cluster', async ({
+    page,
+  }) => {
+    const clusters = page.locator('.scrambler-cluster');
+    const count = await clusters.count();
+    expect(count).toBeGreaterThanOrEqual(2);
+
+    // Baseline (no hover) — every cluster unpaused.
+    for (let i = 0; i < count; i++) {
+      await expect(clusters.nth(i)).not.toHaveClass(/paused/);
+    }
+
+    // Hover into the Scrambler container. Every cluster should pause
+    // together, not just the topmost-in-DOM-order one.
+    await page.locator('.scrambler').first().hover();
+    for (let i = 0; i < count; i++) {
+      await expect(clusters.nth(i)).toHaveClass(/paused/);
+    }
+
+    // Move pointer well off the Scrambler. Every cluster should
+    // resume together.
+    await page.mouse.move(0, 0);
+    for (let i = 0; i < count; i++) {
+      await expect(clusters.nth(i)).not.toHaveClass(/paused/);
+    }
+  });
+
+  test('drag end always restores the shared dragging flag', async ({ page }) => {
+    /* The new dragging pause reason lives on the Scrambler parent.
+     * ScramblerCard listens for both pointerup/pointercancel and
+     * lostpointercapture so a system-preempted drag still releases
+     * the flag. We can't trigger an actual capture loss in
+     * Playwright, but we CAN verify the post-drag baseline: after
+     * a normal drag-end every cluster is back to unpaused (the
+     * smoke verification that drag state isn't leaking). */
+    const clusters = page.locator('.scrambler-cluster');
+    const card = page.locator('.scrambler-card').first();
+    const box = await card.boundingBox();
+    if (!box) throw new Error('card not visible');
+
+    // Quick drag gesture — press, move a few px, release.
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2 + 30, box.y + box.height / 2, {
+      steps: 5,
+    });
+    await page.mouse.up();
+
+    // After up + hover-off, no cluster should remain paused.
+    await page.mouse.move(0, 0);
+    const count = await clusters.count();
+    for (let i = 0; i < count; i++) {
+      await expect(clusters.nth(i)).not.toHaveClass(/paused/);
+    }
+  });
+});
+
+/**
+ * Critical post-v0.1.0 regression (kept under the refactor): after
+ * a user collapses a card, no cluster stays paused beyond the
+ * 800ms recentlyCollapsed grace, even if the user's pointer is
+ * parked inside the Scrambler.
  */
 test.describe('Scrambler — cluster resumes after collapse with pointer parked', () => {
   test('cluster orbit resumes after card collapses, pointer still over cluster', async ({

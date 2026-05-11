@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ScramblerCard, ScramblerCluster } from '../lib/scrambler/types';
+  import { isOrbitPaused } from '../lib/scrambler/pause';
   import ScramblerClusterComponent from './ScramblerCluster.svelte';
 
   interface Props {
@@ -14,43 +15,116 @@
   let width = $state(800);
   let height = $state(600);
 
-  /* Single source of truth for "any card is open anywhere on the
-   * Scrambler". Hoisted from each cluster so when one cluster has an
-   * expanded card, ALL clusters pause — keeping the user's reading
-   * focus on the open card rather than letting sibling clusters orbit
-   * in the background. Also smooths a UX glitch where one cluster
-   * frozen + another moving read as "broken state". */
-  let anyCardOpen = $state(false);
-
-  /* Single source of truth for the sticky background-tap pause (#43).
-   * Hoisted so a click on ANY cluster's background freezes (or
-   * resumes) every cluster together. Previously each cluster carried
-   * its own tapPaused boolean and a click only flipped the one it
-   * landed in — half the orbit kept moving, which read as a bug.
-   * Tester also reported the inverse intent: "if clicking the
-   * background pauses anything it must pause everything, otherwise
-   * remove the behavior." A single shared boolean is the simplest
-   * possible coordination. */
+  /*
+   * SINGLE-SOURCE-OF-TRUTH PAUSE STATE.
+   *
+   * Every cluster reads the same `paused` derived. There is no
+   * intentional UX reason for one cluster to pause while another
+   * orbits — the prior per-cluster model produced asymmetric freezes
+   * (one cluster's local hover/focus/drag flag could stick without
+   * affecting siblings, and the user had no recovery path short of
+   * very specific pointer choreography). Hoisting every reason here
+   * removes that whole class of bugs at the root.
+   *
+   * Reasons:
+   *   hovered            — pointer is anywhere inside the Scrambler
+   *                        (mouse/pen only — touch never sets it)
+   *   focusInside        — keyboard focus is inside the Scrambler
+   *                        (gated by isKeyboardActive in the
+   *                        derivation so click-driven focus on a
+   *                        button doesn't pin the orbit)
+   *   tapPaused          — sticky toggle from a background click
+   *   openCards          — set of currently-lifted card IDs;
+   *                        anyCardOpen = openCards.size > 0
+   *   dragging           — a card is mid-drag anywhere
+   *   recentlyCollapsed  — 800ms grace after a card-close so the
+   *                        spring transitions settle visually before
+   *                        orbital motion resumes
+   */
+  let hovered = $state(false);
+  let focusInside = $state(false);
+  let isKeyboardActive = $state(false);
   let tapPaused = $state(false);
-  function toggleTapPause() {
-    tapPaused = !tapPaused;
-  }
+  let openCards = $state<Set<string>>(new Set());
+  let dragging = $state(false);
+  let recentlyCollapsed = $state(false);
+  let collapseTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const anyCardOpen = $derived(openCards.size > 0);
+
+  const paused = $derived(
+    isOrbitPaused({
+      hover: hovered,
+      focus: focusInside && isKeyboardActive,
+      tap: tapPaused,
+      anyCardOpen,
+      dragging,
+      recentlyCollapsed,
+    }),
+  );
+
+  /* Card-close grace: when anyCardOpen transitions true→false, hold
+   * every cluster's orbit for 800ms so any in-flight spring
+   * transitions on the closing card finish settling. Also force-clear
+   * hovered + focusInside on the same edge — the .scrambler div is
+   * the outermost pause boundary and closing a card under the cursor
+   * doesn't fire pointerleave on the scrambler itself, so without an
+   * explicit reset the hover-pause would pin every cluster
+   * indefinitely after a close gesture. The close is an explicit
+   * "I'm done reading" signal; pointerenter re-engages hover-pause on
+   * the next pointer-from-outside if the user wants it. */
+  let prevAnyCardOpen = false;
+  $effect(() => {
+    const open = anyCardOpen;
+    if (prevAnyCardOpen && !open) {
+      recentlyCollapsed = true;
+      if (collapseTimer !== undefined) clearTimeout(collapseTimer);
+      collapseTimer = setTimeout(() => {
+        recentlyCollapsed = false;
+        collapseTimer = undefined;
+      }, 800);
+      hovered = false;
+      focusInside = false;
+    } else if (!prevAnyCardOpen && open) {
+      if (collapseTimer !== undefined) {
+        clearTimeout(collapseTimer);
+        collapseTimer = undefined;
+      }
+      recentlyCollapsed = false;
+    }
+    prevAnyCardOpen = open;
+  });
 
   $effect(() => {
-    if (!containerEl || typeof MutationObserver === 'undefined') return;
-    const update = () => {
-      anyCardOpen = !!containerEl?.querySelector(
-        '.scrambler-card.focused, .scrambler-card.expanded',
-      );
+    return () => {
+      if (collapseTimer !== undefined) clearTimeout(collapseTimer);
     };
-    update();
-    const obs = new MutationObserver(update);
-    obs.observe(containerEl, {
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-    return () => obs.disconnect();
+  });
+
+  /* Global keyboard / pointer mode tracking. Keyboard activity gates
+   * focusInside from contributing to pause (so a click-driven focus
+   * doesn't pin the orbit). One listener pair for the whole
+   * Scrambler — was duplicated per-cluster before. */
+  $effect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (
+        e.key === 'Tab' ||
+        e.key === 'Enter' ||
+        e.key === ' ' ||
+        e.key.startsWith('Arrow')
+      ) {
+        isKeyboardActive = true;
+      }
+    };
+    const onPointer = () => {
+      isKeyboardActive = false;
+    };
+    window.addEventListener('keydown', onKey, true);
+    window.addEventListener('pointerdown', onPointer, true);
+    return () => {
+      window.removeEventListener('keydown', onKey, true);
+      window.removeEventListener('pointerdown', onPointer, true);
+    };
   });
 
   $effect(() => {
@@ -94,6 +168,41 @@
       if (pending !== undefined) clearTimeout(pending);
     };
   });
+
+  // ── Callbacks for descendants ────────────────────────────────────
+
+  function toggleTapPause() {
+    /* Guards: bg-tap that closes a card shouldn't also flip pause
+     * (A1 from the v0.1.0 clarity review). And a release-after-drag
+     * synthesized click shouldn't flip pause either. */
+    if (anyCardOpen) return;
+    if (dragging) return;
+    tapPaused = !tapPaused;
+  }
+
+  function onCardLiftedChange(cardId: string, lifted: boolean) {
+    /* Idempotent Set updates — robust against duplicate or missed
+     * calls (a card unmounting while lifted, a re-render firing the
+     * same transition twice). add/remove of an existing/missing key
+     * is a no-op rather than a count drift. */
+    if (lifted) {
+      if (openCards.has(cardId)) return;
+      openCards = new Set([...openCards, cardId]);
+    } else {
+      if (!openCards.has(cardId)) return;
+      const next = new Set(openCards);
+      next.delete(cardId);
+      openCards = next;
+    }
+  }
+
+  function onCardDragChange(isDragging: boolean) {
+    /* Card-level pointer capture means at most one card drags at a
+     * time, so a single boolean is sufficient. ScramblerCard also
+     * listens for lostpointercapture so a system-preempted drag
+     * doesn't strand this flag at true. */
+    dragging = isDragging;
+  }
 </script>
 
 <div
@@ -102,6 +211,25 @@
   role="region"
   aria-label="Interactive content navigator — use Tab to focus on cards, Enter to select"
   aria-live="polite"
+  onpointerenter={(e) => {
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') hovered = true;
+  }}
+  onpointerleave={(e) => {
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') hovered = false;
+  }}
+  onpointercancel={() => {
+    hovered = false;
+  }}
+  onfocusin={() => {
+    if (isKeyboardActive) focusInside = true;
+  }}
+  onfocusout={(e) => {
+    /* Only clear when focus is actually leaving the Scrambler
+     * entirely. Tab between sibling cards keeps focus inside; we
+     * don't want each Tab to trip a false focusout-then-focusin. */
+    if (e.relatedTarget instanceof Node && containerEl?.contains(e.relatedTarget)) return;
+    focusInside = false;
+  }}
 >
   {#each clusters as cluster, i (cluster.id)}
     <!--
@@ -129,9 +257,10 @@
       containerHeight={height}
       timeOffset={i * (Math.PI * 2 / 3) * 0.4 + manualTimeOffset}
       onCardSelect={onCardSelect}
-      {anyCardOpen}
-      {tapPaused}
+      {paused}
       onToggleTapPause={toggleTapPause}
+      onCardLiftedChange={onCardLiftedChange}
+      onCardDragChange={onCardDragChange}
     />
   {/each}
 
