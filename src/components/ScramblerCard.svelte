@@ -557,6 +557,7 @@
           title={`${card.title} — video`}
           loading="lazy"
           allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+          style:pointer-events={isLifted ? 'auto' : 'none'}
         ></iframe>
       </div>
     {:else if card.mediaGrid && card.mediaGrid.length > 0}

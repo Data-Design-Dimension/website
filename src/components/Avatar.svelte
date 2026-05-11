@@ -30,11 +30,29 @@
   let hovered = $state(false);
   let avatarBtn: HTMLButtonElement | undefined = $state();
   let closeBtn: HTMLButtonElement | undefined = $state();
+  /* #47 — the close button is a SIBLING of the avatar button,
+   * conditionally rendered while `hovered` is true. After the user
+   * clicks "–", that button unmounts and the pointer (and any
+   * keyboard focus) lands back on the avatar underneath, firing its
+   * `onmouseenter` / `onfocus`. Both handlers re-opened the bio
+   * panel, so the close click appeared to do nothing.
+   *
+   * We set `suppressReopen` for a brief window after every close so
+   * those follow-up open events get swallowed. 250ms is long enough
+   * to cover the unmount → enter / focus cascade across browsers and
+   * short enough to feel instant if the user deliberately re-hovers. */
+  let suppressReopen = $state(false);
+  let reopenTimer: ReturnType<typeof setTimeout> | undefined;
 
   function setOpen(value: boolean) {
     if (value === hovered) return;
     hovered = value;
     onOpenChange?.(value);
+  }
+
+  function maybeOpen() {
+    if (suppressReopen) return;
+    setOpen(true);
   }
 
   // True when focus/pointer is moving to a sibling element that's part of
@@ -57,8 +75,27 @@
   }
 
   function handleClose() {
+    suppressReopen = true;
     setOpen(false);
+    if (reopenTimer !== undefined) clearTimeout(reopenTimer);
+    reopenTimer = setTimeout(() => {
+      suppressReopen = false;
+      reopenTimer = undefined;
+    }, 250);
   }
+
+  /* Cancel any pending suppression timer if the component is
+   * unmounted (route change, Astro island swap) before it fires.
+   * Without this the timeout callback would write to runes after
+   * the state container is torn down. */
+  $effect(() => {
+    return () => {
+      if (reopenTimer !== undefined) {
+        clearTimeout(reopenTimer);
+        reopenTimer = undefined;
+      }
+    };
+  });
 
   function handleEscape(e: KeyboardEvent) {
     if (e.key === 'Escape' && hovered) {
@@ -75,9 +112,9 @@
   class:open={hovered}
   aria-label="About Kathryn Hurchla — click to open full bio"
   aria-expanded={hovered}
-  onmouseenter={() => setOpen(true)}
+  onmouseenter={maybeOpen}
   onmouseleave={handleLeave}
-  onfocus={() => setOpen(true)}
+  onfocus={maybeOpen}
   onblur={handleBlur}
   onclick={onExpand}
 >
