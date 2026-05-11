@@ -136,26 +136,45 @@ test.describe('Scrambler — every cluster shares the same pause state', () => {
     await page.waitForSelector('.scrambler-cluster', { timeout: 5000 });
   });
 
-  test('hovering anywhere on the Scrambler paints .paused on every cluster', async ({
+  test('hovering empty background is NOT meaningful — no cluster pauses', async ({
     page,
   }) => {
+    /* The Scrambler fills most of the viewport. If hovering the
+     * empty background paused the orbit, the orbit would never run
+     * in practice. Only hovering a card is a meaningful "I'm reading
+     * something" gesture. */
     const clusters = page.locator('.scrambler-cluster');
     const count = await clusters.count();
     expect(count).toBeGreaterThanOrEqual(2);
 
-    // Baseline (no hover) — every cluster unpaused.
+    // Move the pointer to a corner of the Scrambler that's
+    // demonstrably not over any card. We measure the Scrambler
+    // bounding box and aim at the top edge between the wordmark and
+    // any orbital card.
+    const scrambler = page.locator('.scrambler').first();
+    const box = await scrambler.boundingBox();
+    if (!box) throw new Error('scrambler not visible');
+    // Aim near top-right corner — outside all orbital ellipses.
+    await page.mouse.move(box.x + box.width - 32, box.y + 32);
+
+    // No cluster should be paused — the pointer is over Scrambler
+    // background, not a card.
     for (let i = 0; i < count; i++) {
       await expect(clusters.nth(i)).not.toHaveClass(/paused/);
     }
+  });
 
-    // Hover into the Scrambler container. Every cluster should pause
-    // together, not just the topmost-in-DOM-order one.
-    await page.locator('.scrambler').first().hover();
+  test('hovering a card paints .paused on every cluster', async ({ page }) => {
+    const clusters = page.locator('.scrambler-cluster');
+    const count = await clusters.count();
+    expect(count).toBeGreaterThanOrEqual(2);
+
+    await page.locator('.scrambler-card').first().hover();
     for (let i = 0; i < count; i++) {
       await expect(clusters.nth(i)).toHaveClass(/paused/);
     }
 
-    // Move pointer well off the Scrambler. Every cluster should
+    // Move pointer off the Scrambler entirely. Every cluster should
     // resume together.
     await page.mouse.move(0, 0);
     for (let i = 0; i < count; i++) {

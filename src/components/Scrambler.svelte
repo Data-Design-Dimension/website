@@ -211,8 +211,23 @@
   role="region"
   aria-label="Interactive content navigator — use Tab to focus on cards, Enter to select"
   aria-live="polite"
-  onpointerenter={(e) => {
-    if (e.pointerType === 'mouse' || e.pointerType === 'pen') hovered = true;
+  onpointermove={(e) => {
+    /* Hover only pauses when the pointer is OVER A CARD — never over
+     * empty Scrambler background or a cluster label. The Scrambler
+     * fills most of the viewport, so a "hover anywhere = pause" rule
+     * would make the orbit never run in practice. Card hover is the
+     * only meaningful "I'm reading something" gesture; bg hover
+     * means nothing (and bg-click still toggles the sticky tap-pause
+     * if the user wants to hold the orbit still).
+     *
+     * pointermove bubbles from any descendant, so a single listener
+     * on .scrambler catches every gesture. We re-derive hovered on
+     * each move from the current target (~5-level closest() walk;
+     * negligible). Stationary pointers don't fire pointermove, so
+     * once set the value persists until the next motion. */
+    if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+    const target = e.target as Element | null;
+    hovered = !!(target?.closest?.('.scrambler-card'));
   }}
   onpointerleave={(e) => {
     if (e.pointerType === 'mouse' || e.pointerType === 'pen') hovered = false;
