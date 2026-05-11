@@ -522,9 +522,15 @@
     height: 2rem;
     padding: 0;
     border: 1px solid oklch(0.30 0.04 155 / 0.25);
-    background: oklch(0.96 0.005 155 / 0.92);
+    /* Translucent neutral sage — lets the card's amber→green gradient
+       breathe through. ~0.40 alpha leans on the backdrop-filter blur
+       for legibility against any underlying hue. */
+    background: oklch(0.96 0.005 155 / 0.40);
     color: oklch(0.30 0.04 155);
-    border-radius: 0.55rem 0 0.95rem 0 / 0.55rem 0 1.4rem 0;
+    /* TR + BL rounded so the big rounded edge follows the card's
+       outer top-right pillow corner. Mirror of the card-toggle
+       pattern (which sits at bottom-right). */
+    border-radius: 0 0.95rem 0 0.55rem / 0 1.4rem 0 0.55rem;
     cursor: pointer;
     backdrop-filter: blur(4px);
     box-shadow: 0 2px 6px oklch(0.2 0.01 155 / 0.18);
@@ -536,7 +542,7 @@
 
   .avatar-close:hover {
     transform: translateY(-2px);
-    background: oklch(0.98 0.005 155 / 0.96);
+    background: oklch(0.96 0.005 155 / 0.55);
     box-shadow: 0 4px 12px oklch(0.2 0.01 155 / 0.22);
   }
 

@@ -39,13 +39,19 @@
   let cardEl: HTMLDivElement | undefined = $state();
 
   const isForeground = $derived(position.z < 0.3);
-  // Tester feedback (#40, #41): users were frustrated waiting for back-
-  // of-orbit cards to surface again before they could click. Match the
-  // interactive threshold to the draggable threshold so any card you
-  // can grab you can also tap directly. Depth blur/opacity still cue
-  // the back state; visibility:hidden takes over past the draggable
-  // boundary.
-  const isInteractive = $derived(position.z < 0.6);
+  // Tester feedback round 2 (post-#237445d): make EVERY card pointer-
+  // clickable regardless of depth. The depth blur/opacity/scale already
+  // cue the back state — there's no reason to lock the click target.
+  // Keyboard Tab order is the only place we keep a depth limit
+  // (isInTabOrder below) so traversing the orbit by Tab stays
+  // reasonable. The dial's Arrow-key control still gives keyboard
+  // users access to any card by rotating it to the foreground.
+  const isInteractive = true;
+  // Tab-stop subset: less-blurry cards (front ~70% of the orbit)
+  // remain in keyboard Tab order. Cards beyond z=0.7 are still
+  // pointer-clickable and discoverable to AT via virtual cursor —
+  // they just don't add to the Tab traversal count.
+  const isInTabOrder = $derived(position.z < 0.7);
   const isDraggable = $derived(position.z < 0.6);
   const phosphorIntensity = $derived(Math.max(0, 1 - position.z * 2));
 
@@ -476,13 +482,11 @@
   }
   style:opacity={isLifted ? 1 : position.opacity}
   style:filter={isLifted || position.opacity < 0.08 ? 'none' : `blur(${position.blur}px)`}
-  style:visibility={!isLifted && !isInteractive && position.opacity < 0.04 ? 'hidden' : null}
+  style:visibility={!isLifted && position.opacity < 0.04 ? 'hidden' : null}
   role="button"
-  tabindex={isInteractive ? 0 : -1}
+  tabindex={isInTabOrder ? 0 : -1}
   aria-label={card.title}
-  aria-expanded={isInteractive ? isExpanded : undefined}
-  aria-disabled={!isInteractive ? true : undefined}
-  aria-hidden={!isInteractive}
+  aria-expanded={isExpanded}
   aria-grabbed={isDraggable ? isDragging : undefined}
   onpointerenter={(e) => {
     /* Only real hover-pointers (mouse, pen) drive isHovered. Touch
@@ -1095,9 +1099,13 @@
      * The previous 1rem margin-top exposed card-screen's glass-tint
      * background between media and body, which read as a green/amber
      * "band cutting through" the card. Internal padding keeps the
-     * text breathing room without revealing the seam. */
+     * text breathing room without revealing the seam.
+     *
+     * Bottom padding of var(--space-8) (2rem ≈ two tag-heights) gives
+     * the last tag row a clear breathing zone before the card edge /
+     * toggle button — tester feedback after #237445d. */
     margin-top: 0;
-    padding: var(--space-4) var(--space-6) 0;
+    padding: var(--space-4) var(--space-6) var(--space-8);
     position: relative;
     z-index: 0;
   }
@@ -1785,9 +1793,10 @@
        at the right edge. Tighten body horizontal padding (so chips have
        more room to wrap) and add a small right padding on the tag list
        so the last chip in a wrapped row never butts against the card
-       screen edge. */
+       screen edge. Preserve the var(--space-8) bottom padding so the
+       last tag still has two tag-heights of breathing room. */
     .card-expanded-body {
-      padding: var(--space-4) var(--space-4) 0;
+      padding: var(--space-4) var(--space-4) var(--space-8);
     }
     .card-tags {
       padding-right: 0.25rem;

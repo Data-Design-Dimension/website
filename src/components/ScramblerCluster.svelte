@@ -370,9 +370,15 @@
     inset: 0;
   }
 
+  /* Position cluster labels BELOW the DADEDA wordmark across all
+     breakpoints. Wordmark uses font-size clamp(2.25rem, 4vw, 3.25rem)
+     anchored at top: 1rem on desktop — its bottom edge can reach
+     ~4.25rem on wide viewports. 4.5rem clears it with breathing room.
+     Mobile keeps a tighter offset since the wordmark there is at the
+     clamp floor (2.25rem) anchored at 0.75rem. */
   .cluster-label {
     position: absolute;
-    top: var(--space-4);
+    top: 4.5rem;
     left: var(--space-4);
     font-size: 0.75rem;
     font-family: var(--font-mono);
@@ -386,14 +392,6 @@
     z-index: 5;
   }
 
-  /* Tester #41 (Nicole, iPhone 15 Pro Max): on mobile, the cluster
-     label rendered at the same top-left anchor as the DADEDA wordmark
-     and the two superimposed visually ("SE2 Work Works"). Push the
-     cluster label below the wordmark so DADEDA stays the top-left
-     identity anchor and the cluster name reads as a stacked sub-line.
-     Wordmark sits at top: 0.75rem with line-height 1 and font-size
-     min 2.25rem, so its bottom edge is ~3rem; offset the label a bit
-     further so they breathe. */
   @media (max-width: 640px) {
     .cluster-label {
       top: 3.25rem;

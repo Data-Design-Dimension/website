@@ -150,12 +150,17 @@
   // of the Knob. All items share the same x so their left edges line up;
   // y values are evenly stepped by 3rem so vertical gaps are uniform.
   // Reads as an intentional menu rather than an arbitrary fan.
+  // Vertical gap between flyout items: 3.6rem in the settled position
+  // (was 3rem) so larger-thumb tap targets have clear breathing room
+  // between them. Starting yRem shifted up to keep the whole stack
+  // centered against the contact pad. Total stack height: 4 gaps ×
+  // 3.6rem = 14.4rem (was 12rem) — still within the windshield.
   const contactItems = [
-    { key: 'email', label: 'Email me', xRem: 8.5, yRem: -10.5 },
-    { key: 'resume', label: 'Resume', xRem: 8.5, yRem: -7.5 },
-    { key: 'share', label: 'Share', xRem: 8.5, yRem: -4.5 },
-    { key: 'linkedin', label: 'LinkedIn', xRem: 8.5, yRem: -1.5 },
-    { key: 'github', label: 'GitHub', xRem: 8.5, yRem: 1.5 },
+    { key: 'email', label: 'Email me', xRem: 8.5, yRem: -12.6 },
+    { key: 'resume', label: 'Resume', xRem: 8.5, yRem: -9.0 },
+    { key: 'share', label: 'Share', xRem: 8.5, yRem: -5.4 },
+    { key: 'linkedin', label: 'LinkedIn', xRem: 8.5, yRem: -1.8 },
+    { key: 'github', label: 'GitHub', xRem: 8.5, yRem: 1.8 },
   ] as const;
 
   function flyoutItemStyle(item: { xRem: number; yRem: number }): string {
@@ -382,6 +387,7 @@
   <div
     class="knob-dial"
     class:tool-active={dialGlow}
+    class:show-press={showNudge}
     bind:this={dialEl}
     role="slider"
     tabindex="0"
@@ -403,10 +409,14 @@
         aria-hidden="true"
       ></span>
     </span>
-    <span id="knob-dial-tooltip" class="dial-tooltip" role="tooltip">
-      Drag to rotate the orbit
-    </span>
   </div>
+  <!-- Tooltip lives OUTSIDE .knob-dial because that element has
+       overflow:hidden (for the brushed-metal pattern) — clipping any
+       absolutely-positioned child that extends past its bounds. Anchored
+       to .knob (its grandparent) instead. -->
+  <span id="knob-dial-tooltip" class="dial-tooltip" role="tooltip">
+    Drag to rotate the orbit
+  </span>
 
   {#if contactOpen}
     <div
@@ -752,7 +762,7 @@
   }
 
   .dial-nudge-wrap.nudging {
-    animation: knob-dial-nudge 1.4s ease-in-out 600ms 2;
+    animation: knob-dial-nudge 1.4s ease-in-out 600ms 4;
   }
 
   @keyframes knob-dial-nudge {
@@ -761,12 +771,40 @@
     75% { transform: rotate(10deg); }
   }
 
-  /* Help tooltip above the dial. Hidden at rest; fades in on hover or
-     keyboard focus. aria-describedby on the dial means screen readers
-     also announce this on focus. */
+  /* Companion "press" effect on the dial body during the nudge —
+     synced to the rotation peaks (25% / 75%) so the dial visually
+     reads as being pushed down AND turned. Mimics the existing
+     :active state (push into well) without a transform translate
+     since the existing keyframe handles rotation via a wrapper.
+     CSS-only, runs the same 4 reps then settles. */
+  .knob-dial.show-press {
+    animation: knob-dial-press 1.4s ease-in-out 600ms 4;
+  }
+
+  @keyframes knob-dial-press {
+    0%, 100% {
+      box-shadow:
+        inset 0 1px 0 oklch(0.95 0.005 250 / 0.70),
+        inset 0 -1.5px 2px oklch(0.42 0.015 250 / 0.45),
+        0 3px 6px oklch(0.10 0.02 250 / 0.40),
+        0 1px 2px oklch(0.08 0.02 250 / 0.30);
+    }
+    25%, 75% {
+      box-shadow:
+        inset 0 2px 3px oklch(0.30 0.012 250 / 0.55),
+        inset 0 -1px 1px oklch(0.85 0.008 250 / 0.40),
+        0 1px 2px oklch(0.10 0.02 250 / 0.30);
+    }
+  }
+
+  /* Help tooltip above the dial. Sibling of .knob-dial (not descendant)
+     because .knob-dial has overflow:hidden which clipped the previous
+     placement. Anchored to .knob root: dial sits at 50% center with
+     radius 3.25rem, so tooltip's bottom rests 0.5rem above the dial's
+     top edge. */
   .dial-tooltip {
     position: absolute;
-    bottom: calc(100% + 0.5rem);
+    bottom: calc(50% + 3.25rem + 0.5rem);
     left: 50%;
     transform: translateX(-50%);
     padding: 0.3rem 0.6rem;
@@ -783,9 +821,9 @@
     z-index: 60;
   }
 
-  .knob-dial:hover .dial-tooltip,
-  .knob-dial:focus-visible .dial-tooltip,
-  .knob-dial:focus-within .dial-tooltip {
+  .knob:has(.knob-dial:hover) .dial-tooltip,
+  .knob:has(.knob-dial:focus-visible) .dial-tooltip,
+  .knob:has(.knob-dial:focus-within) .dial-tooltip {
     opacity: 1;
   }
 
@@ -809,12 +847,13 @@
   .contact-bridge {
     position: absolute;
     /* Container origin is at knob-center; items live in xRem 8.4-10
-       and yRem -10.5 to 1.5. Bridge spans a generous box around
-       all of that. */
-    top: -12rem;
+       and yRem -12.6 to 1.8 (widened gap between items for thumb
+       tappability). Bridge spans a generous box around all of that
+       so cursor transit between items never crosses a dead zone. */
+    top: -14rem;
     left: 4rem;
     width: 12rem;
-    height: 16rem;
+    height: 18rem;
     pointer-events: auto;
   }
 
@@ -928,7 +967,8 @@
     .radial-item {
       animation: none;
     }
-    .dial-nudge-wrap.nudging {
+    .dial-nudge-wrap.nudging,
+    .knob-dial.show-press {
       animation: none;
     }
     .dial-tooltip {
