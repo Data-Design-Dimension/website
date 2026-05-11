@@ -22,6 +22,20 @@
    * frozen + another moving read as "broken state". */
   let anyCardOpen = $state(false);
 
+  /* Single source of truth for the sticky background-tap pause (#43).
+   * Hoisted so a click on ANY cluster's background freezes (or
+   * resumes) every cluster together. Previously each cluster carried
+   * its own tapPaused boolean and a click only flipped the one it
+   * landed in — half the orbit kept moving, which read as a bug.
+   * Tester also reported the inverse intent: "if clicking the
+   * background pauses anything it must pause everything, otherwise
+   * remove the behavior." A single shared boolean is the simplest
+   * possible coordination. */
+  let tapPaused = $state(false);
+  function toggleTapPause() {
+    tapPaused = !tapPaused;
+  }
+
   $effect(() => {
     if (!containerEl || typeof MutationObserver === 'undefined') return;
     const update = () => {
@@ -116,6 +130,8 @@
       timeOffset={i * (Math.PI * 2 / 3) * 0.4 + manualTimeOffset}
       onCardSelect={onCardSelect}
       {anyCardOpen}
+      {tapPaused}
+      onToggleTapPause={toggleTapPause}
     />
   {/each}
 

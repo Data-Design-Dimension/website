@@ -6,6 +6,7 @@
     warpPhaseToAngle,
     FOREGROUND_ANGLE,
   } from '../lib/scrambler/orbital-math';
+  import { isOrbitPaused } from '../lib/scrambler/pause';
   import ScramblerCardComponent from './ScramblerCard.svelte';
 
   interface Props {
@@ -18,6 +19,12 @@
      * or expanded card. All clusters pause together so background
      * orbits don't compete with the user's reading focus. */
     anyCardOpen?: boolean;
+    /* Hoisted from Scrambler — sticky pause toggled by a background
+     * click on ANY cluster (#43). All clusters share the same value
+     * so one click pauses (and the next resumes) every cluster
+     * together. */
+    tapPaused?: boolean;
+    onToggleTapPause?: () => void;
   }
 
   let {
@@ -27,6 +34,8 @@
     timeOffset = 0,
     onCardSelect,
     anyCardOpen = false,
+    tapPaused = false,
+    onToggleTapPause,
   }: Props = $props();
 
   /* Two distinct pause sources, kept separate so each can be cleared
@@ -49,7 +58,8 @@
   // to read at their own pace. Tapping the cluster background (not a
   // card) toggles a sticky pause — separate from hover/focus so the
   // user can intentionally hold the orbit still on touch devices.
-  let tapPaused = $state(false);
+  // Hoisted to the Scrambler parent (#43) so the toggle freezes
+  // every cluster together; this component receives it as a prop.
   let isKeyboardActive = $state(false);
   let clusterEl: HTMLDivElement | undefined = $state();
   let isDraggingCard = $state(false);
@@ -110,8 +120,16 @@
   // (collapses the expanded card or releases the drag), the cluster
   // resumes orbital rotation — but with any drag-induced phase
   // offsets still applied, so cards stay where they were dragged.
+  // tapPaused is a hoisted, shared signal — see Scrambler.svelte (#43).
   const orbitPaused = $derived(
-    hoverPaused || focusPaused || tapPaused || anyCardOpen || isDraggingCard || recentlyCollapsed,
+    isOrbitPaused({
+      hover: hoverPaused,
+      focus: focusPaused,
+      tap: tapPaused,
+      anyCardOpen,
+      dragging: isDraggingCard,
+      recentlyCollapsed,
+    }),
   );
 
   /* Track keyboard vs pointer mode globally so focusin can decide
@@ -300,6 +318,13 @@
   onpointerleave={(e) => {
     if (e.pointerType === 'mouse' || e.pointerType === 'pen') hoverPaused = false;
   }}
+  onpointercancel={() => {
+    /* Touch interrupted (gesture stolen by browser scroll, OS, etc.).
+     * Mirror the v0.1.0-preview #39 fix that cleared isHovered: clear
+     * hoverPaused too, so a stale value can't pin the orbit after the
+     * pointer never sends a clean leave. */
+    hoverPaused = false;
+  }}
   onfocusin={() => {
     /* Only pause for keyboard-driven focus. A click or tap also
      * triggers focusin (on the focusable target, e.g. a button) but
@@ -308,14 +333,16 @@
   }}
   onfocusout={() => (focusPaused = false)}
   onclick={(e) => {
-    /* Tap on the cluster background (not on a card) toggles a sticky
-     * pause. e.target === e.currentTarget rules out clicks that bubbled
-     * up from a card, the cluster label, or any descendant. Drag in
-     * progress is also excluded so a release-after-drag doesn't flip
-     * the pause state. */
+    /* Tap on the cluster background (not on a card) toggles the
+     * SHARED, sticky pause for the entire Scrambler (#43). The
+     * tapPaused state lives on the Scrambler parent so one click
+     * here pauses every cluster together; the next click resumes
+     * every cluster together. e.target === e.currentTarget rules
+     * out bubbled clicks from a card / label; isDraggingCard
+     * filters out the release event at the end of a drag. */
     if (e.target !== e.currentTarget) return;
     if (isDraggingCard) return;
-    tapPaused = !tapPaused;
+    onToggleTapPause?.();
   }}
 >
   <span class="cluster-label" style:opacity={cluster.orbit === 'inner' ? 0.7 : 0.3}>
