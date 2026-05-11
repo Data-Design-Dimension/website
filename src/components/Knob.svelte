@@ -541,17 +541,28 @@
      state. A subtle drop-shadow filter also lifts the hovered pad
      off the dial to reinforce press affordance (filter works on SVG
      paths where CSS transform translateY can be flaky). */
-  .knob:has(.target-top:hover) .pad-green:not(.active) {
-    fill: oklch(0.84 0.15 138);
-    filter: drop-shadow(0 -2px 3px oklch(0.45 0.10 145 / 0.35));
-  }
-  .knob:has(.target-bl:hover) .pad-amber:not(.active) {
-    fill: oklch(0.90 0.14 90);
-    filter: drop-shadow(0 -2px 3px oklch(0.55 0.12 90 / 0.35));
-  }
-  .knob:has(.target-br:hover) .pad-neutral:not(.active) {
-    fill: oklch(0.66 0.028 70);
-    filter: drop-shadow(0 -2px 3px oklch(0.40 0.02 70 / 0.30));
+  /* Hover preview — "warming up" toward the active fill — is gated to
+     hover-capable, fine-pointer devices only. iOS Safari (and Chrome
+     on iOS, which is WebKit under the hood) treats a tap as a sticky
+     :hover that persists until something else is tapped, so without
+     this gate the moment a user tapped a pad to DEselect it the
+     :hover rule below clamped the fill back to the saturated preview
+     color and the transparent inactive state never appeared until they
+     also tapped the background. (hover: hover) AND (pointer: fine)
+     rules out the touch + coarse-pointer combination together. */
+  @media (hover: hover) and (pointer: fine) {
+    .knob:has(.target-top:hover) .pad-green:not(.active) {
+      fill: oklch(0.84 0.15 138);
+      filter: drop-shadow(0 -2px 3px oklch(0.45 0.10 145 / 0.35));
+    }
+    .knob:has(.target-bl:hover) .pad-amber:not(.active) {
+      fill: oklch(0.90 0.14 90);
+      filter: drop-shadow(0 -2px 3px oklch(0.55 0.12 90 / 0.35));
+    }
+    .knob:has(.target-br:hover) .pad-neutral:not(.active) {
+      fill: oklch(0.66 0.028 70);
+      filter: drop-shadow(0 -2px 3px oklch(0.40 0.02 70 / 0.30));
+    }
   }
 
   /* Pad labels — sized in SVG user units so text scales with the dial.

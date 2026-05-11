@@ -116,7 +116,20 @@
   onmouseleave={handleLeave}
   onfocus={maybeOpen}
   onblur={handleBlur}
-  onclick={onExpand}
+  onclick={() => {
+    /* On touch (iOS Safari + Chrome on iOS) neither onmouseenter nor
+     * onfocus fires reliably for a tap on a <button> — synthesized
+     * mouseenter is iffy across versions and Safari doesn't focus
+     * non-form buttons on tap by default. Without a click handler that
+     * opens the panel, tapping the avatar did nothing visible. Route
+     * onclick through the same maybeOpen guard the other openers use
+     * (suppressReopen short-circuits it so the close button's unmount
+     * cascade still can't reopen the panel), then forward to the
+     * optional onExpand callback so the future full-overlay hook
+     * keeps working when wired up. */
+    maybeOpen();
+    onExpand?.();
+  }}
 >
   <span class="avatar-shell" aria-hidden="true">
     <span class="avatar-photo-wrap">
