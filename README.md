@@ -1,4 +1,4 @@
-# dadeda.design
+# [dadeda.design](https://dadeda.design)
 
 Portfolio and professional brand site for [Kathryn Hurchla](https://www.linkedin.com/in/kathrynhurchla/) / [Data Design Dimension](https://github.com/Data-Design-Dimension).
 
