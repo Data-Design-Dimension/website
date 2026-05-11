@@ -388,6 +388,7 @@
     class="knob-dial"
     class:tool-active={dialGlow}
     class:show-press={showNudge}
+    class:dragging={isDragging}
     bind:this={dialEl}
     role="slider"
     tabindex="0"
@@ -825,6 +826,15 @@
   .knob:has(.knob-dial:focus-visible) .dial-tooltip,
   .knob:has(.knob-dial:focus-within) .dial-tooltip {
     opacity: 1;
+  }
+
+  /* #44: while the user is actively dragging the dial they already
+     know how it works — keep the "Drag to rotate the orbit" hint out
+     of their way. Wins over the hover/focus rules above because the
+     pointer is still over (and focus still within) the dial during
+     a drag, so those selectors would otherwise keep the tooltip on. */
+  .knob:has(.knob-dial.dragging) .dial-tooltip {
+    opacity: 0;
   }
 
   /* Flyout container — anchored to knob center, but its hover bounds
