@@ -46,6 +46,16 @@
   let isKeyboardActive = $state(false);
   let tapPaused = $state(false);
   let openCards = $state<Set<string>>(new Set());
+  /* Single-selection invariant. Two-thumb simultaneous taps on
+   * mobile used to leave two cards focused at once (each tap's
+   * 300ms grace blocks the other's outside-tap dismissal). Closing
+   * one of them left the other still selected → anyCardOpen stayed
+   * true → orbit never resumed without a separate bg-tap. The
+   * Scrambler now tracks WHICH card is the active selection;
+   * ScramblerCard force-collapses itself when this prop names a
+   * different card, converging multi-select into single-select
+   * deterministically. */
+  let selectedCardId = $state<string | null>(null);
   let dragging = $state(false);
   let recentlyCollapsed = $state(false);
   let collapseTimer: ReturnType<typeof setTimeout> | undefined;
@@ -184,15 +194,27 @@
     /* Idempotent Set updates — robust against duplicate or missed
      * calls (a card unmounting while lifted, a re-render firing the
      * same transition twice). add/remove of an existing/missing key
-     * is a no-op rather than a count drift. */
+     * is a no-op rather than a count drift.
+     *
+     * Also drives the single-selection invariant: lifting a card
+     * names it the current selection, prompting any prior selection
+     * to force-collapse via its own selectedCardId-watching effect.
+     * Unlifting clears selectedCardId only if the unlifting card
+     * WAS the selection (preserves the invariant during the brief
+     * window where a force-collapsed card fires its own unlift
+     * callback after a new card has already become the selection). */
     if (lifted) {
-      if (openCards.has(cardId)) return;
-      openCards = new Set([...openCards, cardId]);
+      if (!openCards.has(cardId)) {
+        openCards = new Set([...openCards, cardId]);
+      }
+      selectedCardId = cardId;
     } else {
-      if (!openCards.has(cardId)) return;
-      const next = new Set(openCards);
-      next.delete(cardId);
-      openCards = next;
+      if (openCards.has(cardId)) {
+        const next = new Set(openCards);
+        next.delete(cardId);
+        openCards = next;
+      }
+      if (selectedCardId === cardId) selectedCardId = null;
     }
   }
 
@@ -273,6 +295,7 @@
       timeOffset={i * (Math.PI * 2 / 3) * 0.4 + manualTimeOffset}
       onCardSelect={onCardSelect}
       {paused}
+      {selectedCardId}
       onToggleTapPause={toggleTapPause}
       onCardLiftedChange={onCardLiftedChange}
       onCardDragChange={onCardDragChange}

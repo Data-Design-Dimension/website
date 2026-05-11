@@ -273,6 +273,53 @@ test.describe('Scrambler — cluster resumes after collapse with pointer parked'
     await expect(cluster).not.toHaveClass(/paused/);
   });
 
+  test('single-selection invariant: tapping a second card collapses the first', async ({
+    page,
+  }) => {
+    /* On mobile, two-thumb simultaneous taps used to focus two
+     * cards at once (each tap's 300ms outside-tap grace prevents
+     * the other tap from dismissing it). Closing one of them left
+     * the other still selected → orbit never resumed without a
+     * separate bg-tap.
+     *
+     * The fix enforces single-selection at the parent: a new tap
+     * names that card the active selection, and prior selections
+     * force-collapse via a selectedCardId-watching effect.
+     *
+     * Simulation: dispatch synthesized pointerup on cardA then cardB
+     * within the same script tick. The single-selection effect
+     * should converge to cardB-only-focused regardless of which
+     * card's effects flushed first. */
+    await page.goto('/');
+    await page.waitForSelector('.scrambler-card', { timeout: 5000 });
+
+    const cards = page.locator('.scrambler-card');
+    const cardA = cards.nth(0);
+    const cardB = cards.nth(1);
+
+    // Tap each card to focus it. Use synthesized pointer events so
+    // we control timing without a moving cursor.
+    for (const card of [cardA, cardB]) {
+      await card.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        el.dispatchEvent(new PointerEvent('pointerdown', {
+          bubbles: true, pointerType: 'mouse', clientX: cx, clientY: cy, pointerId: 1,
+        }));
+        el.dispatchEvent(new PointerEvent('pointerup', {
+          bubbles: true, pointerType: 'mouse', clientX: cx, clientY: cy, pointerId: 1,
+        }));
+      });
+    }
+
+    // After convergence: only cardB is focused. cardA must have
+    // been force-collapsed by the single-selection effect.
+    await expect(cardB).toHaveClass(/focused/);
+    await expect(cardA).not.toHaveClass(/focused/);
+    await expect(cardA).not.toHaveClass(/expanded/);
+  });
+
   test('cluster also resumes when card is dismissed via background tap', async ({
     page,
   }) => {
