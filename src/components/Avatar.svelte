@@ -153,10 +153,10 @@
   <span class="avatar-bio" aria-hidden={!hovered}>
     <span class="bio-name">Kathryn Hurchla</span>
     <span class="bio-blurb">
-      I make intelligent experiences where technology and design blur. Find me building AI-enabled moments of wonder through cross-disciplinary experience design &amp; engineering with clients who disrupt and lead industries.
+      I make intelligent experiences where technology and design blur. Find me building AI-enabled moments of wonder through cross-disciplinary design &amp; engineering with people and brands that disrupt and lead industries.
     </span>
     <span class="bio-blurb">
-      Data Design Dimension—DADEDA—is an ethos. A personal commitment to work that suits the technologist and creative in me, and a LLC for occasional passion projects and sharing thoughts, written and talks.
+      Data Design Dimension—DADEDA—is an indy creative tech studio and an ethos. A personal commitment to work that suits the technologist and creative in me, and a structure for projects and sharing thoughts, written and talks.
     </span>
   </span>
 </button>
