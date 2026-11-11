@@ -1,6 +1,9 @@
 # [dadeda.design](https://dadeda.design)
 
-Portfolio and professional brand site for [Kathryn Hurchla](https://www.linkedin.com/in/kathrynhurchla/) / [Data Design Dimension](https://github.com/Data-Design-Dimension).
+Portfolio and professional brand site for **Kathryn Hurchla** and her independent creative technology studio **Data Design Dimension**.
+
+Partnerships or business inquiries >> [kathryn@dadeda.design](mailto:kathryn@dadeda.design)\
+Spot a problem, or the site's down or inaccessible to you? [Submit an issue](https://github.com/Data-Design-Dimension/website/issues)
 
 ## Setup
 
@@ -56,7 +59,7 @@ public/              Static assets
 
 ## Previous Version
 
-The Flask/Bootstrap version is preserved at tag `v1.0-flask` and branch `archive/flask-v1`.
+An OG Flask/Bootstrap site version is preserved at tag `v1.0-flask` and branch `archive/flask-v1`.
 
 ## License
 
