@@ -14,10 +14,23 @@
     containerHeight: number;
     timeOffset?: number;
     onCardSelect?: (card: import('../lib/scrambler/types').ScramblerCard) => void;
-    /* Hoisted from Scrambler — true when ANY cluster has a focused
-     * or expanded card. All clusters pause together so background
-     * orbits don't compete with the user's reading focus. */
-    anyCardOpen?: boolean;
+    /* Single-source pause state from the Scrambler parent. Every
+     * cluster reads the same value, so pause / resume is always
+     * synchronous across the whole Scrambler. There is intentionally
+     * no local pause state on this component — the asymmetric-freeze
+     * bug class the v0.1.0 → v0.1.1 fixes chased was a direct
+     * consequence of per-cluster bookkeeping; lifting it to the
+     * parent eliminates it at the root. */
+    paused: boolean;
+    /* Currently-selected card id (null when none). Drives the
+     * single-selection invariant — a card whose id doesn't match
+     * this prop force-collapses itself. Lives on the Scrambler
+     * parent so multi-thumb taps converge to a single selection
+     * regardless of which card's local pointerup fired first. */
+    selectedCardId: string | null;
+    onToggleTapPause: () => void;
+    onCardLiftedChange: (cardId: string, lifted: boolean) => void;
+    onCardDragChange: (isDragging: boolean) => void;
   }
 
   let {
@@ -26,42 +39,14 @@
     containerHeight,
     timeOffset = 0,
     onCardSelect,
-    anyCardOpen = false,
+    paused,
+    selectedCardId,
+    onToggleTapPause,
+    onCardLiftedChange,
+    onCardDragChange,
   }: Props = $props();
 
-  /* Two distinct pause sources, kept separate so each can be cleared
-   * independently — this is what fixes the "orbit doesn't restart"
-   * bug on both mobile and desktop. Previously a single isPaused
-   * flag was pinned true by focusin (clicking the toggle button
-   * focuses it, focusout never fires because the button stays
-   * rendered after collapse). Splitting the source lets pointer
-   * activity override stale focus state without affecting hover.
-   *
-   *   hoverPaused — true while a mouse/pen is over the cluster.
-   *                 Cleared by pointerleave. Touch never sets it.
-   *   focusPaused — true ONLY when keyboard-driven focus enters a
-   *                 descendant. Cleared by focusout OR any
-   *                 pointerdown anywhere on the document. Touch /
-   *                 mouse focus never sets it. */
-  let hoverPaused = $state(false);
-  let focusPaused = $state(false);
-  // Tester feedback (#40, #41): both testers wanted to stop the orbit
-  // to read at their own pace. Tapping the cluster background (not a
-  // card) toggles a sticky pause — separate from hover/focus so the
-  // user can intentionally hold the orbit still on touch devices.
-  let tapPaused = $state(false);
-  let isKeyboardActive = $state(false);
   let clusterEl: HTMLDivElement | undefined = $state();
-  let isDraggingCard = $state(false);
-  // True for ~800ms after the last expanded/focused card closes (#39).
-  // .scrambler-card has a spring CSS transition on `transform`, so when
-  // `isLifted` flips off the scale interpolates from 1.0 back to the
-  // card's orbital scale. The orbit's per-frame scale updates re-target
-  // the spring constantly during that window — visible as two cards
-  // jockeying for position. Holding the orbit while the spring settles
-  // gives the card a stable target to land on.
-  let recentlyCollapsed = $state(false);
-  let collapseTimer: ReturnType<typeof setTimeout> | undefined;
 
   // Per-card phase offsets — added to a card's natural orbit phase so
   // the user can DRAG cards along the orbit. The offset persists after
@@ -69,90 +54,15 @@
   // phase position when the orbit resumes.
   let phaseOffsets = $state<Map<string, number>>(new Map());
 
-  /* React to the global anyCardOpen signal: when it transitions
-   * true → false, hold this cluster's orbit for 800ms so any
-   * spring transitions inside this cluster's cards finish settling
-   * before motion resumes. When it goes false → true we cancel
-   * any pending grace (we're going back to a paused state anyway).
-   *
-   * prevAnyCardOpen is intentionally a plain variable, not $state —
-   * we don't want writes to it to retrigger the effect. */
-  let prevAnyCardOpen = false;
-  $effect(() => {
-    const open = anyCardOpen;
-    if (prevAnyCardOpen && !open) {
-      recentlyCollapsed = true;
-      if (collapseTimer !== undefined) clearTimeout(collapseTimer);
-      collapseTimer = setTimeout(() => {
-        recentlyCollapsed = false;
-        collapseTimer = undefined;
-      }, 800);
-    } else if (!prevAnyCardOpen && open) {
-      if (collapseTimer !== undefined) {
-        clearTimeout(collapseTimer);
-        collapseTimer = undefined;
-      }
-      recentlyCollapsed = false;
-    }
-    prevAnyCardOpen = open;
-  });
-
-  /* Separate unmount cleanup — runs only when the cluster unmounts,
-   * not on every anyCardOpen change. */
-  $effect(() => {
-    return () => {
-      if (collapseTimer !== undefined) clearTimeout(collapseTimer);
-    };
-  });
-
-  // Pause the orbital animation if hovered/focused, if any card is
-  // expanded, OR if a card is being dragged. Once the user finishes
-  // (collapses the expanded card or releases the drag), the cluster
-  // resumes orbital rotation — but with any drag-induced phase
-  // offsets still applied, so cards stay where they were dragged.
-  const orbitPaused = $derived(
-    hoverPaused || focusPaused || tapPaused || anyCardOpen || isDraggingCard || recentlyCollapsed,
-  );
-
-  /* Track keyboard vs pointer mode globally so focusin can decide
-   * whether it was triggered by a Tab (pause is desired UX so cards
-   * don't move under keyboard nav) or by a click/tap on a button
-   * (which also focuses the button on most browsers — but the user
-   * doesn't expect a click to pin the orbit). */
-  $effect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (
-        e.key === 'Tab' ||
-        e.key === 'Enter' ||
-        e.key === ' ' ||
-        e.key.startsWith('Arrow')
-      ) {
-        isKeyboardActive = true;
-      }
-    };
-    const onPointer = () => {
-      isKeyboardActive = false;
-      /* Pointer activity always overrides any stale focus pause —
-       * defense against iOS/desktop browsers that don't reliably
-       * fire focusout when focus stays on a still-rendered button
-       * after a card collapses. */
-      focusPaused = false;
-    };
-    window.addEventListener('keydown', onKey, true);
-    window.addEventListener('pointerdown', onPointer, true);
-    return () => {
-      window.removeEventListener('keydown', onKey, true);
-      window.removeEventListener('pointerdown', onPointer, true);
-    };
-  });
+  const orbitPaused = $derived(paused);
 
   // ── DRAG handlers ──────────────────────────────────────────────
   function handleCardDragStart() {
-    isDraggingCard = true;
+    onCardDragChange(true);
   }
 
   function handleCardDragEnd() {
-    isDraggingCard = false;
+    onCardDragChange(false);
   }
 
   function handleCardDragMove(cardId: string, clientX: number, clientY: number) {
@@ -291,31 +201,14 @@
   class:paused={orbitPaused}
   role="group"
   aria-label="{cluster.label} — {cluster.cards.length} items"
-  onpointerenter={(e) => {
-    /* Hover pause is a separate signal from focus pause so each can
-     * be cleared independently. Touch is excluded — there's no
-     * lingering hover state on touch. */
-    if (e.pointerType === 'mouse' || e.pointerType === 'pen') hoverPaused = true;
-  }}
-  onpointerleave={(e) => {
-    if (e.pointerType === 'mouse' || e.pointerType === 'pen') hoverPaused = false;
-  }}
-  onfocusin={() => {
-    /* Only pause for keyboard-driven focus. A click or tap also
-     * triggers focusin (on the focusable target, e.g. a button) but
-     * the user doesn't expect that to pin the orbit. */
-    if (isKeyboardActive) focusPaused = true;
-  }}
-  onfocusout={() => (focusPaused = false)}
   onclick={(e) => {
-    /* Tap on the cluster background (not on a card) toggles a sticky
-     * pause. e.target === e.currentTarget rules out clicks that bubbled
-     * up from a card, the cluster label, or any descendant. Drag in
-     * progress is also excluded so a release-after-drag doesn't flip
-     * the pause state. */
+    /* Tap on the cluster background (not on a card) requests the
+     * SHARED tap-pause toggle from the parent. Parent applies the
+     * cross-cutting guards (anyCardOpen, dragging) before flipping.
+     * e.target === e.currentTarget filters bubbled clicks from cards
+     * / labels. */
     if (e.target !== e.currentTarget) return;
-    if (isDraggingCard) return;
-    tapPaused = !tapPaused;
+    onToggleTapPause();
   }}
 >
   <span class="cluster-label" style:opacity={cluster.orbit === 'inner' ? 0.7 : 0.3}>
@@ -355,10 +248,12 @@
       <ScramblerCardComponent
         {card}
         {position}
+        {selectedCardId}
         onSelect={onCardSelect}
         onDragStart={handleCardDragStart}
         onDragMove={handleCardDragMove}
         onDragEnd={handleCardDragEnd}
+        onLiftedChange={(lifted) => onCardLiftedChange(card.id, lifted)}
       />
     </div>
   {/each}

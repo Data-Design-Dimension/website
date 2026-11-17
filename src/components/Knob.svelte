@@ -388,6 +388,7 @@
     class="knob-dial"
     class:tool-active={dialGlow}
     class:show-press={showNudge}
+    class:dragging={isDragging}
     bind:this={dialEl}
     role="slider"
     tabindex="0"
@@ -490,14 +491,19 @@
 
   /* GREEN pad — See Work.
      Inactive: a light YELLOW-leaning green (hue 130) — reads as "green
-     at low glow" rather than sage.
+     at low glow" rather than sage. Now at 0.25 alpha (#46): tester
+     reported the previous solid pale-green still read as "kind of on"
+     against the sage canvas. Dropping the alpha lets the canvas show
+     through so the off state is unambiguously off, while keeping
+     enough hue that the pad's identity (See Work = green) is still
+     readable at rest.
      Active: --color-accent-green, the same neon green used by .card-cta
      so the dial visually rhymes with the cards' call-to-action color.
      Active also gets a soft phosphor halo (drop-shadow) so the toggle
      state reads at a glance — tester #40 didn't notice the previous
      chroma-only diff was a toggle until both pads were turned off. */
   .pad-green {
-    fill: oklch(0.93 0.09 130);
+    fill: oklch(0.93 0.09 130 / 0.25);
   }
   .pad-green.active {
     fill: var(--color-accent-green);
@@ -509,9 +515,11 @@
      two off-state pads feel equally "quiet". Still clearly amber, not
      sage. Active brightens toward a fuller #FFCC00 phosphor glow with
      a matching halo. Was 0.18 chroma — boosted to 0.22 for a clearer
-     on/off read at the same lightness band as See Work's active. */
+     on/off read at the same lightness band as See Work's active.
+     Now also at 0.25 alpha (#46), mirroring See Work's transparency
+     so both toggleable categories share the same off-state weight. */
   .pad-amber {
-    fill: oklch(0.92 0.10 85); /* pale amber pre-glow */
+    fill: oklch(0.92 0.10 85 / 0.25); /* pale amber pre-glow */
   }
   .pad-amber.active {
     fill: oklch(0.85 0.22 95); /* ≈ deeper CRT amber */
@@ -533,17 +541,28 @@
      state. A subtle drop-shadow filter also lifts the hovered pad
      off the dial to reinforce press affordance (filter works on SVG
      paths where CSS transform translateY can be flaky). */
-  .knob:has(.target-top:hover) .pad-green:not(.active) {
-    fill: oklch(0.84 0.15 138);
-    filter: drop-shadow(0 -2px 3px oklch(0.45 0.10 145 / 0.35));
-  }
-  .knob:has(.target-bl:hover) .pad-amber:not(.active) {
-    fill: oklch(0.90 0.14 90);
-    filter: drop-shadow(0 -2px 3px oklch(0.55 0.12 90 / 0.35));
-  }
-  .knob:has(.target-br:hover) .pad-neutral:not(.active) {
-    fill: oklch(0.66 0.028 70);
-    filter: drop-shadow(0 -2px 3px oklch(0.40 0.02 70 / 0.30));
+  /* Hover preview — "warming up" toward the active fill — is gated to
+     hover-capable, fine-pointer devices only. iOS Safari (and Chrome
+     on iOS, which is WebKit under the hood) treats a tap as a sticky
+     :hover that persists until something else is tapped, so without
+     this gate the moment a user tapped a pad to DEselect it the
+     :hover rule below clamped the fill back to the saturated preview
+     color and the transparent inactive state never appeared until they
+     also tapped the background. (hover: hover) AND (pointer: fine)
+     rules out the touch + coarse-pointer combination together. */
+  @media (hover: hover) and (pointer: fine) {
+    .knob:has(.target-top:hover) .pad-green:not(.active) {
+      fill: oklch(0.84 0.15 138);
+      filter: drop-shadow(0 -2px 3px oklch(0.45 0.10 145 / 0.35));
+    }
+    .knob:has(.target-bl:hover) .pad-amber:not(.active) {
+      fill: oklch(0.90 0.14 90);
+      filter: drop-shadow(0 -2px 3px oklch(0.55 0.12 90 / 0.35));
+    }
+    .knob:has(.target-br:hover) .pad-neutral:not(.active) {
+      fill: oklch(0.66 0.028 70);
+      filter: drop-shadow(0 -2px 3px oklch(0.40 0.02 70 / 0.30));
+    }
   }
 
   /* Pad labels — sized in SVG user units so text scales with the dial.
@@ -825,6 +844,15 @@
   .knob:has(.knob-dial:focus-visible) .dial-tooltip,
   .knob:has(.knob-dial:focus-within) .dial-tooltip {
     opacity: 1;
+  }
+
+  /* #44: while the user is actively dragging the dial they already
+     know how it works — keep the "Drag to rotate the orbit" hint out
+     of their way. Wins over the hover/focus rules above because the
+     pointer is still over (and focus still within) the dial during
+     a drag, so those selectors would otherwise keep the tooltip on. */
+  .knob:has(.knob-dial.dragging) .dial-tooltip {
+    opacity: 0;
   }
 
   /* Flyout container — anchored to knob center, but its hover bounds

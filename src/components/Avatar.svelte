@@ -30,11 +30,29 @@
   let hovered = $state(false);
   let avatarBtn: HTMLButtonElement | undefined = $state();
   let closeBtn: HTMLButtonElement | undefined = $state();
+  /* #47 — the close button is a SIBLING of the avatar button,
+   * conditionally rendered while `hovered` is true. After the user
+   * clicks "–", that button unmounts and the pointer (and any
+   * keyboard focus) lands back on the avatar underneath, firing its
+   * `onmouseenter` / `onfocus`. Both handlers re-opened the bio
+   * panel, so the close click appeared to do nothing.
+   *
+   * We set `suppressReopen` for a brief window after every close so
+   * those follow-up open events get swallowed. 250ms is long enough
+   * to cover the unmount → enter / focus cascade across browsers and
+   * short enough to feel instant if the user deliberately re-hovers. */
+  let suppressReopen = $state(false);
+  let reopenTimer: ReturnType<typeof setTimeout> | undefined;
 
   function setOpen(value: boolean) {
     if (value === hovered) return;
     hovered = value;
     onOpenChange?.(value);
+  }
+
+  function maybeOpen() {
+    if (suppressReopen) return;
+    setOpen(true);
   }
 
   // True when focus/pointer is moving to a sibling element that's part of
@@ -57,8 +75,27 @@
   }
 
   function handleClose() {
+    suppressReopen = true;
     setOpen(false);
+    if (reopenTimer !== undefined) clearTimeout(reopenTimer);
+    reopenTimer = setTimeout(() => {
+      suppressReopen = false;
+      reopenTimer = undefined;
+    }, 250);
   }
+
+  /* Cancel any pending suppression timer if the component is
+   * unmounted (route change, Astro island swap) before it fires.
+   * Without this the timeout callback would write to runes after
+   * the state container is torn down. */
+  $effect(() => {
+    return () => {
+      if (reopenTimer !== undefined) {
+        clearTimeout(reopenTimer);
+        reopenTimer = undefined;
+      }
+    };
+  });
 
   function handleEscape(e: KeyboardEvent) {
     if (e.key === 'Escape' && hovered) {
@@ -75,11 +112,24 @@
   class:open={hovered}
   aria-label="About Kathryn Hurchla — click to open full bio"
   aria-expanded={hovered}
-  onmouseenter={() => setOpen(true)}
+  onmouseenter={maybeOpen}
   onmouseleave={handleLeave}
-  onfocus={() => setOpen(true)}
+  onfocus={maybeOpen}
   onblur={handleBlur}
-  onclick={onExpand}
+  onclick={() => {
+    /* On touch (iOS Safari + Chrome on iOS) neither onmouseenter nor
+     * onfocus fires reliably for a tap on a <button> — synthesized
+     * mouseenter is iffy across versions and Safari doesn't focus
+     * non-form buttons on tap by default. Without a click handler that
+     * opens the panel, tapping the avatar did nothing visible. Route
+     * onclick through the same maybeOpen guard the other openers use
+     * (suppressReopen short-circuits it so the close button's unmount
+     * cascade still can't reopen the panel), then forward to the
+     * optional onExpand callback so the future full-overlay hook
+     * keeps working when wired up. */
+    maybeOpen();
+    onExpand?.();
+  }}
 >
   <span class="avatar-shell" aria-hidden="true">
     <span class="avatar-photo-wrap">
@@ -103,10 +153,10 @@
   <span class="avatar-bio" aria-hidden={!hovered}>
     <span class="bio-name">Kathryn Hurchla</span>
     <span class="bio-blurb">
-      I make intelligent experiences where technology and design blur. Find me building AI-enabled moments of wonder through cross-disciplinary experience design &amp; engineering with clients who disrupt and lead industries.
+      I make intelligent experiences where technology and design blur. Find me building AI-enabled moments of wonder through cross-disciplinary design &amp; engineering with people and brands that disrupt and lead industries.
     </span>
     <span class="bio-blurb">
-      Data Design Dimension—DADEDA—is an ethos. A personal commitment to work that suits the technologist and creative in me, and a LLC for occasional passion projects and sharing thoughts, written and talks.
+      Data Design Dimension—DADEDA—is an indy creative tech studio and an ethos. A personal commitment to work that suits the technologist and creative in me, and a structure for projects and sharing thoughts, written and talks.
     </span>
   </span>
 </button>
